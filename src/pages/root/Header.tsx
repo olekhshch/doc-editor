@@ -1,11 +1,15 @@
 import React from "react"
 import styled from "styled-components"
+import { useAppDispatch } from "../../app/hooks"
+import { createNewProject } from "../../features/projects/projectsSlice"
 
 const Header = () => {
+  const dispatch = useAppDispatch()
+  const addNewProject = () => dispatch(createNewProject())
   return (
     <StyledHeader>
       <div className="btn-container">
-        <button>New project</button>
+        <button onClick={addNewProject}>New project</button>
         <a href="">Docs</a>
         <a href="">Git</a>
       </div>
@@ -19,8 +23,11 @@ const Header = () => {
 export default Header
 
 const StyledHeader = styled.header`
-  padding: 24px;
+  padding: var(--marg);
   display: flex;
+  position: fixed;
+  left: 0;
+  right: 0;
   justify-content: space-between;
   font-size: var(--h2-size);
   font-weight: bold;
@@ -47,7 +54,7 @@ const StyledHeader = styled.header`
   }
 
   form {
-    margin-right: 24px;
+    margin-right: var(--marg);
     width: 360px;
   }
 

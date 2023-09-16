@@ -6,6 +6,13 @@
 
   --p-size: 16px;
   --h2-size: 20px;
+
+  --marg: 24px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -15,9 +22,27 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+h2 {
+  font-size: var(--h2-size);
+}
+
+button {
+  cursor: pointer;
 }

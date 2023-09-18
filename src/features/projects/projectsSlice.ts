@@ -10,7 +10,7 @@ const projectsSlice = createSlice({
       const newProject: ProjectInterface = {
         _id,
         title: "New project",
-        createdOn: Date(),
+        createdOn: new Date(),
       }
       state.projects = [...state.projects, newProject]
     },

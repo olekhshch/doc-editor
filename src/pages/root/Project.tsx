@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react"
 import styled from "styled-components"
-import { ProjectInterface } from "../../types"
+import { DocumentInterface, ProjectInterface } from "../../types"
 import { IconContext } from "react-icons"
 import { RiDeleteBin6Line, RiPencilLine } from "react-icons/ri"
+import { GoGrabber } from "react-icons/go"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import {
   deleteProject,
@@ -21,6 +22,8 @@ const Project = ({ project }: props) => {
 
   const [prTitle, setPrTitle] = useState(title)
   const [titleWidth, setTitleWidth] = useState(230)
+
+  const documents: DocumentInterface[] = []
 
   const handleTitleChange = (e: React.ChangeEvent) => {
     const { value } = e.target as HTMLInputElement
@@ -41,9 +44,13 @@ const Project = ({ project }: props) => {
     }
   }
 
+  const editModeOn = () => {
+    dispatch(setEditTitleId(_id))
+  }
+
   const editBtnAction = () => {
     if (editTitleId !== _id) {
-      dispatch(setEditTitleId(_id))
+      editModeOn()
     } else {
       setNewTitle(prTitle)
     }
@@ -68,23 +75,28 @@ const Project = ({ project }: props) => {
 
   return (
     <StyledArticle>
-      <div className="project-title flex">
-        {_id === editTitleId ? (
-          <form onSubmit={handleTitleSubmit}>
-            <input
-              //   ref={inputRef}
-              className="edit-title"
-              value={prTitle}
-              placeholder="Can't be empty"
-              onChange={(e) => handleTitleChange(e)}
-              style={{ width: titleWidth + "px" }}
-            />
-          </form>
-        ) : (
-          <h2>{title}</h2>
-        )}
-        <span ref={titleRef}>{prTitle}</span>
-        <IconContext.Provider value={{ color: "var(--white)", size: "24px" }}>
+      <IconContext.Provider value={{ color: "var(--white)", size: "24px" }}>
+        <div className="project-title flex">
+          <button className="icon grabber" title="Drag&drop to reorder">
+            <GoGrabber />
+          </button>
+          {_id === editTitleId ? (
+            <form onSubmit={handleTitleSubmit}>
+              <input
+                //   ref={inputRef}
+                className="edit-title"
+                value={prTitle}
+                placeholder="Can't be empty"
+                onChange={(e) => handleTitleChange(e)}
+                style={{ width: titleWidth + "px" }}
+                autoFocus
+              />
+            </form>
+          ) : (
+            <h3 onDoubleClick={editModeOn}>{title}</h3>
+          )}
+          <span ref={titleRef}>{prTitle}</span>
+
           <div className="actions flex">
             <button className="icon" title="Rename" onClick={editBtnAction}>
               <RiPencilLine />
@@ -93,9 +105,9 @@ const Project = ({ project }: props) => {
               <RiDeleteBin6Line />
             </button>
           </div>
-        </IconContext.Provider>
-      </div>
-      <ProjectDocsContainer />
+        </div>
+      </IconContext.Provider>
+      <ProjectDocsContainer documents={documents} />
     </StyledArticle>
   )
 }
@@ -105,7 +117,7 @@ export default Project
 const StyledArticle = styled.article`
   .project-title {
     height: 30px;
-    gap: 12px;
+    gap: 6px;
     align-items: center;
   }
 
@@ -119,26 +131,38 @@ const StyledArticle = styled.article`
     gap: 8px;
   }
 
-  .actions .icon {
+  .icon {
     background: none;
     width: fit-content;
     height: fit-content;
     border: none;
   }
 
+  .grabber {
+    margin: 0;
+    padding: 0;
+    cursor: grab;
+  }
+
   h3,
   input {
-    padding: 0;
+    padding-right: 12px;
+    padding-bottom: 0;
+    margin: 0;
+    font-size: var(--h2-size);
+    font-style: normal;
+    font-weight: bold;
   }
 
   .edit-title {
-    padding-right: 8px;
     width: fit-content;
     background: none;
     border: none;
-    font-size: var(--h2-size);
     color: var(--white);
-    font-weight: bold;
+  }
+
+  .edit-title:focus {
+    outline: none;
   }
 
   span {

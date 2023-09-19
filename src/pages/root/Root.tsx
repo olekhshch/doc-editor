@@ -1,18 +1,91 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 import Header from "./Header"
-import { useAppSelector } from "../../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../app/hooks"
+import { IconContext } from "react-icons"
+import { TbTriangleInvertedFilled } from "react-icons/tb"
 import Project from "./Project"
+import {
+  sortBy,
+  sortBy as sortingOptions,
+} from "../../features/projects/sorting"
+import { setSortBy } from "../../features/projects/projectsSlice"
+import { sortingOption } from "../../features/projects/initialState"
 
 const Root = () => {
-  const { projects } = useAppSelector((state) => state.projects)
+  const { projects, sortBy } = useAppSelector((state) => state.projects)
+  const dispatch = useAppDispatch()
+
+  const [projectsSorted, setProjectsSorted] = useState(projects)
+  const [isSortingMenuOpen, setIsSortingMenuOpen] = useState(false)
+
+  const toggleSortingMenu = () => setIsSortingMenuOpen(!isSortingMenuOpen)
+
+  useEffect(() => {
+    const sortProjects = () => {
+      const projectsCopy = [...projects]
+      if (sortBy === "DATE_NEWEST") {
+        return projectsCopy.sort((a, b) => {
+          const dateA = new Date(a.createdOn).getTime()
+          const dateB = new Date(b.createdOn).getTime()
+          console.log(dateA)
+          console.log(dateB)
+          return dateB - dateA
+        })
+      }
+      if (sortBy === "ALPHABET") {
+        return projectsCopy.sort((a, b) => (a.title > b.title ? 1 : -1))
+      }
+      return projectsCopy
+    }
+
+    const resortedprojects = sortProjects()
+    if (resortedprojects) {
+      setProjectsSorted(resortedprojects)
+    } else {
+      setProjectsSorted(projects)
+    }
+  }, [projects, sortBy])
+
+  const SortingMenu = () => {
+    const sortingEntries = Object.entries(sortingOptions)
+    console.log(sortingEntries)
+
+    const changeSorting = (newSorting: sortingOption) => {
+      toggleSortingMenu()
+      dispatch(setSortBy(newSorting))
+    }
+    return (
+      <ul className="menu flex-col">
+        {sortingEntries.map(([key, value]) => {
+          return (
+            <li onClick={() => changeSorting(key as sortingOption)}>{value}</li>
+          )
+        })}
+      </ul>
+    )
+  }
 
   return (
     <>
       <StyledBg>
         <Header />
         <main className="flex-col">
-          {projects.map((project) => (
+          <section className="tools-panel">
+            <p>
+              Sort by:{" "}
+              <button className="text-btn" onClick={toggleSortingMenu}>
+                {sortingOptions[sortBy]}{" "}
+                <IconContext.Provider value={{ size: "12" }}>
+                  <span>
+                    <TbTriangleInvertedFilled />
+                  </span>
+                </IconContext.Provider>
+              </button>
+              {isSortingMenuOpen && <SortingMenu />}
+            </p>
+          </section>
+          {projectsSorted.map((project) => (
             <Project project={project} key={project._id} />
           ))}
         </main>
@@ -39,7 +112,7 @@ const StyledBg = styled.div`
   color: var(--white);
 
   main {
-    margin: 80px auto 20px;
+    margin: 90px auto 20px;
     max-width: 80vw;
     gap: 12px;
   }
@@ -48,5 +121,38 @@ const StyledBg = styled.div`
     position: fixed;
     top: 0;
     z-index: 100;
+  }
+
+  .tools-panel {
+    margin-bottom: 64px;
+  }
+
+  .tools-panel .text-btn {
+    text-align: left;
+    border: none;
+    border-bottom: 1px solid var(--white);
+    background: none;
+    font-size: var(--p-size);
+    color: var(--white);
+  }
+
+  .menu {
+    width: 130px;
+    position: absolute;
+    color: var(--black);
+    background-color: var(--white);
+  }
+
+  .menu li {
+    padding-left: 8px;
+    list-style: none;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .menu li:hover {
+    color: var(--white);
+    background-color: var(--main);
+    font-weight: bold;
   }
 `

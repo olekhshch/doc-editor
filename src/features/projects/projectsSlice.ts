@@ -1,6 +1,8 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
-import { initialState } from "./initialState"
+import { initialState, sortingOption } from "./initialState"
 import { ProjectInterface } from "../../types"
+import { reoderArray } from "../../functions/reorderArray"
+import { sortBy } from "./sorting"
 const projectsSlice = createSlice({
   name: "projects",
   initialState,
@@ -30,6 +32,22 @@ const projectsSlice = createSlice({
         return project
       })
     },
+    setSortBy: (state, { payload }: PayloadAction<sortingOption>) => {
+      state.sortBy = payload
+    },
+    moveProject: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{ elementToMoveId: number; afterIndex: number }>,
+    ) => {
+      const newProjects = reoderArray(
+        state.projects.slice(),
+        payload.elementToMoveId,
+        payload.afterIndex,
+      ) as ProjectInterface[]
+      state.projects = newProjects
+    },
   },
 })
 
@@ -39,4 +57,6 @@ export const {
   deleteProject,
   setEditTitleId,
   renameProject,
+  moveProject,
+  setSortBy,
 } = projectsSlice.actions

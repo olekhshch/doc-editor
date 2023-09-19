@@ -30,14 +30,14 @@ export default ProjectDocsContainer
 const StyledArticle = styled.article`
   border: 1px solid var(--white);
   width: 100%;
-  min-height: 100px;
+  min-height: 226px;
   list-style: none;
   align-items: center;
 
   .empty-msg {
     padding: auto;
     justify-content: center;
-    min-height: 100px;
+    min-height: 226px;
     gap: 2px;
   }
 

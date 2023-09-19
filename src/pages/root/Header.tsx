@@ -32,7 +32,7 @@ const StyledHeader = styled.header`
   justify-content: space-between;
   font-size: var(--h2-size);
   font-weight: bold;
-  background: linear-gradient(var(--black), transparent);
+  background: linear-gradient(rgba(var(--main-darker0), 0.8), transparent);
 
   .btn-container {
     display: flex;

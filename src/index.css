@@ -1,8 +1,11 @@
 :root {
   --main: rgb(153, 0, 224);
   --main-lighter: rgb(172, 85, 227);
+  --main-darker0: 93,5,147;
+  --main-darker: rgb(var(--main-darker0));
   --white: rgb(247, 240, 250);
-  --black: rgb(111, 0, 180);
+  --black0: 93, 5, 147;
+  --black: rgb(var(--black0));
 
   --p-size: 16px;
   --h2-size: 20px;

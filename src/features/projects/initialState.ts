@@ -1,14 +1,23 @@
 import { ProjectInterface } from "../../types"
-import { sortBy } from "./sorting"
 
 export interface ProjectsState {
   projects: ProjectInterface[]
   editTitleId: null | number
-  sortBy: sortBy
+  sortBy: sortingOption
+}
+
+export type sortingOption =
+  | "DEFAULT"
+  | "DATE_OLDEST"
+  | "DATE_NEWEST"
+  | "ALPHABET"
+
+export type sortingOptions = {
+  [key in keyof sortingOption as sortingOption]: string
 }
 
 export const initialState: ProjectsState = {
   projects: [],
   editTitleId: null,
-  sortBy: sortBy.DEFAULT,
+  sortBy: "DEFAULT",
 }

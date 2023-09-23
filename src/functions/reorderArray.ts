@@ -1,13 +1,18 @@
 export const reoderArray = (
-  array: { _id: number }[],
+  array: { _id: number; orderIndex: number }[],
   elementId: number,
-  afterIndex: number,
+  placementIndex: number,
 ) => {
-  const elementToMove = array.find((element) => element._id)
-  const arrayWithoutElement = array.filter((el) => el._id !== elementId)
+  const elementToMove = array.find((el) => el._id === elementId)
+
   if (elementToMove) {
-    const newArray = arrayWithoutElement.splice(afterIndex, 0, elementToMove)
-    return newArray
+    const filteredArray = array.filter((el) => el._id !== elementId)
+    const newPlaceIndex =
+      elementToMove.orderIndex > placementIndex
+        ? placementIndex
+        : placementIndex - 1
+    filteredArray.splice(newPlaceIndex, 0, elementToMove)
+    return filteredArray
   }
   return array
 }

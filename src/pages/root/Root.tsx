@@ -11,6 +11,7 @@ import {
 } from "../../features/projects/sorting"
 import { setSortBy } from "../../features/projects/projectsSlice"
 import { sortingOption } from "../../features/projects/initialState"
+import DnDProjectPlaceholder from "./DnDProjectPlaceholder"
 
 const Root = () => {
   const { projects, sortBy } = useAppSelector((state) => state.projects)
@@ -25,13 +26,7 @@ const Root = () => {
     const sortProjects = () => {
       const projectsCopy = [...projects]
       if (sortBy === "DATE_NEWEST") {
-        return projectsCopy.sort((a, b) => {
-          const dateA = new Date(a.createdOn).getTime()
-          const dateB = new Date(b.createdOn).getTime()
-          console.log(dateA)
-          console.log(dateB)
-          return dateB - dateA
-        })
+        return projectsCopy.sort((a, b) => b.createdOn - a.createdOn)
       }
       if (sortBy === "ALPHABET") {
         return projectsCopy.sort((a, b) => (a.title > b.title ? 1 : -1))
@@ -49,7 +44,6 @@ const Root = () => {
 
   const SortingMenu = () => {
     const sortingEntries = Object.entries(sortingOptions)
-    console.log(sortingEntries)
 
     const changeSorting = (newSorting: sortingOption) => {
       toggleSortingMenu()
@@ -59,7 +53,9 @@ const Root = () => {
       <ul className="menu flex-col">
         {sortingEntries.map(([key, value]) => {
           return (
-            <li onClick={() => changeSorting(key as sortingOption)}>{value}</li>
+            <li key={key} onClick={() => changeSorting(key as sortingOption)}>
+              {value}
+            </li>
           )
         })}
       </ul>
@@ -82,12 +78,17 @@ const Root = () => {
                   </span>
                 </IconContext.Provider>
               </button>
-              {isSortingMenuOpen && <SortingMenu />}
             </p>
+            {isSortingMenuOpen && <SortingMenu />}
           </section>
-          {projectsSorted.map((project) => (
-            <Project project={project} key={project._id} />
-          ))}
+          {projectsSorted.map((project, index) => {
+            return (
+              <div key={project._id}>
+                <DnDProjectPlaceholder placementIndex={index} />
+                <Project project={project} />
+              </div>
+            )
+          })}
         </main>
       </StyledBg>
       <div className="page-content"></div>

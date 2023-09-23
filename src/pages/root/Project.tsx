@@ -4,26 +4,39 @@ import { DocumentInterface, ProjectInterface } from "../../types"
 import { IconContext } from "react-icons"
 import { RiDeleteBin6Line, RiPencilLine } from "react-icons/ri"
 import { GoGrabber } from "react-icons/go"
+import { BsArrowsCollapse } from "react-icons/bs"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import {
+  collapseProject,
   deleteProject,
+  expandProject,
   renameProject,
   setEditTitleId,
 } from "../../features/projects/projectsSlice"
 import ProjectDocsContainer from "./ProjectDocsContainer"
+import { useDrag } from "react-dnd/dist/hooks"
+import { DnDTypes } from "../../DnDtypes"
 
 interface props {
   project: ProjectInterface
 }
 const Project = ({ project }: props) => {
   const { editTitleId } = useAppSelector((state) => state.projects)
-  const { title, _id } = project
+  const { title, _id, isCollapsed, orderIndex } = project
   const dispatch = useAppDispatch()
 
   const [prTitle, setPrTitle] = useState(title)
   const [titleWidth, setTitleWidth] = useState(230)
 
   const documents: DocumentInterface[] = []
+
+  const [{ isDragging }, dragHandle, dragPreview] = useDrag({
+    type: DnDTypes.PROJECT,
+    collect: (monitor: any) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    item: { _id, title, orderIndex },
+  })
 
   const handleTitleChange = (e: React.ChangeEvent) => {
     const { value } = e.target as HTMLInputElement
@@ -73,11 +86,24 @@ const Project = ({ project }: props) => {
     dispatch(deleteProject(_id))
   }
 
+  const toggleCollapsed = () => {
+    dispatch(!isCollapsed ? collapseProject(_id) : expandProject(_id))
+  }
+
   return (
     <StyledArticle>
       <IconContext.Provider value={{ color: "var(--white)", size: "24px" }}>
-        <div className="project-title flex">
-          <button className="icon grabber" title="Drag&drop to reorder">
+        <div
+          className={
+            isDragging ? "project-title flex dragging" : "project-title flex"
+          }
+          draggable
+        >
+          <button
+            className="icon grabber"
+            title="Drag&drop to reorder"
+            ref={dragHandle}
+          >
             <GoGrabber />
           </button>
           {_id === editTitleId ? (
@@ -93,21 +119,38 @@ const Project = ({ project }: props) => {
               />
             </form>
           ) : (
-            <h3 onDoubleClick={editModeOn}>{title}</h3>
+            <h3 onDoubleClick={editModeOn} ref={dragPreview}>
+              {title}
+            </h3>
           )}
           <span ref={titleRef}>{prTitle}</span>
 
-          <div className="actions flex">
-            <button className="icon" title="Rename" onClick={editBtnAction}>
-              <RiPencilLine />
-            </button>
-            <button className="icon" title="Delete project" onClick={deletePr}>
-              <RiDeleteBin6Line />
-            </button>
-          </div>
+          {!isDragging && (
+            <div className="actions flex">
+              <button className="icon" title="Rename" onClick={editBtnAction}>
+                <RiPencilLine />
+              </button>
+              <button
+                className="icon"
+                title="Collapse"
+                onClick={toggleCollapsed}
+              >
+                <BsArrowsCollapse />
+              </button>
+              <button
+                className="icon"
+                title="Delete project"
+                onClick={deletePr}
+              >
+                <RiDeleteBin6Line />
+              </button>
+            </div>
+          )}
         </div>
       </IconContext.Provider>
-      <ProjectDocsContainer documents={documents} />
+      {!isDragging && !isCollapsed && (
+        <ProjectDocsContainer documents={documents} />
+      )}
     </StyledArticle>
   )
 }
@@ -129,6 +172,10 @@ const StyledArticle = styled.article`
     display: flex;
     visibility: visible;
     gap: 8px;
+  }
+
+  .dragging {
+    opacity: 0.6;
   }
 
   .icon {

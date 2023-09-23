@@ -3,6 +3,7 @@ import { initialState, sortingOption } from "./initialState"
 import { ProjectInterface } from "../../types"
 import { reoderArray } from "../../functions/reorderArray"
 import { sortBy } from "./sorting"
+
 const projectsSlice = createSlice({
   name: "projects",
   initialState,
@@ -12,7 +13,10 @@ const projectsSlice = createSlice({
       const newProject: ProjectInterface = {
         _id,
         title: "New project",
-        createdOn: new Date(),
+        createdOn: new Date().getTime(),
+        isCollapsed: false,
+        isPinned: false,
+        orderIndex: state.projects.length,
       }
       state.projects = [...state.projects, newProject]
     },
@@ -32,6 +36,23 @@ const projectsSlice = createSlice({
         return project
       })
     },
+    collapseProject: (state, { payload }: PayloadAction<number>) => {
+      console.log(payload)
+      state.projects = state.projects.map((project) => {
+        if (project._id === payload) {
+          return { ...project, isCollapsed: true }
+        }
+        return project
+      })
+    },
+    expandProject: (state, { payload }: PayloadAction<number>) => {
+      state.projects = state.projects.map((project) => {
+        if (project._id === payload) {
+          return { ...project, isCollapsed: false }
+        }
+        return project
+      })
+    },
     setSortBy: (state, { payload }: PayloadAction<sortingOption>) => {
       state.sortBy = payload
     },
@@ -39,12 +60,13 @@ const projectsSlice = createSlice({
       state,
       {
         payload,
-      }: PayloadAction<{ elementToMoveId: number; afterIndex: number }>,
+      }: PayloadAction<{ elementToMoveId: number; newPlacementIndex: number }>,
     ) => {
+      const oldProjects = [...state.projects]
       const newProjects = reoderArray(
-        state.projects.slice(),
+        oldProjects,
         payload.elementToMoveId,
-        payload.afterIndex,
+        payload.newPlacementIndex,
       ) as ProjectInterface[]
       state.projects = newProjects
     },
@@ -59,4 +81,6 @@ export const {
   renameProject,
   moveProject,
   setSortBy,
+  collapseProject,
+  expandProject,
 } = projectsSlice.actions

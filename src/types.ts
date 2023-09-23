@@ -1,7 +1,10 @@
 export interface ProjectInterface {
   _id: number
   title: string
-  createdOn: Date
+  createdOn: number
+  isCollapsed: boolean
+  isPinned: boolean
+  orderIndex: number
 }
 
 export interface DocumentInterface {

@@ -1,11 +1,18 @@
 import React from "react"
 import styled from "styled-components"
-import { useAppDispatch } from "../../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { createNewProject } from "../../features/projects/projectsSlice"
 
 const Header = () => {
+  const { projects } = useAppSelector((state) => state.projects)
   const dispatch = useAppDispatch()
-  const addNewProject = () => dispatch(createNewProject())
+  const addNewProject = () => {
+    if (projects.length <= 10) {
+      dispatch(createNewProject())
+    } else {
+      alert("Max amount of project (10) is excided")
+    }
+  }
   return (
     <StyledHeader>
       <div className="btn-container">

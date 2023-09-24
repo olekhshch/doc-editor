@@ -1,6 +1,6 @@
 :root {
   --main: rgb(153, 0, 224);
-  --main-lighter: rgb(172, 85, 227);
+  --main-lighter: rgb(167, 59, 234);
   --main-darker0: 93,5,147;
   --main-darker: rgb(var(--main-darker0));
   --white: rgb(247, 240, 250);
@@ -48,4 +48,12 @@ h2 {
 
 button {
   cursor: pointer;
+}
+
+.doc-preview {
+  width: 140px;
+  height: 190px;
+  border: 2px solid var(--white);
+  /* flex-grow: 1;
+  max-width: 160px; */
 }

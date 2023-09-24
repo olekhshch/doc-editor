@@ -28,7 +28,8 @@ const Project = ({ project }: props) => {
   const [prTitle, setPrTitle] = useState(title)
   const [titleWidth, setTitleWidth] = useState(230)
 
-  const documents: DocumentInterface[] = []
+  const { documents } = useAppSelector((state) => state.documents)
+  const projDocuments = documents.filter((doc) => doc.projectId === _id)
 
   const [{ isDragging }, dragHandle, dragPreview] = useDrag({
     type: DnDTypes.PROJECT,
@@ -149,7 +150,7 @@ const Project = ({ project }: props) => {
         </div>
       </IconContext.Provider>
       {!isDragging && !isCollapsed && (
-        <ProjectDocsContainer documents={documents} />
+        <ProjectDocsContainer documents={projDocuments} projectId={_id} />
       )}
     </StyledArticle>
   )

@@ -18,7 +18,7 @@ const Header = () => {
       <div className="btn-container">
         <button onClick={addNewProject}>New project</button>
         <a href="">Docs</a>
-        <a href="">Git</a>
+        <a href="https://github.com/olekhshch/doc-editor">Git</a>
       </div>
       <form>
         <input placeholder="Search documents by title..."></input>
@@ -36,6 +36,7 @@ const StyledHeader = styled.header`
   top: 0;
   left: 0;
   right: 0;
+  z-index: 100;
   justify-content: space-between;
   font-size: var(--h2-size);
   font-weight: bold;

@@ -2,7 +2,6 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { initialState, sortingOption } from "./initialState"
 import { ProjectInterface } from "../../types"
 import { reoderArray } from "../../functions/reorderArray"
-import { sortBy } from "./sorting"
 
 const projectsSlice = createSlice({
   name: "projects",
@@ -68,7 +67,10 @@ const projectsSlice = createSlice({
         payload.elementToMoveId,
         payload.newPlacementIndex,
       ) as ProjectInterface[]
-      state.projects = newProjects
+      state.projects = newProjects.map((project, idx) => ({
+        ...project,
+        orderIndex: idx,
+      }))
     },
   },
 })

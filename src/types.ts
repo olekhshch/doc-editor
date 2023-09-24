@@ -6,10 +6,10 @@ export interface ProjectInterface {
   isPinned: boolean
   orderIndex: number
 }
-
-export interface DocumentInterface {
+export interface DocumentPreviewInterface {
   _id: number
-  projectId: number
+  projectId: number | null
   title: string
-  createdOn: Date
+  createdOn: number
 }
+export interface DocumentInterface extends DocumentPreviewInterface {}

@@ -6,10 +6,3 @@ export const sortBy: sortingOptions = {
   DATE_NEWEST: "Date (newest)",
   ALPHABET: "Alphabet",
 }
-
-// export enum sortBy {
-//   DEFAULT = "Default",
-//   DATE_OLDEST = "Date (oldest)",
-//   DATE_NEWEST = "Date (newest)",
-//   ALPHABET = "Alphabet",
-// }

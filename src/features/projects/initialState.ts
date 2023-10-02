@@ -4,6 +4,7 @@ export interface ProjectsState {
   projects: ProjectInterface[]
   editTitleId: null | number
   sortBy: sortingOption
+  viewMode: "lists" | "papers"
 }
 
 export type sortingOption =
@@ -20,4 +21,5 @@ export const initialState: ProjectsState = {
   projects: [],
   editTitleId: null,
   sortBy: "DEFAULT",
+  viewMode: "lists",
 }

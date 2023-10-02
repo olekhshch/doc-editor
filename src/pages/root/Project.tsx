@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react"
 import styled from "styled-components"
-import { DocumentInterface, ProjectInterface } from "../../types"
+import {
+  DocumentInterface,
+  DocumentPreviewInterface,
+  ProjectInterface,
+} from "../../types"
 import { IconContext } from "react-icons"
 import { RiDeleteBin6Line, RiPencilLine } from "react-icons/ri"
 import { GoGrabber } from "react-icons/go"
@@ -28,8 +32,15 @@ const Project = ({ project }: props) => {
   const [prTitle, setPrTitle] = useState(title)
   const [titleWidth, setTitleWidth] = useState(230)
 
+  const filterById = (array: DocumentPreviewInterface[], id: number) => {
+    const copy = [...array]
+    const res = copy.filter((doc) => doc.projectId === id)
+
+    return res
+  }
+
   const { documents } = useAppSelector((state) => state.documents)
-  const projDocuments = documents.filter((doc) => doc.projectId === _id)
+  const projDocuments = filterById(documents, _id)
 
   const [{ isDragging }, dragHandle, dragPreview] = useDrag({
     type: DnDTypes.PROJECT,

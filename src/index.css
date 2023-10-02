@@ -8,9 +8,11 @@
   --black: rgb(var(--black0));
 
   --p-size: 16px;
-  --h2-size: 20px;
+  --h2-size: 26px;
+  --h4-size: 18px;
 
   --marg: 24px;
+  --rename-doc-width: 200px;
 }
 
 * {

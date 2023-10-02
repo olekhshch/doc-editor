@@ -12,6 +12,11 @@ import {
 import { setSortBy } from "../../features/projects/projectsSlice"
 import { sortingOption } from "../../features/projects/initialState"
 import DnDProjectPlaceholder from "./DnDProjectPlaceholder"
+import WindowContext, {
+  RootWindow,
+  WindowContextInterface,
+} from "./popUps/WindowsContext"
+import PopUpWindow from "./popUps/PopUpWindow"
 
 const Root = () => {
   const { projects, sortBy } = useAppSelector((state) => state.projects)
@@ -62,36 +67,63 @@ const Root = () => {
     )
   }
 
+  const [isWindowOpen, setIsWindowOpen] = useState(false)
+  const [openwindowType, setOpenWindowType] =
+    useState<RootWindow>("create-project")
+
+  const [popUpCoordinates, setPopUpCoordinates] = useState({
+    top: 100,
+    left: 100,
+  })
+  const [renameDocTitle, setRenameDocTitle] = useState("")
+  const [renameDocId, setRenameDocId] = useState<number | null>(null)
+
+  const windowContextValue: WindowContextInterface = {
+    isOpen: isWindowOpen,
+    setIsopen: setIsWindowOpen,
+    windowType: openwindowType,
+    setWindowType: setOpenWindowType,
+    windowCoordinates: popUpCoordinates,
+    setWindowCoordinates: setPopUpCoordinates,
+    renameDocTitle,
+    setRenameDocTitle,
+    renameDocId,
+    setRenameDocId,
+  }
+
   return (
     <>
-      <StyledBg>
-        <Header />
-        <main className="flex-col">
-          <section className="tools-panel">
-            <p>
-              Sort by:{" "}
-              <button className="text-btn" onClick={toggleSortingMenu}>
-                {sortingOptions[sortBy]}{" "}
-                <IconContext.Provider value={{ size: "12" }}>
-                  <span>
-                    <TbTriangleInvertedFilled />
-                  </span>
-                </IconContext.Provider>
-              </button>
-            </p>
-            {isSortingMenuOpen && <SortingMenu />}
-          </section>
-          {projectsSorted.map((project, index) => {
-            return (
-              <div key={project._id}>
-                <DnDProjectPlaceholder placementIndex={index} />
-                <Project project={project} />
-              </div>
-            )
-          })}
-        </main>
-      </StyledBg>
-      <div className="page-content"></div>
+      <WindowContext.Provider value={windowContextValue}>
+        <StyledBg>
+          <Header />
+          <main className="flex-col">
+            <section className="tools-panel">
+              <p>
+                Sort by:{" "}
+                <button className="text-btn" onClick={toggleSortingMenu}>
+                  {sortingOptions[sortBy]}{" "}
+                  <IconContext.Provider value={{ size: "12" }}>
+                    <span>
+                      <TbTriangleInvertedFilled />
+                    </span>
+                  </IconContext.Provider>
+                </button>
+              </p>
+              {isSortingMenuOpen && <SortingMenu />}
+            </section>
+            {projectsSorted.map((project, index) => {
+              return (
+                <div key={project._id}>
+                  <DnDProjectPlaceholder placementIndex={index} />
+                  <Project project={project} />
+                </div>
+              )
+            })}
+          </main>
+          {isWindowOpen && <PopUpWindow />}
+        </StyledBg>
+        <div className="page-content"></div>
+      </WindowContext.Provider>
     </>
   )
 }

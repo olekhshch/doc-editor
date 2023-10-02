@@ -1,8 +1,8 @@
-import React from "react"
+import React, { useEffect } from "react"
 import styled from "styled-components"
 import { DocumentInterface } from "../../types"
 import DocPreview from "./DocPreview"
-import { useAppDispatch } from "../../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { createDoc } from "../../features/documents/documentsSlice"
 import { SlPlus } from "react-icons/sl"
 import { IconContext } from "react-icons"
@@ -13,6 +13,7 @@ type props = {
 }
 
 const ProjectDocsContainer = ({ documents, projectId }: props) => {
+  const { viewMode } = useAppSelector((state) => state.projects)
   const dispatch = useAppDispatch()
 
   const addDoc = () => {

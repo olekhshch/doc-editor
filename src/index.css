@@ -8,6 +8,7 @@
   --black: rgb(var(--black0));
 
   --p-size: 16px;
+  --h1-size: 72px;
   --h2-size: 26px;
   --h4-size: 18px;
 
@@ -22,9 +23,10 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+  /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+    sans-serif; */
+    font-family: 'Roboto Condensed', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -58,4 +60,9 @@ button {
   border: 2px solid var(--white);
   /* flex-grow: 1;
   max-width: 160px; */
+}
+
+.editor-sb {
+  padding: 20px;
+  flex-grow: 1;
 }

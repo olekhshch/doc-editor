@@ -36,9 +36,15 @@ const documentsSlice = createSlice({
         return doc
       })
     },
+    setDocAsCurrent: (state, { payload }: PayloadAction<number>) => {
+      state.activeDocumentId = payload
+      //Untill persist functionality is created
+      state.activeContent.docId = payload
+    },
   },
 })
 
 export default documentsSlice.reducer
 
-export const { createDoc, deleteDoc, renameDoc } = documentsSlice.actions
+export const { createDoc, deleteDoc, renameDoc, setDocAsCurrent } =
+  documentsSlice.actions

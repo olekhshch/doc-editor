@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.1",
+    "@remirror/pm": "^2.0.8",
+    "@remirror/react": "^2.0.35",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
     "react": "^18.2.0",
@@ -24,6 +26,7 @@
     "react-icons": "^4.11.0",
     "react-redux": "^8.0.1",
     "react-router-dom": "^6.16.0",
+    "remirror": "^2.0.36",
     "sort-by": "^1.2.0",
     "styled-components": "^6.0.8"
   },

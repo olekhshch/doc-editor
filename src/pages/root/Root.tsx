@@ -17,6 +17,7 @@ import WindowContext, {
   WindowContextInterface,
 } from "./popUps/WindowsContext"
 import PopUpWindow from "./popUps/PopUpWindow"
+import MainTools from "./MainTools"
 
 const Root = () => {
   const { projects, sortBy } = useAppSelector((state) => state.projects)
@@ -97,6 +98,7 @@ const Root = () => {
         <StyledBg>
           <Header />
           <main className="flex-col">
+            <MainTools />
             <section className="tools-panel">
               <p>
                 Sort by:{" "}

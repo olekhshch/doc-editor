@@ -5,7 +5,8 @@ import { TiDelete } from "react-icons/ti"
 import { MdModeEditOutline } from "react-icons/md"
 import { IconContext } from "react-icons"
 import { useAppDispatch } from "../../app/hooks"
-import { deleteDoc, renameDoc } from "../../features/documents/documentsSlice"
+import { deleteDoc } from "../../features/documents/documentsSlice"
+import { Link } from "react-router-dom"
 import WindowContext from "./popUps/WindowsContext"
 
 interface props {
@@ -37,7 +38,11 @@ const DocPreview = ({ documentPreview }: props) => {
 
   return (
     <StyledLi className="doc-preview">
-      <h4>{title}</h4>
+      <h4>
+        <Link to={`docs/${_id}`} className="doc-title">
+          {title}
+        </Link>
+      </h4>
 
       <div className="doc-preview-tools">
         <IconContext.Provider
@@ -71,14 +76,17 @@ const StyledLi = styled.li`
   text-overflow: clip;
   overflow: hidden;
 
-  h4,
-  .doc-title-form {
+  h4 {
     width: 100%;
     margin: auto;
     font-size: var(--h4-size);
     text-overflow: clip;
   }
 
+  .doc-title {
+    color: var(--white);
+    text-decoration: none;
+  }
   .doc-preview-tools {
     margin: 4px;
     position: absolute;

@@ -13,3 +13,9 @@ export interface DocumentPreviewInterface {
   createdOn: number
 }
 export interface DocumentInterface extends DocumentPreviewInterface {}
+
+export interface DocumentContent {
+  _id: number
+  docId: number
+  components: any[]
+}

@@ -2,8 +2,13 @@ import React, { useMemo } from "react"
 import { useAppSelector } from "../../../app/hooks"
 import HeadingEl from "./HeadingEl"
 import styled from "styled-components"
-import { DocContentComponent, HeadingElement } from "../../../types"
+import {
+  DocContentComponent,
+  HeadingElement,
+  ParagraphElement,
+} from "../../../types"
 import { MdOutlineDragIndicator } from "react-icons/md"
+import ParagraphEl from "./ParagraphEl"
 
 const ContentElements = () => {
   const { activeContent } = useAppSelector((state) => state.documents)
@@ -18,6 +23,11 @@ const ContentElements = () => {
     if (type === "heading") {
       const headingElement = element as HeadingElement
       return <HeadingEl {...headingElement} />
+    }
+
+    if (type === "paragraph") {
+      const paragraphElement = element as ParagraphElement
+      return <ParagraphEl />
     }
 
     return <>Element Component</>
@@ -36,7 +46,7 @@ const ContentElements = () => {
                 <div>
                   <button className="dnd-handle">
                     {" "}
-                    <MdOutlineDragIndicator />{" "}
+                    <MdOutlineDragIndicator title="Drag and drop to change position; Click to find more options" />{" "}
                   </button>
                 </div>
               </div>
@@ -52,25 +62,31 @@ const ContentElements = () => {
 export default ContentElements
 
 const StyledElementContainer = styled.article`
-  margin: 32px 0%;
+  margin: auto 0%;
   width: 100%;
 
   .doc-element-left {
     min-width: var(--editor-left-mg);
+    min-height: fit-content;
     text-align: right;
   }
 
   .dnd-handle {
-    margin: 12px 2px;
+    margin-top: 2px;
     padding: 0;
     width: fit-content;
     height: 1em;
-    font-size: 32px;
+    font-size: 28px;
     background: none;
     border: none;
     color: transparent;
     cursor: grabbing;
   }
+
+  /* .one-element {
+    border: 1px solid black;
+  } */
+
   .one-element:hover .dnd-handle {
     color: grey;
   }

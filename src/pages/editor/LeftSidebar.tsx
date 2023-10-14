@@ -34,7 +34,7 @@ const LeftSidebar = () => {
         <article className="flex-col top-panel">
           <p className="doc-title">{docTitle}</p>
           <Link to="../.." className="back-btn">
-            {"<"} Back
+            {"<"} All projects
           </Link>
         </article>
         <p>Navigation: </p>

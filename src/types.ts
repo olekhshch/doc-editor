@@ -20,7 +20,7 @@ export interface DocumentContent {
   components: DocContentComponent[]
 }
 
-export type DocContentComponent = HeadingElement | ParapraphElement
+export type DocContentComponent = HeadingElement | ParagraphElement
 
 export type ContentComponentType = "heading" | "paragraph" | "image"
 
@@ -36,7 +36,7 @@ export interface HeadingElement extends BasicComponent {
   content: string
 }
 
-export interface ParapraphElement extends BasicComponent {
+export interface ParagraphElement extends BasicComponent {
   type: "paragraph"
   content: string
 }

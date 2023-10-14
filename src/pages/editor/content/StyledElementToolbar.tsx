@@ -21,7 +21,7 @@ const StyledToolbar = styled.div`
   display: none;
 
   .toolbar-section {
-    background-color: var(--white);
+    background-color: white;
     border: 1px solid var(--main);
     border-radius: 8px;
     padding: 0 4px;
@@ -32,9 +32,10 @@ const StyledToolbar = styled.div`
   }
 
   .element-toolbar-btn {
+    padding: 2px;
     border: none;
     min-width: 16px;
-    font-size: var(--p-size);
+    font-size: var(--small-size);
     text-align: center;
     font-weight: bold;
   }

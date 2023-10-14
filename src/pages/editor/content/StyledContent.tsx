@@ -5,6 +5,7 @@ export default styled.article`
   position: relative;
   border: 1px solid transparent;
   border-radius: 8px;
+  height: fit-content;
 
   &:hover {
     border: 1px solid grey;

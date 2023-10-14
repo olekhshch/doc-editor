@@ -4,7 +4,7 @@ import {
   DocumentInterface,
   DocumentPreviewInterface,
   HeadingElement,
-  ParapraphElement,
+  ParagraphElement,
 } from "../../types"
 
 const documentsSlice = createSlice({
@@ -115,7 +115,7 @@ const documentsSlice = createSlice({
     },
     addParagraph: (state, { payload }: PayloadAction<{ after?: number }>) => {
       const orderIdx = payload.after ?? state.activeContent.components.length
-      const newPEl: ParapraphElement = {
+      const newPEl: ParagraphElement = {
         id: new Date().getMilliseconds(),
         type: "paragraph",
         content: "",

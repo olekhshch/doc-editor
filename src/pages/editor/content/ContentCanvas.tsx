@@ -1,9 +1,9 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
 import { useAppSelector } from "../../../app/hooks"
-import MainHeader from "./MainHeader"
+import MainHeader from "./MainTitle"
 import { CurrentDocContext } from "../Editor"
-import ContentElements from "./ContentElements"
+import Elements from "./Container"
 
 const ContentCanvas = () => {
   const { beginsWithTitle, activeDocumentId } = useAppSelector(
@@ -16,7 +16,7 @@ const ContentCanvas = () => {
       {beginsWithTitle && (
         <MainHeader docTitle={title} docId={activeDocumentId} />
       )}
-      <ContentElements />
+      <Elements />
     </StyledContentContainer>
   )
 }
@@ -30,5 +30,5 @@ const StyledContentContainer = styled.main`
   width: 297mm;
   min-height: 100vh;
 
-  border: 1px solid blue;
+  /* border: 1px solid blue; */
 `

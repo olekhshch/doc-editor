@@ -7,13 +7,17 @@
   --black0: 93, 5, 147;
   --black: rgb(var(--black0));
 
-  --p-size: 16px;
+  --p-size: 18px;
   --h1-size: 72px;
-  --h2-size: 26px;
-  --h4-size: 18px;
+  --h2-size: 48px;
+  --h3-size: 28px;
+  --h4-size: 22px;
 
   --marg: 24px;
   --rename-doc-width: 200px;
+
+  --editor-left-mg: 72px;
+  --font-1: 'Roboto Condensed', sans-serif;
 }
 
 * {
@@ -29,7 +33,7 @@ body {
     font-family: 'Roboto Condensed', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
 }
 
 code {
@@ -46,8 +50,20 @@ code {
   flex-direction: column;
 }
 
+h1 {
+  font-size: var(--h1-size);
+}
+
 h2 {
   font-size: var(--h2-size);
+}
+
+h3 {
+  font-size: var(--h3-size);
+}
+
+h4 {
+  font-size: var(--h4-size);
 }
 
 button {
@@ -63,6 +79,9 @@ button {
 }
 
 .editor-sb {
+  /* display: flex; */
+  /* flex-direction: column; */
   padding: 20px;
-  flex-grow: 1;
+  /* flex-grow: 1; */
+  /* position: fixed; */
 }

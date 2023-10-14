@@ -5,7 +5,10 @@ import ContentCanvas from "./content/ContentCanvas"
 import RightSidebar from "./RightSidebar"
 import { useLoaderData, useLocation } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
-import { setDocAsCurrent } from "../../features/documents/documentsSlice"
+import {
+  enableAddingElements,
+  setDocAsCurrent,
+} from "../../features/documents/documentsSlice"
 import { DocumentPreviewInterface } from "../../types"
 import Loading from "../../Loading"
 
@@ -33,6 +36,8 @@ const Editor = () => {
     dispatch(setDocAsCurrent(docId))
     const currentDoc = documents.find((doc) => doc._id === docId)
     setCurrentDocDetails(currentDoc)
+
+    dispatch(enableAddingElements())
   }, [dispatch, documents, location.pathname])
 
   if (!currentDocDetails) {

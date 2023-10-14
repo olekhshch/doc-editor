@@ -30,18 +30,20 @@ const LeftSidebar = () => {
 
   return (
     <StyledLeftSb className="editor-sb">
-      <article className="flex-col top-panel">
-        <p className="doc-title">{docTitle}</p>
-        <Link to="../.." className="back-btn">
-          {"<"} Back
-        </Link>
-      </article>
-      <p>Navigation: </p>
-      <SbTabs
-        options={sbOptions}
-        activeIdx={activeIdx}
-        setActiveIdx={setActiveIdx}
-      />
+      <div className="sb-inner">
+        <article className="flex-col top-panel">
+          <p className="doc-title">{docTitle}</p>
+          <Link to="../.." className="back-btn">
+            {"<"} Back
+          </Link>
+        </article>
+        <p>Navigation: </p>
+        <SbTabs
+          options={sbOptions}
+          activeIdx={activeIdx}
+          setActiveIdx={setActiveIdx}
+        />
+      </div>
     </StyledLeftSb>
   )
 }
@@ -49,7 +51,16 @@ const LeftSidebar = () => {
 export default LeftSidebar
 
 const StyledLeftSb = styled.aside`
-  background-color: #f3f0fa;
+  top: 0;
+  bottom: 0;
+  border-right: 1px solid red;
+  flex-grow: 1;
+  flex-basis: 300px;
+  min-width: 154px;
+
+  .sb-inner {
+    position: absolute;
+  }
 
   .top-panel {
     margin-bottom: 12px;
@@ -73,7 +84,7 @@ const StyledLeftSb = styled.aside`
     background-color: var(--main);
     border: none;
     color: var(--white);
-    font-size: var(--h2-size);
+    font-size: var(--h3-size);
     font-weight: bold;
     text-align: left;
     text-decoration: none;

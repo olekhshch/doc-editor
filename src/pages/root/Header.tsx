@@ -38,7 +38,7 @@ const StyledHeader = styled.header`
   right: 0;
   z-index: 100;
   justify-content: space-between;
-  font-size: var(--h2-size);
+  font-size: var(--h3-size);
   font-weight: bold;
   /* background: linear-gradient(rgba(var(--main-darker0), 0.8), transparent); */
   background: transparent;
@@ -51,7 +51,7 @@ const StyledHeader = styled.header`
   button {
     padding: 4px 12px;
     border-radius: 10px;
-    font-size: var(--h2-size);
+    font-size: var(--h3-size);
     font-weight: bold;
     background-color: var(--white);
     color: var(--main);
@@ -59,6 +59,7 @@ const StyledHeader = styled.header`
   }
 
   a {
+    margin: auto;
     color: var(--white);
     text-decoration: none;
   }
@@ -74,5 +75,6 @@ const StyledHeader = styled.header`
     font-size: var(--p-size);
     border-radius: 10px;
     border: none;
+    font-family: var(--font-1);
   }
 `

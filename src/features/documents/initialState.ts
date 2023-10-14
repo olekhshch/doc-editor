@@ -4,7 +4,9 @@ export interface DocumentsState {
   documents: DocumentPreviewInterface[]
   activeDocumentId: number | null
   activeContent: DocumentContent
-  begginsWithTitle: boolean
+  beginsWithTitle: boolean
+  currentElementId: number | null
+  disableElementsAdding: boolean
 }
 
 export const initialState: DocumentsState = {
@@ -22,5 +24,7 @@ export const initialState: DocumentsState = {
     docId: 123,
     components: [],
   },
-  begginsWithTitle: true,
+  beginsWithTitle: true,
+  currentElementId: null,
+  disableElementsAdding: true,
 }

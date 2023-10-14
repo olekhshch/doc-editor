@@ -24,5 +24,11 @@ const RightSidebar = () => {
 export default RightSidebar
 
 const StyledRightSb = styled.aside`
-  background-color: azure;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  /* flex-basis: 200px; */
+
+  border-left: 1px solid red;
 `

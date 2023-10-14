@@ -3,14 +3,20 @@ import styled from "styled-components"
 import { useAppSelector } from "../../../app/hooks"
 import MainHeader from "./MainHeader"
 import { CurrentDocContext } from "../Editor"
+import ContentElements from "./ContentElements"
 
 const ContentCanvas = () => {
-  const { begginsWithTitle } = useAppSelector((state) => state.documents)
+  const { beginsWithTitle, activeDocumentId } = useAppSelector(
+    (state) => state.documents,
+  )
   const { title } = useContext(CurrentDocContext)!
 
   return (
     <StyledContentContainer>
-      {begginsWithTitle && <MainHeader docTitle={title} />}
+      {beginsWithTitle && (
+        <MainHeader docTitle={title} docId={activeDocumentId} />
+      )}
+      <ContentElements />
     </StyledContentContainer>
   )
 }
@@ -18,9 +24,11 @@ const ContentCanvas = () => {
 export default ContentCanvas
 
 const StyledContentContainer = styled.main`
-  flex-basis: 297mm;
+  margin: auto;
+  /* flex-basis: 297mm; */
   min-width: 297mm;
+  width: 297mm;
   min-height: 100vh;
-  border-left: 1px solid var(--black);
-  border-right: 1px solid var(--black);
+
+  border: 1px solid blue;
 `

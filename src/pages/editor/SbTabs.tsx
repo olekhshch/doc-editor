@@ -1,7 +1,9 @@
 import React from "react"
 import styled from "styled-components"
 import AddComponentsMenu from "./sidebarMenus/AddComponentsMenu"
+import DocNavigation from "./sidebarMenus/DocNavigation"
 export type sbTabOption = "Doc" | "Project" | "Add..." | "Style..."
+
 type props = {
   options: [sbTabOption, sbTabOption]
   activeIdx: 0 | 1
@@ -22,6 +24,8 @@ const SbTabs = ({ options, activeIdx, setActiveIdx }: props) => {
     switch (activeOption) {
       case "Add...":
         return <AddComponentsMenu />
+      case "Doc":
+        return <DocNavigation />
       default:
         return <span>Sb Menu</span>
     }
@@ -54,6 +58,7 @@ const StyledTabs = styled.section`
   flex-direction: column;
 
   .options {
+    margin-bottom: 12px;
     display: flex;
     border-bottom: 2px solid var(--main);
     min-height: calc(1.2 * var(--h4-size));

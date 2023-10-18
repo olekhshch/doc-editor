@@ -124,7 +124,6 @@ const Root = () => {
           </main>
           {isWindowOpen && <PopUpWindow />}
         </StyledBg>
-        <div className="page-content"></div>
       </WindowContext.Provider>
     </>
   )

@@ -1,5 +1,5 @@
-import React, { useMemo } from "react"
-import { useAppSelector } from "../../../app/hooks"
+import React, { useEffect, useMemo } from "react"
+import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import HeadingEl from "./HeadingEl"
 import styled from "styled-components"
 import {
@@ -9,14 +9,15 @@ import {
 } from "../../../types"
 import { MdOutlineDragIndicator } from "react-icons/md"
 import ParagraphEl from "./ParagraphEl"
+import { addParagraph } from "../../../features/documents/documentsSlice"
 
 const ContentElements = () => {
   const { activeContent } = useAppSelector((state) => state.documents)
 
   const components = useMemo(() => {
     console.log("COMPONENTS CHANGED [MEMO]")
-    return activeContent.components
-  }, [activeContent.components])
+    return activeContent ? activeContent.components : []
+  }, [activeContent])
 
   const Content = (element: DocContentComponent) => {
     const { type } = element
@@ -27,7 +28,7 @@ const ContentElements = () => {
 
     if (type === "paragraph") {
       const paragraphElement = element as ParagraphElement
-      return <ParagraphEl />
+      return <ParagraphEl paragraphElement={paragraphElement} />
     }
 
     return <>Element Component</>
@@ -59,7 +60,7 @@ const ContentElements = () => {
   )
 }
 
-export default ContentElements
+export default React.memo(ContentElements)
 
 const StyledElementContainer = styled.article`
   margin: auto 0%;

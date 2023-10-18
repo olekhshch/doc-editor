@@ -79,14 +79,15 @@ const StyledLi = styled.li`
   h4 {
     width: 100%;
     margin: auto;
-    font-size: var(--h4-size);
-    text-overflow: clip;
+    font-weight: normal;
+    text-overflow: ellipsis;
   }
 
   .doc-title {
     color: var(--white);
     text-decoration: none;
   }
+
   .doc-preview-tools {
     margin: 4px;
     position: absolute;

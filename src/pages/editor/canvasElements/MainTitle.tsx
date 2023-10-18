@@ -20,11 +20,11 @@ const hooks = [
   () => {
     const { getText } = useHelpers()
     const { insertText } = useCommands()
-    const dispatch = useAppDispatch()
+    const dispatch: any = useAppDispatch()
     const { title } = useContext(CurrentDocContext)!
 
     const handleEnterPress = useCallback(
-      ({ state }) => {
+      ({ state }: { state: any }) => {
         const newTitle = getText(state)
         if (newTitle.trim() !== "") {
           dispatch(renameDoc({ newTitle }))
@@ -41,58 +41,18 @@ const hooks = [
 ]
 
 const MainTitle = ({ docTitle }: props) => {
-  console.log("Main title rendered")
-
-  const t = React.useMemo(() => docTitle, [docTitle])
+  console.log("MAIN TITLE RENDERED")
 
   const { manager, state } = useRemirror({
-    content: t,
+    content: docTitle,
     stringHandler: "text",
   })
 
-  // const { getText } = useHelpers()
-  // const [newTitle, setNewTitle] = useState(docTitle)
-
-  // const handleChange = (e: React.ChangeEvent) => {
-  //   const { value } = e.target! as HTMLInputElement
-  //   setNewTitle(value)
-  // }
-
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault()
-  //   if (newTitle.trim() !== "") {
-  //     dispatch(renameDoc({ newTitle }))
-  //   } else {
-  //     setNewTitle(docTitle)
-  //   }
-  // }
-
   return (
     <StyledDocTitle>
-      <Remirror
-        manager={manager}
-        initialContent={state}
-        onChange={(params) => {
-          const newTitle = params.helpers.getText()
-          console.log(newTitle)
-        }}
-        hooks={hooks}
-      />
+      <Remirror manager={manager} initialContent={state} hooks={hooks} />
     </StyledDocTitle>
   )
-
-  // return (
-  //   <StyledDocTitle>
-  //     <form onSubmit={(e) => handleSubmit(e)}>
-  //       <input
-  //         value={newTitle}
-  //         placeholder="Can't be empty"
-  //         onChange={(e) => handleChange(e)}
-  //       />
-  //     </form>
-  //   </StyledDocTitle>
-  // )
-  // return <StyledDocTitle onClick={handleModeChange}>{newTitle}</StyledDocTitle>
 }
 
 export default React.memo(MainTitle)
@@ -107,6 +67,9 @@ const StyledDocTitle = styled.h1`
   //remirror
   white-space: pre-wrap;
   height: 1.2em;
+  &:focus {
+    outline: none;
+  }
 
   input {
     width: 100%;

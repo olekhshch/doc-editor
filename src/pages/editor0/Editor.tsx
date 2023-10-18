@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState } from "react"
 import styled from "styled-components"
 import LeftSidebar from "./LeftSidebar"
-import Canvas from "./Canvas"
+import ContentCanvas from "./content/ContentCanvas"
 import RightSidebar from "./RightSidebar"
 import { useLoaderData, useLocation } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
@@ -51,7 +51,7 @@ const Editor = () => {
   }, [dispatch, documents, location.pathname, activeDocumentId])
 
   const handleEditorClicks = () => {
-    // dispatch(setActiveElementId(null))
+    dispatch(setActiveElementId(null))
   }
 
   if (!currentDocDetails) {
@@ -61,7 +61,7 @@ const Editor = () => {
     <CurrentDocContext.Provider value={currentDocDetails}>
       <StyledEditorPage onClick={handleEditorClicks}>
         <LeftSidebar />
-        <Canvas />
+        <ContentCanvas />
         <RightSidebar />
       </StyledEditorPage>
     </CurrentDocContext.Provider>

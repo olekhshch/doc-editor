@@ -1,11 +1,16 @@
-import { DocumentContent, DocumentPreviewInterface } from "../../types"
+import {
+  DocumentContent,
+  DocumentPreviewInterface,
+  ParagraphElement,
+} from "../../types"
 
 export interface DocumentsState {
   documents: DocumentPreviewInterface[]
   activeDocumentId: number | null
-  activeContent: DocumentContent
+  activeContent: DocumentContent | undefined
+  cachedContents: DocumentContent[]
   beginsWithTitle: boolean
-  currentElementId: number | null
+  activeElementId: number | null
   disableElementsAdding: boolean
 }
 
@@ -24,7 +29,8 @@ export const initialState: DocumentsState = {
     docId: 123,
     components: [],
   },
+  cachedContents: [],
   beginsWithTitle: true,
-  currentElementId: null,
+  activeElementId: null,
   disableElementsAdding: true,
 }

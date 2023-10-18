@@ -25,9 +25,9 @@ export type DocContentComponent = HeadingElement | ParagraphElement
 export type ContentComponentType = "heading" | "paragraph" | "image"
 
 export interface BasicComponent {
-  id: number
+  _id: number
   type: ContentComponentType
-  orderIdx: number
+  orderIndex: number
 }
 
 export interface HeadingElement extends BasicComponent {

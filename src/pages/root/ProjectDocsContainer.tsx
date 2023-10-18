@@ -38,7 +38,7 @@ const ProjectDocsContainer = ({ documents, projectId }: props) => {
         ))}
         <li className="doc-preview">
           <IconContext.Provider
-            value={{ size: "48px", className: "add-doc-icon" }}
+            value={{ size: "64px", className: "add-doc-icon" }}
           >
             <button
               className="add-doc-btn"

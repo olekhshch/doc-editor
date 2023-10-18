@@ -9,19 +9,19 @@ const DocNavigation = () => {
   )
 
   const headings = useMemo<HeadingElement[]>(() => {
-    if (activeDocumentId && activeContent) {
+    if (activeDocumentId) {
       return activeContent.components.filter(
         (component) => component.type === "heading",
       ) as HeadingElement[]
     }
     return []
-  }, [activeContent, activeDocumentId])
+  }, [activeContent.components, activeDocumentId])
 
   return (
     <StyledDocNav>
       <ul className="doc-headings">
-        {headings.map(({ level, content, orderIndex }) => (
-          <li key={orderIndex} className={`heading-${level}`}>
+        {headings.map(({ level, content, orderIdx }) => (
+          <li key={orderIdx} className={`heading-${level}`}>
             {content}
           </li>
         ))}

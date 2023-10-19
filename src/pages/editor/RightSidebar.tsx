@@ -36,7 +36,7 @@ const StyledRightSb = styled.aside`
 
   .sb-inner {
     position: fixed;
-    top: 0;
+    top: 32px;
   }
 
   /* border-left: 1px solid red; */

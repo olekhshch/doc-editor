@@ -3,14 +3,33 @@ import { HeadingElement } from "../../../types"
 import { useAppDispatch } from "../../../app/hooks"
 import {
   setActiveElementId,
+  setHeadingContent,
   setHeadingLevel,
 } from "../../../features/documents/documentsSlice"
 import StyledElementToolbar from "./StyledElementToolbar"
-import { Remirror, useRemirror } from "@remirror/react"
+import { Remirror, useRemirror, useHelpers, useKeymap } from "@remirror/react"
 
+const hooks = [
+  () => {
+    const { getText } = useHelpers()
+    const dispatch = useAppDispatch()
+
+    const handleEnterPress = useCallback(
+      (state: any) => {
+        const newContent = getText(state)
+        dispatch(setHeadingContent({ newContent }))
+        return true
+      },
+      [getText, dispatch],
+    )
+
+    useKeymap("Enter", handleEnterPress)
+  },
+]
 type props = {
   headingElementObj: HeadingElement
 }
+
 const HeadingEl = ({ headingElementObj }: props) => {
   const dispatch = useAppDispatch()
   const { _id, level, content } = headingElementObj
@@ -67,7 +86,7 @@ const HeadingEl = ({ headingElementObj }: props) => {
     if (level === 1) {
       return (
         <h2 spellCheck="false">
-          <Remirror manager={manager} initialContent={state} />
+          <Remirror manager={manager} initialContent={state} hooks={hooks} />
         </h2>
       )
     }
@@ -75,17 +94,17 @@ const HeadingEl = ({ headingElementObj }: props) => {
     if (level === 2) {
       return (
         <h3 spellCheck="false">
-          <Remirror manager={manager} initialContent={state} />
+          <Remirror manager={manager} initialContent={state} hooks={hooks} />
         </h3>
       )
     }
 
     return (
       <h4 spellCheck="false">
-        <Remirror manager={manager} initialContent={state} />
+        <Remirror manager={manager} initialContent={state} hooks={hooks} />
       </h4>
     )
-  }, [level, content])
+  }, [level, manager, state])
 
   return (
     <div onClick={(e) => handleClick(e)}>

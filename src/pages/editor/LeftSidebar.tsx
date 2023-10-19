@@ -62,7 +62,7 @@ const StyledLeftSb = styled.aside`
 
   .sb-inner {
     position: fixed;
-    top: 0;
+    top: 32px;
   }
 
   .top-panel {

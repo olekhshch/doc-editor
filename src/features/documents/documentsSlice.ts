@@ -147,6 +147,28 @@ const documentsSlice = createSlice({
         },
       )
     },
+    setHeadingContent: (
+      state,
+      { payload }: PayloadAction<{ headingId?: number; newContent: string }>,
+    ) => {
+      const targetId = payload.headingId ?? state.activeElementId
+      if (state.activeContent && targetId !== null) {
+        state.activeContent.components = state.activeContent.components.map(
+          (element) => {
+            if (element._id === targetId) {
+              if (element.type === "heading") {
+                const newValue =
+                  payload.newContent.trim() !== ""
+                    ? payload.newContent
+                    : element.content
+                return { ...element, content: newValue }
+              }
+            }
+            return element
+          },
+        )
+      }
+    },
     addParagraph: (state, { payload }: PayloadAction<{ after?: number }>) => {
       const orderIndex = payload.after ?? state.activeContent!.components.length
       const newPEl: ParagraphElement = {
@@ -199,6 +221,7 @@ export const {
   setActiveElementId,
   addHeading,
   setHeadingLevel,
+  setHeadingContent,
   addParagraph,
   moveElement,
 } = documentsSlice.actions

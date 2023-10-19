@@ -55,13 +55,14 @@ export default LeftSidebar
 const StyledLeftSb = styled.aside`
   top: 0;
   bottom: 0;
-  border-right: 1px solid red;
+  /* border-right: 1px solid red; */
   flex-grow: 1;
   flex-basis: 300px;
   min-width: 154px;
 
   .sb-inner {
-    position: absolute;
+    position: fixed;
+    top: 0;
   }
 
   .top-panel {

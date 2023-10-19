@@ -21,7 +21,7 @@ type DropCollected = {
 const DnDPlaceholder = ({ indexBefore }: props) => {
   const dispatch = useAppDispatch()
 
-  const [collect, dropRef] = useDrop<DragElementItem, void, DropCollected>({
+  const [{ isStart }, dropRef] = useDrop<DragElementItem, void, DropCollected>({
     accept: DnDTypes.ELEMENT,
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -34,21 +34,19 @@ const DnDPlaceholder = ({ indexBefore }: props) => {
     },
   })
 
-  if (collect.isStart) {
-    return <StyledPlaceholder ref={dropRef}>{indexBefore}</StyledPlaceholder>
-  }
-
-  return <></>
+  return (
+    <StyledPlaceholder ref={dropRef} $canDrop={isStart}></StyledPlaceholder>
+  )
 }
 
 export default DnDPlaceholder
 
-const StyledPlaceholder = styled.div`
+type StyledProps = {
+  $canDrop: boolean
+}
+
+const StyledPlaceholder = styled.div<StyledProps>`
   height: 4px;
   background-color: var(--main);
-  /* opacity: 0;
-
-  &:hover {
-    opacity: 1;
-  } */
+  opacity: ${(props) => (props.$canDrop ? 1 : 0)};
 `

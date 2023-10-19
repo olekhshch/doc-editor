@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useEffect, useMemo } from "react"
 import { DocContentComponent, HeadingElement } from "../../../types"
 import HeadingEl from "./HeadingEl"
 import styled from "styled-components"
@@ -34,17 +34,18 @@ const DocElement = ({ docElementObj }: props) => {
   return (
     <StyledElementWrapper draggable>
       <IconContext.Provider value={{ size: "24" }}>
-        <div className="element-left-margin">
-          <button
-            ref={dragHandle}
+        <div className="element-left-margin" draggable>
+          <div
             className="dnd-handle"
             title="Drag and drop to reoder; Click to expand menu"
+            draggable
+            ref={dragHandle}
           >
             <MdOutlineDragIndicator />
-          </button>
+          </div>
         </div>
       </IconContext.Provider>
-      <StyledContent ref={dragPreview}>{ContentMemo}</StyledContent>
+      <StyledContent>{ContentMemo}</StyledContent>
     </StyledElementWrapper>
   )
 }

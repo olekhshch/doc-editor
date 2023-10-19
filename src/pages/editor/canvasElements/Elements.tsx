@@ -20,7 +20,7 @@ const Elements = () => {
         const { _id } = element
 
         return (
-          <div key={_id}>
+          <div key={_id} draggable>
             <DnDPlaceholder indexBefore={element.orderIndex} />
             <Element docElementObj={element} />
           </div>

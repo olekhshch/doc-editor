@@ -12,11 +12,13 @@ const RightSidebar = () => {
   const [activeIdx, setActiveIdx] = useState<0 | 1>(0)
   return (
     <StyledRightSb className="editor-sb">
-      <SbTabs
-        options={sbOptions}
-        activeIdx={activeIdx}
-        setActiveIdx={setActiveIdx}
-      />
+      <div className="sb-inner">
+        <SbTabs
+          options={sbOptions}
+          activeIdx={activeIdx}
+          setActiveIdx={setActiveIdx}
+        />
+      </div>
     </StyledRightSb>
   )
 }
@@ -28,7 +30,14 @@ const StyledRightSb = styled.aside`
   right: 0;
   bottom: 0;
   height: 100%;
-  /* flex-basis: 200px; */
+  flex-grow: 1;
+  flex-basis: 300px;
+  min-width: 154px;
 
-  border-left: 1px solid red;
+  .sb-inner {
+    position: fixed;
+    top: 0;
+  }
+
+  /* border-left: 1px solid red; */
 `

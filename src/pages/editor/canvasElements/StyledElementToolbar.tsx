@@ -15,8 +15,12 @@ export default StyledElementToolbar
 const StyledToolbar = styled.div`
   position: absolute;
   display: flex;
-  gap: 24px;
+  justify-content: space-between;
+  align-items: center;
+  /* gap: 24px; */
   font-size: var(--small-size);
+  width: 90%;
+  min-width: 120px;
 
   display: none;
 
@@ -44,5 +48,9 @@ const StyledToolbar = styled.div`
   .active {
     background-color: var(--main);
     color: var(--white);
+  }
+
+  .delete-btn:hover {
+    background-color: red;
   }
 `

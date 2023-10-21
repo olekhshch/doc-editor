@@ -1,5 +1,9 @@
-import React, { useEffect, useMemo } from "react"
-import { DocContentComponent, HeadingElement } from "../../../types"
+import React, { useContext, useEffect, useMemo, useState } from "react"
+import {
+  ColumnsElement,
+  DocContentComponent,
+  HeadingElement,
+} from "../../../types"
 import HeadingEl from "./HeadingEl"
 import styled from "styled-components"
 import StyledContent from "./StyledContent"
@@ -7,21 +11,31 @@ import { MdOutlineDragIndicator } from "react-icons/md"
 import { IconContext } from "react-icons"
 import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
+import ElementMenu from "./ElementMenu"
+import { useAppDispatch } from "../../../app/hooks"
+import { setActiveElementId } from "../../../features/documents/documentsSlice"
+import { MenuState } from "../Editor"
+import ColumnsDocElement from "./ColumnsDocElement"
 
 type props = {
-  docElementObj: DocContentComponent
+  docElementObj: DocContentComponent | ColumnsElement
+  column: null | [number, "left" | "right"]
 }
 
-const DocElement = ({ docElementObj }: props) => {
+const DocElement = ({ docElementObj, column }: props) => {
+  // const dispatch = useAppDispatch()
   const { type, _id } = docElementObj
+
+  const { elementMenuId, setElementMenuId } = useContext(MenuState)
+  const [showMenu, setShowMenu] = useState(false)
 
   const ContentMemo = useMemo(() => {
     if (type === "heading") {
       const headingObj = docElementObj as HeadingElement
-      return <HeadingEl headingElementObj={headingObj} />
+      return <HeadingEl headingElementObj={headingObj} column={column} />
     }
     return <>element</>
-  }, [docElementObj, type])
+  }, [docElementObj, type, column])
 
   const [{ isDragging }, dragHandle, dragPreview] = useDrag({
     type: DnDTypes.ELEMENT,
@@ -31,21 +45,41 @@ const DocElement = ({ docElementObj }: props) => {
     item: { _id },
   })
 
+  const handleDnDHandleClick = (e: React.MouseEvent) => {
+    setElementMenuId(showMenu ? null : _id)
+    e.stopPropagation()
+  }
+
+  useEffect(() => {
+    setShowMenu(elementMenuId === _id)
+  }, [elementMenuId, _id])
+
   return (
     <StyledElementWrapper draggable>
-      <IconContext.Provider value={{ size: "24" }}>
-        <div className="element-left-margin" draggable>
-          <div
-            className="dnd-handle"
-            title="Drag and drop to reoder; Click to expand menu"
-            draggable
-            ref={dragHandle}
-          >
-            <MdOutlineDragIndicator />
+      {column === null && (
+        <IconContext.Provider value={{ size: "24" }}>
+          <div className="element-left-margin" draggable>
+            <button
+              className={showMenu ? "dnd-handle pressed" : "dnd-handle"}
+              title="Drag and drop to reoder; Click to expand menu"
+              draggable
+              ref={dragHandle}
+              onClick={(e) => handleDnDHandleClick(e)}
+            >
+              <MdOutlineDragIndicator />
+            </button>
+            {showMenu && <ElementMenu elementId={_id} elementType={type} />}
           </div>
-        </div>
-      </IconContext.Provider>
-      <StyledContent>{ContentMemo}</StyledContent>
+        </IconContext.Provider>
+      )}
+      {type !== "columns" && (
+        <StyledContent onClick={() => setElementMenuId(null)} ref={dragPreview}>
+          {ContentMemo}
+        </StyledContent>
+      )}
+      {type === "columns" && (
+        <ColumnsDocElement columnsElement={docElementObj} />
+      )}
     </StyledElementWrapper>
   )
 }
@@ -63,11 +97,19 @@ const StyledElementWrapper = styled.li`
   }
 
   .dnd-handle {
+    padding: 2px 0;
+    width: fit-content;
     height: fit-content;
     background-color: transparent;
     border: none;
+    border-radius: 6px;
     cursor: grab;
     opacity: 0;
+  }
+
+  .pressed {
+    opacity: 1;
+    background-color: var(--gray);
   }
 
   &:hover .dnd-handle {

@@ -4,6 +4,7 @@ import { useAppSelector } from "../../app/hooks"
 import MainTitle from "./canvasElements/MainTitle"
 import Elements from "./canvasElements/Elements"
 import { CurrentDocContext } from "./Editor"
+import MainToolbar from "./MainToolbar"
 
 const ContentCanvas = () => {
   const { beginsWithTitle, activeDocumentId } = useAppSelector(
@@ -20,6 +21,7 @@ const ContentCanvas = () => {
 
   return (
     <StyledContentContainer>
+      <MainToolbar />
       {beginsWithTitle && <MainTitle docId={_id} docTitle={title} />}
       <Elements />
     </StyledContentContainer>
@@ -37,9 +39,9 @@ const ContentCanvas = () => {
 export default ContentCanvas
 
 const StyledContentContainer = styled.main`
-  margin: auto;
+  /* margin: auto; */
   /* flex-basis: 297mm; */
-  min-width: 297mm;
+  min-width: 210mm;
   width: 297mm;
   min-height: 100vh;
 

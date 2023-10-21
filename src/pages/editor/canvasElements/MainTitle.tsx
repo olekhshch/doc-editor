@@ -58,7 +58,7 @@ const MainTitle = ({ docTitle }: props) => {
 export default React.memo(MainTitle)
 
 const StyledDocTitle = styled.h1`
-  margin: 24px var(--editor-left-mg);
+  margin: 0 var(--editor-left-mg) 24px;
   border-bottom: 4px solid var(--main);
   font-family: "Roboto Condensed", sans-serif;
   font-size: var(--h1-size);

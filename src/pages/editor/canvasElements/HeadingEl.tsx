@@ -1,13 +1,16 @@
-import React, { useMemo, useCallback } from "react"
+import React, { useMemo, useCallback, useContext } from "react"
 import { HeadingElement } from "../../../types"
 import { useAppDispatch } from "../../../app/hooks"
 import {
+  deleteElement,
   setActiveElementId,
   setHeadingContent,
   setHeadingLevel,
 } from "../../../features/documents/documentsSlice"
 import StyledElementToolbar from "./StyledElementToolbar"
 import { Remirror, useRemirror, useHelpers, useKeymap } from "@remirror/react"
+import { FaTrash } from "react-icons/fa"
+import { MenuState } from "../Editor"
 
 const hooks = [
   () => {
@@ -26,14 +29,16 @@ const hooks = [
     useKeymap("Enter", handleEnterPress)
   },
 ]
+
 type props = {
   headingElementObj: HeadingElement
+  column: null | [number, "left" | "right"]
 }
 
-const HeadingEl = ({ headingElementObj }: props) => {
+const HeadingEl = ({ headingElementObj, column }: props) => {
   const dispatch = useAppDispatch()
   const { _id, level, content } = headingElementObj
-  console.log(`HEADING ${_id} has rendered`)
+  const { setElementMenuId } = useContext(MenuState)
 
   const Toolbar = () => {
     type headingLevel = 1 | 2 | 3
@@ -46,28 +51,41 @@ const HeadingEl = ({ headingElementObj }: props) => {
     const handleLevelChange = (e: React.MouseEvent, l: headingLevel) => {
       e.stopPropagation()
       if (!isActive(l)) {
-        dispatch(setHeadingLevel({ newLevel: l, headingElId: _id }))
+        dispatch(setHeadingLevel({ newLevel: l, headingElId: _id, column }))
       }
     }
 
+    const handleDelete = () => dispatch(deleteElement(_id))
+
     return (
       <StyledElementToolbar>
-        <div className="toolbar-section">
-          {levels.map((l) => (
+        <>
+          <div className="toolbar-section">
+            {levels.map((l) => (
+              <button
+                className={
+                  isActive(l)
+                    ? "element-toolbar-btn active"
+                    : "element-toolbar-btn"
+                }
+                title="Change heading level"
+                onClick={(e) => handleLevelChange(e, l)}
+                key={l}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
+          <div className="toolbar-section">
             <button
-              className={
-                isActive(l)
-                  ? "element-toolbar-btn active"
-                  : "element-toolbar-btn"
-              }
-              title="Change heading level"
-              onClick={(e) => handleLevelChange(e, l)}
-              key={l}
+              className="element-toolbar-btn delete-btn"
+              onClick={handleDelete}
+              title="Remove component"
             >
-              {l}
+              <FaTrash />
             </button>
-          ))}
-        </div>
+          </div>
+        </>
       </StyledElementToolbar>
     )
   }
@@ -75,6 +93,7 @@ const HeadingEl = ({ headingElementObj }: props) => {
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     dispatch(setActiveElementId(_id))
+    setElementMenuId(null)
   }
 
   const { manager, state } = useRemirror({

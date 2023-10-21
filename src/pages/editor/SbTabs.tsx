@@ -34,13 +34,17 @@ const SbTabs = ({ options, activeIdx, setActiveIdx }: props) => {
     <StyledTabs>
       <div className="options flex">
         <button
-          className={activeIdx === 0 ? "active-btn" : ""}
+          className={
+            activeIdx === 0 ? "sb-options-btn active-btn" : "sb-options-btn"
+          }
           onClick={() => handleClick(0)}
         >
           {firstOption}
         </button>
         <button
-          className={activeIdx === 1 ? "active-btn" : ""}
+          className={
+            activeIdx === 1 ? "sb-options-btn active-btn" : "sb-options-btn"
+          }
           onClick={() => handleClick(1)}
         >
           {secondOption}
@@ -64,8 +68,9 @@ const StyledTabs = styled.section`
     min-height: calc(1.2 * var(--h4-size));
   }
 
-  button {
-    width: 80px;
+  .sb-options-btn {
+    min-width: 80px;
+    width: 120px;
     flex-grow: 1;
     background: none;
     border: none;

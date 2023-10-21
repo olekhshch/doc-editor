@@ -1,6 +1,7 @@
 :root {
   --main: rgb(153, 0, 224);
   --main-lighter: rgb(167, 59, 234);
+  --gray: rgb(217, 200, 228);
   --main-darker0: 93,5,147;
   --main-darker: rgb(var(--main-darker0));
   --white: rgb(247, 240, 250);
@@ -13,9 +14,12 @@
   --h3-size: 28px;
   --h4-size: 22px;
   --small-size: 14px;
+  --context-menu-size: 18px;
 
   --marg: 24px;
   --rename-doc-width: 200px;
+  --element-menu-width: 160px;
+  --editor-menu-li-height: 24px;
 
   --editor-left-mg: 72px;
   --font-1: 'Roboto Condensed', sans-serif;

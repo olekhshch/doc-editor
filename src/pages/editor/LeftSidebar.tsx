@@ -31,7 +31,7 @@ const LeftSidebar = () => {
 
   return (
     <StyledLeftSb className="editor-sb">
-      <div className="sb-inner">
+      <div>
         <article className="flex-col top-panel">
           <p className="doc-title">{docTitle}</p>
           <Link to="../.." className="back-btn">
@@ -55,10 +55,10 @@ export default LeftSidebar
 const StyledLeftSb = styled.aside`
   top: 0;
   bottom: 0;
-  /* border-right: 1px solid red; */
   flex-grow: 1;
   flex-basis: 300px;
   min-width: 154px;
+  /* width: 100%; */
 
   .sb-inner {
     position: fixed;

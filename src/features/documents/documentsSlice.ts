@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 import { initialState } from "./initialState"
 import {
+  ColumnsElement,
   DocContentComponent,
   DocumentInterface,
   DocumentPreviewInterface,
@@ -126,24 +127,35 @@ const documentsSlice = createSlice({
     },
     setHeadingLevel: (
       state,
-      { payload }: PayloadAction<{ newLevel: 1 | 2 | 3; headingElId: number }>,
+      {
+        payload,
+      }: PayloadAction<{
+        newLevel: 1 | 2 | 3
+        headingElId: number
+        column: null | [number, "left" | "right"]
+      }>,
     ) => {
+      const setNewLevelCb = (element: DocContentComponent) => {
+        if (element._id === payload.headingElId) {
+          return { ...element, level: payload.newLevel }
+        }
+        return element
+      }
+
       state.activeContent!.components = state.activeContent!.components.map(
         (component) => {
-          if (component._id === payload.headingElId) {
-            try {
-              const heading = component as HeadingElement
-              return { ...heading, level: payload.newLevel }
-            } catch (e) {
-              console.log(
-                "HEADING LEVEL CHANGE: Smth went wrong while changing " +
-                  payload.headingElId +
-                  " heading level",
-              )
-              return component
+          //if header is a part of a column
+          if (payload.column !== null) {
+            const [columnId, side] = payload.column
+
+            if (component._id === columnId && component.type === "columns") {
+              const updatedSide = component[side].map((el) => setNewLevelCb(el))
+              return { ...component, [side]: updatedSide }
             }
+            return component
           }
-          return component
+          //if not part of a column
+          return setNewLevelCb(component as DocContentComponent)
         },
       )
     },
@@ -204,6 +216,48 @@ const documentsSlice = createSlice({
         state.activeContent!.components = oldElements
       }
     },
+    deleteElement: (state, { payload }: PayloadAction<number>) => {
+      if (state.activeContent) {
+        state.activeContent.components = state.activeContent.components.filter(
+          (component) => component._id !== payload,
+        )
+      }
+    },
+    insertColumn: (
+      state,
+      { payload }: PayloadAction<{ elementId: number; side: "right" | "left" }>,
+    ) => {
+      if (state.activeContent)
+        state.activeContent.components = state.activeContent.components.map(
+          (element) => {
+            if (
+              element._id === payload.elementId &&
+              element.type !== "columns"
+            ) {
+              const { _id, orderIndex } = element
+              if (payload.side === "left") {
+                const newElement: ColumnsElement = {
+                  _id,
+                  orderIndex,
+                  type: "columns",
+                  left: [element],
+                  right: [],
+                }
+                return newElement
+              }
+              const newElement: ColumnsElement = {
+                _id,
+                orderIndex,
+                type: "columns",
+                left: [],
+                right: [element],
+              }
+              return newElement
+            }
+            return element
+          },
+        )
+    },
   },
 })
 
@@ -224,4 +278,6 @@ export const {
   setHeadingContent,
   addParagraph,
   moveElement,
+  deleteElement,
+  insertColumn,
 } = documentsSlice.actions

@@ -13,24 +13,50 @@ import {
 } from "../../features/documents/documentsSlice"
 import { DocumentPreviewInterface } from "../../types"
 import Loading from "../../Loading"
-
-interface CurrentDocContext {
-  currentDocDetails: DocumentPreviewInterface | undefined
-  setCurrentDocDetails: (dc: DocumentPreviewInterface) => void
-}
+import MainToolbar from "./MainToolbar"
+import { screenwidth_editor } from "../../screenwidth_treshholds"
 
 export const CurrentDocContext = createContext<
   DocumentPreviewInterface | undefined
 >(undefined)
 
+interface EditorMenuState {
+  elementMenuId: number | null
+  setElementMenuId: (id: number | null) => void
+  showLeftSb: boolean
+  showRightSb: boolean
+}
+
+export const MenuState = createContext<EditorMenuState>({
+  elementMenuId: null,
+  setElementMenuId: (id) => {},
+  showLeftSb: true,
+  showRightSb: true,
+})
+
 const Editor = () => {
+  const [showLeftSb, setShowLeftSb] = useState(true)
+  const [showRightSb, setShowRightSb] = useState(
+    window.innerWidth >= screenwidth_editor.only_one_sb,
+  )
+
   const [currentDocDetails, setCurrentDocDetails] = useState<
     DocumentPreviewInterface | undefined
   >(undefined)
+
+  const [elementMenuId, setElementMenuId] = useState<number | null>(null)
+  const menuContextValue: EditorMenuState = {
+    elementMenuId,
+    setElementMenuId,
+    showLeftSb,
+    showRightSb,
+  }
   const dispatch = useAppDispatch()
+
   const { documents, activeDocumentId } = useAppSelector(
     (state) => state.documents,
   )
+
   const location = useLocation()
 
   useEffect(() => {
@@ -52,18 +78,35 @@ const Editor = () => {
 
   const handleEditorClicks = () => {
     // dispatch(setActiveElementId(null))
+    setElementMenuId(null)
   }
+
+  const handleResize = () => {
+    const { innerWidth } = window
+    if (innerWidth < screenwidth_editor.only_one_sb) {
+      setShowRightSb(false)
+    } else {
+      setShowLeftSb(true)
+      setShowRightSb(true)
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize)
+  }, [])
 
   if (!currentDocDetails) {
     return <Loading />
   }
   return (
     <CurrentDocContext.Provider value={currentDocDetails}>
-      <StyledEditorPage onClick={handleEditorClicks}>
-        <LeftSidebar />
-        <Canvas />
-        <RightSidebar />
-      </StyledEditorPage>
+      <MenuState.Provider value={menuContextValue}>
+        <StyledEditorPage onClick={handleEditorClicks}>
+          {showLeftSb && <LeftSidebar />}
+          <Canvas />
+          {showRightSb && <RightSidebar />}
+        </StyledEditorPage>
+      </MenuState.Provider>
     </CurrentDocContext.Provider>
   )
 }
@@ -72,4 +115,7 @@ export default Editor
 
 const StyledEditorPage = styled.div`
   display: flex;
+  * {
+    outline: none;
+  }
 `

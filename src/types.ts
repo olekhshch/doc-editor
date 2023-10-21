@@ -17,12 +17,12 @@ export interface DocumentInterface extends DocumentPreviewInterface {}
 export interface DocumentContent {
   _id: number
   docId: number
-  components: DocContentComponent[]
+  components: (DocContentComponent | ColumnsElement)[]
 }
 
 export type DocContentComponent = HeadingElement | ParagraphElement
 
-export type ContentComponentType = "heading" | "paragraph" | "image"
+export type ContentComponentType = "heading" | "paragraph" | "image" | "columns"
 
 export interface BasicComponent {
   _id: number
@@ -39,4 +39,10 @@ export interface HeadingElement extends BasicComponent {
 export interface ParagraphElement extends BasicComponent {
   type: "paragraph"
   content: string
+}
+
+export interface ColumnsElement extends BasicComponent {
+  type: "columns"
+  left: DocContentComponent[]
+  right: DocContentComponent[]
 }

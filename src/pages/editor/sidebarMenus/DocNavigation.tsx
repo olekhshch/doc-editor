@@ -33,6 +33,8 @@ const DocNavigation = () => {
 export default DocNavigation
 
 const StyledDocNav = styled.section`
+  max-width: 270px;
+
   .doc-headings {
     font-weight: bold;
     list-style: none;

@@ -6,6 +6,10 @@ import {
   addHeading,
   addParagraph,
 } from "../../../features/documents/documentsSlice"
+import { BiHeading, BiImage } from "react-icons/bi"
+import { BsCardText } from "react-icons/bs"
+import { ImTable } from "react-icons/im"
+import { IconContext } from "react-icons"
 
 const AddComponentsMenu = () => {
   const { beginsWithTitle, disableElementsAdding } = useAppSelector(
@@ -28,45 +32,58 @@ const AddComponentsMenu = () => {
 
   return (
     <StyledAddMenu className="sb-menu">
-      <section>
-        <h4>Elements</h4>
-        <ul className="constructor-btn-container flex-col">
-          <li>
-            <button
-              className="constructor-btn"
-              onClick={addHeadingEl}
-              disabled={disableElementsAdding}
-            >
-              <span> H. | .</span> Heading 2
-            </button>
-          </li>
-          <li>
-            <button
-              className="constructor-btn"
-              onClick={addParagraphEl}
-              disabled={disableElementsAdding}
-            >
-              <span> H. | .</span> Paragraph
-            </button>
-          </li>
-          <li>
-            <button
-              className="constructor-btn"
-              disabled={disableElementsAdding}
-            >
-              <span> img. | .</span> Image
-            </button>
-          </li>
-          <li>
-            <button
-              className="constructor-btn"
-              disabled={disableElementsAdding}
-            >
-              <span> T | .</span> Table 2x3
-            </button>
-          </li>
-        </ul>
-      </section>
+      <IconContext.Provider value={{ size: "24" }}>
+        <section>
+          <ul className="constructor-btn-container">
+            <li>
+              <button
+                className="constructor-btn"
+                onClick={addHeadingEl}
+                disabled={disableElementsAdding}
+              >
+                <span className="icon">
+                  <BiHeading />
+                </span>
+                Heading 2
+              </button>
+            </li>
+            <li>
+              <button
+                className="constructor-btn"
+                onClick={addParagraphEl}
+                disabled={disableElementsAdding}
+              >
+                <span className="icon">
+                  <BsCardText />
+                </span>{" "}
+                Text block
+              </button>
+            </li>
+            <li>
+              <button
+                className="constructor-btn"
+                disabled={disableElementsAdding}
+              >
+                <span className="icon">
+                  <BiImage />
+                </span>{" "}
+                Image
+              </button>
+            </li>
+            <li>
+              <button
+                className="constructor-btn"
+                disabled={disableElementsAdding}
+              >
+                <span className="icon">
+                  <ImTable />
+                </span>{" "}
+                Table 2x3
+              </button>
+            </li>
+          </ul>
+        </section>
+      </IconContext.Provider>
       <section>
         <h4>Other elements</h4>
         <ul>
@@ -110,17 +127,30 @@ const StyledAddMenu = styled.section`
   }
 
   .constructor-btn {
-    padding: 4px;
+    margin: auto;
+    padding: 4px 4px 0;
     display: flex;
     width: 100%;
+    max-width: 160px;
+    align-items: top;
+
+    background-color: transparent;
+    border: none;
+    border-radius: 16px;
+    font-size: var(--h4-size);
   }
 
   .constructor-btn:disabled {
-    color: grey;
+    color: var(--gray);
   }
 
   .constructor-btn:hover {
-    background-color: var(--main);
-    color: var(--white);
+    background-color: var(--gray);
+    color: var(--main);
+  }
+
+  span.icon {
+    min-width: 42px;
+    text-align: center;
   }
 `

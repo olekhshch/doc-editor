@@ -53,7 +53,11 @@ const ElementMenu = ({ elementId, elementType }: props) => {
         <div className="divider" />
         <li>Copy</li>
         <li>Paste</li>
-        <li onClick={() => dispatch(deleteElement(elementId))}>Delete</li>
+        <li
+          onClick={() => dispatch(deleteElement({ elementId, column: null }))}
+        >
+          Delete
+        </li>
       </ul>
     </StyledMenu>
   )

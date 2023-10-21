@@ -216,11 +216,37 @@ const documentsSlice = createSlice({
         state.activeContent!.components = oldElements
       }
     },
-    deleteElement: (state, { payload }: PayloadAction<number>) => {
+    deleteElement: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        elementId: number
+        column: null | [number, "left" | "right"]
+      }>,
+    ) => {
+      const deleteElementCb = (element: DocContentComponent | ColumnsElement) =>
+        element._id !== payload.elementId
+
       if (state.activeContent) {
-        state.activeContent.components = state.activeContent.components.filter(
-          (component) => component._id !== payload,
-        )
+        if (payload.column === null) {
+          state.activeContent.components =
+            state.activeContent.components.filter((el) => deleteElementCb(el))
+        } else {
+          const [columnId, side] = payload.column
+
+          state.activeContent.components = state.activeContent.components.map(
+            (component) => {
+              if (component._id === columnId && component.type === "columns") {
+                const updatedSide = component[side].filter((el) =>
+                  deleteElementCb(el),
+                )
+                return { ...component, [side]: updatedSide }
+              }
+              return component
+            },
+          )
+        }
       }
     },
     insertColumn: (

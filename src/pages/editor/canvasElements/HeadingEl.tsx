@@ -55,7 +55,8 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
       }
     }
 
-    const handleDelete = () => dispatch(deleteElement(_id))
+    const handleDelete = () =>
+      dispatch(deleteElement({ elementId: _id, column }))
 
     return (
       <StyledElementToolbar>

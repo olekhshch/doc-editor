@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
-import { initialState } from "./initialState"
+import { activeElementInColumn, initialState } from "./initialState"
 import {
   ColumnsElement,
   DocContentComponent,
@@ -17,9 +17,11 @@ const documentsSlice = createSlice({
     disableAddingElements: (state) => {
       state.disableElementsAdding = true
     },
+
     enableAddingElements: (state) => {
       state.disableElementsAdding = false
     },
+
     createDoc: (
       state,
       { payload }: PayloadAction<{ projectId: number | null }>,
@@ -33,9 +35,11 @@ const documentsSlice = createSlice({
       const newDoc: DocumentInterface = { ...newDocPreview }
       state.documents = [...state.documents, newDocPreview]
     },
+
     deleteDoc: (state, { payload }: PayloadAction<number>) => {
       state.documents = state.documents.filter((doc) => doc._id !== payload)
     },
+
     renameDoc: (
       state,
       {
@@ -50,6 +54,7 @@ const documentsSlice = createSlice({
         return doc
       })
     },
+
     setDocAsCurrent: (state, { payload }: PayloadAction<number>) => {
       state.activeDocumentId = payload
       //check if content was cached
@@ -76,6 +81,7 @@ const documentsSlice = createSlice({
         }
       }
     },
+
     cacheContent: (state) => {
       const alreadyCached = state.cachedContents.find(
         (content) => content.docId === state.activeDocumentId,
@@ -87,9 +93,11 @@ const documentsSlice = createSlice({
         ]
       }
     },
+
     toggleBegingsWithTitle: (state) => {
       state.beginsWithTitle = !state.beginsWithTitle
     },
+
     addHeading: (
       state,
       {
@@ -125,6 +133,7 @@ const documentsSlice = createSlice({
       }
       state.disableElementsAdding = false
     },
+
     setHeadingLevel: (
       state,
       {
@@ -159,28 +168,71 @@ const documentsSlice = createSlice({
         },
       )
     },
+
     setHeadingContent: (
       state,
-      { payload }: PayloadAction<{ headingId?: number; newContent: string }>,
+      {
+        payload,
+      }: PayloadAction<{
+        headingId?: number
+        newContent: string
+      }>,
     ) => {
-      const targetId = payload.headingId ?? state.activeElementId
-      if (state.activeContent && targetId !== null) {
-        state.activeContent.components = state.activeContent.components.map(
-          (element) => {
-            if (element._id === targetId) {
-              if (element.type === "heading") {
-                const newValue =
-                  payload.newContent.trim() !== ""
-                    ? payload.newContent
-                    : element.content
-                return { ...element, content: newValue }
-              }
-            }
-            return element
-          },
+      //checking if heading is a part of a column
+      const isPartOfAColumn = Array.isArray(state.activeElementId)
+
+      //cb for map
+      const setNewContentCb =
+        (targetId: number) =>
+        (element: DocContentComponent | ColumnsElement) => {
+          if (element._id === targetId && element.type === "heading") {
+            const newValue =
+              payload.newContent.trim() !== ""
+                ? payload.newContent
+                : element.content
+            return { ...element, content: newValue } as HeadingElement
+          }
+          return element
+        }
+
+      //if heading is not part of a column
+      if (!isPartOfAColumn) {
+        const targetId = payload.headingId ?? (state.activeElementId as number)
+
+        state.activeContent!.components = state.activeContent!.components.map(
+          (element) => setNewContentCb(targetId)(element),
         )
+      } else {
+        //if heading is a part of a column
+        const [headingId, columnId, side] =
+          state.activeElementId as activeElementInColumn
+
+        //original column which contains heading
+        const targetColumn = state.activeContent!.components.find(
+          (el) => el._id === columnId && el.type === "columns",
+        ) as ColumnsElement | undefined
+
+        if (targetColumn) {
+          //updated column
+          const newColumnsElement = {
+            ...targetColumn,
+            [side]: targetColumn[side].map((el) =>
+              setNewContentCb(headingId)(el),
+            ),
+          }
+
+          state.activeContent!.components = state.activeContent!.components.map(
+            (el) => {
+              if (el._id === columnId) {
+                return newColumnsElement
+              }
+              return el
+            },
+          )
+        }
       }
     },
+
     addParagraph: (state, { payload }: PayloadAction<{ after?: number }>) => {
       const orderIndex = payload.after ?? state.activeContent!.components.length
       const newPEl: ParagraphElement = {
@@ -192,7 +244,11 @@ const documentsSlice = createSlice({
       const newElements = [...state.activeContent!.components, newPEl]
       state.activeContent!.components = newElements
     },
-    setActiveElementId: (state, { payload }: PayloadAction<number | null>) => {
+
+    setActiveElementId: (
+      state,
+      { payload }: PayloadAction<number | null | activeElementInColumn>,
+    ) => {
       state.activeElementId = payload
     },
     moveElement: (

@@ -93,7 +93,11 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    dispatch(setActiveElementId(_id))
+    if (column === null) {
+      dispatch(setActiveElementId(_id))
+    } else {
+      dispatch(setActiveElementId([_id, ...column]))
+    }
     setElementMenuId(null)
   }
 

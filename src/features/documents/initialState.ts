@@ -4,13 +4,15 @@ import {
   ParagraphElement,
 } from "../../types"
 
+export type activeElementInColumn = [number, number, "left" | "right"] //element id, column id, column side
+
 export interface DocumentsState {
   documents: DocumentPreviewInterface[]
   activeDocumentId: number | null
   activeContent: DocumentContent | undefined
   cachedContents: DocumentContent[]
   beginsWithTitle: boolean
-  activeElementId: number | null
+  activeElementId: number | null | activeElementInColumn
   disableElementsAdding: boolean
 }
 

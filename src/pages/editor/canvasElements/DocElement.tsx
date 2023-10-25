@@ -42,7 +42,7 @@ const DocElement = ({ docElementObj, column }: props) => {
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
     }),
-    item: { _id },
+    item: { _id, columnSource: column },
   })
 
   const handleDnDHandleClick = (e: React.MouseEvent) => {
@@ -73,9 +73,15 @@ const DocElement = ({ docElementObj, column }: props) => {
         </IconContext.Provider>
       )}
       {type !== "columns" && (
-        <StyledContent onClick={() => setElementMenuId(null)} ref={dragPreview}>
-          {ContentMemo}
-        </StyledContent>
+        <>
+          <StyledContent
+            onClick={() => setElementMenuId(null)}
+            ref={dragPreview}
+          >
+            {ContentMemo}
+          </StyledContent>
+          <div className="right-margin" />
+        </>
       )}
       {type === "columns" && (
         <ColumnsDocElement columnsElement={docElementObj} />
@@ -114,5 +120,9 @@ const StyledElementWrapper = styled.li`
 
   &:hover .dnd-handle {
     opacity: 1;
+  }
+
+  .right-margin {
+    width: 48px;
   }
 `

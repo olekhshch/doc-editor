@@ -31,7 +31,7 @@ const LeftSidebar = () => {
 
   return (
     <StyledLeftSb className="editor-sb">
-      <div>
+      <div className="sb-inner">
         <article className="flex-col top-panel">
           <p className="doc-title">{docTitle}</p>
           <Link to="../.." className="back-btn">

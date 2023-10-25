@@ -7,10 +7,12 @@ import { moveElement } from "../../../features/documents/documentsSlice"
 
 type props = {
   indexBefore: number
+  columnTarget: null | [number, "left" | "right"]
 }
 
 type DragElementItem = {
   _id: number
+  columnSource: null | [number, "left" | "right"]
 }
 
 type DropCollected = {
@@ -18,10 +20,14 @@ type DropCollected = {
   isStart: boolean
 }
 
-const DnDPlaceholder = ({ indexBefore }: props) => {
+const DnDPlaceholder = ({ indexBefore, columnTarget }: props) => {
   const dispatch = useAppDispatch()
 
-  const [{ isStart }, dropRef] = useDrop<DragElementItem, void, DropCollected>({
+  const [{ isStart, isOver }, dropRef] = useDrop<
+    DragElementItem,
+    void,
+    DropCollected
+  >({
     accept: DnDTypes.ELEMENT,
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -29,13 +35,22 @@ const DnDPlaceholder = ({ indexBefore }: props) => {
     }),
     drop: (item) => {
       dispatch(
-        moveElement({ elementId: item._id, newPlacementIdx: indexBefore }),
+        moveElement({
+          elementId: item._id,
+          newPlacementIdx: indexBefore,
+          columnSource: item.columnSource,
+          columnTarget,
+        }),
       )
     },
   })
 
   return (
-    <StyledPlaceholder ref={dropRef} $canDrop={isStart}></StyledPlaceholder>
+    <StyledPlaceholder
+      ref={dropRef}
+      $canDrop={isStart}
+      $isOver={isOver}
+    ></StyledPlaceholder>
   )
 }
 
@@ -43,10 +58,11 @@ export default DnDPlaceholder
 
 type StyledProps = {
   $canDrop: boolean
+  $isOver: boolean
 }
 
 const StyledPlaceholder = styled.div<StyledProps>`
-  height: 4px;
+  height: ${(props) => (props.$canDrop ? "4px" : "2px")};
   background-color: var(--main);
-  opacity: ${(props) => (props.$canDrop ? 1 : 0)};
+  opacity: ${(props) => (props.$isOver ? 1 : 0)};
 `

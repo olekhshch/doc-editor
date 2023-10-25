@@ -3,7 +3,7 @@ import styled from "styled-components"
 import LeftSidebar from "./LeftSidebar"
 import Canvas from "./Canvas"
 import RightSidebar from "./RightSidebar"
-import { useLoaderData, useLocation } from "react-router-dom"
+import { useLoaderData, useLocation, useNavigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import {
   cacheContent,
@@ -58,6 +58,7 @@ const Editor = () => {
   )
 
   const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     //preparing doc content data based on URL id
@@ -69,9 +70,10 @@ const Editor = () => {
     }
     const currentDoc = documents.find((doc) => doc._id === docId)
     if (!currentDoc) {
-      alert(`Doc with id ${docId} wasn't found`)
+      navigate("/not-found")
+    } else {
+      setCurrentDocDetails(currentDoc)
     }
-    setCurrentDocDetails(currentDoc)
 
     dispatch(enableAddingElements())
   }, [dispatch, documents, location.pathname, activeDocumentId])

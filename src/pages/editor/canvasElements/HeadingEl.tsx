@@ -3,6 +3,7 @@ import { HeadingElement } from "../../../types"
 import { useAppDispatch } from "../../../app/hooks"
 import {
   deleteElement,
+  duplicateElement,
   setActiveElementId,
   setHeadingContent,
   setHeadingLevel,
@@ -11,6 +12,10 @@ import StyledElementToolbar from "./StyledElementToolbar"
 import { Remirror, useRemirror, useHelpers, useKeymap } from "@remirror/react"
 import { FaTrash } from "react-icons/fa"
 import { MenuState } from "../Editor"
+import { MdOutlineDragIndicator } from "react-icons/md"
+import { HiDuplicate } from "react-icons/hi"
+import { useDrag } from "react-dnd"
+import { DnDTypes } from "../../../DnDtypes"
 
 const hooks = [
   () => {
@@ -40,6 +45,14 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
   const { _id, level, content } = headingElementObj
   const { setElementMenuId } = useContext(MenuState)
 
+  const [{ isDragging }, dragHandle, dragPreview] = useDrag({
+    type: DnDTypes.ELEMENT,
+    collect: (monitor: any) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    item: { _id, columnSource: column },
+  })
+
   const Toolbar = () => {
     type headingLevel = 1 | 2 | 3
     const levels: headingLevel[] = [1, 2, 3]
@@ -58,9 +71,20 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
     const handleDelete = () =>
       dispatch(deleteElement({ elementId: _id, column }))
 
+    const handleDuplicate = () => {
+      dispatch(duplicateElement({ elementId: _id, column }))
+    }
+
     return (
       <StyledElementToolbar>
         <>
+          {column !== null && (
+            <div className="toolbar-section">
+              <button className="dnd-handle" ref={dragHandle}>
+                <MdOutlineDragIndicator />
+              </button>
+            </div>
+          )}
           <div className="toolbar-section">
             {levels.map((l) => (
               <button
@@ -78,6 +102,13 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
             ))}
           </div>
           <div className="toolbar-section">
+            <button
+              className="element-toolbar-btn"
+              onClick={handleDuplicate}
+              title="Duplicate"
+            >
+              <HiDuplicate />
+            </button>
             <button
               className="element-toolbar-btn delete-btn"
               onClick={handleDelete}
@@ -109,7 +140,7 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
   const HeadingMemo = useMemo(() => {
     if (level === 1) {
       return (
-        <h2 spellCheck="false">
+        <h2 spellCheck="false" ref={dragPreview}>
           <Remirror manager={manager} initialContent={state} hooks={hooks} />
         </h2>
       )
@@ -117,14 +148,14 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
 
     if (level === 2) {
       return (
-        <h3 spellCheck="false">
+        <h3 spellCheck="false" ref={dragPreview}>
           <Remirror manager={manager} initialContent={state} hooks={hooks} />
         </h3>
       )
     }
 
     return (
-      <h4 spellCheck="false">
+      <h4 spellCheck="false" ref={dragPreview}>
         <Remirror manager={manager} initialContent={state} hooks={hooks} />
       </h4>
     )
@@ -132,7 +163,7 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
 
   return (
     <div onClick={(e) => handleClick(e)}>
-      <Toolbar />
+      {!isDragging && <Toolbar />}
       {HeadingMemo}
     </div>
   )

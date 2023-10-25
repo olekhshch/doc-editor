@@ -2,6 +2,7 @@ import React from "react"
 import { ColumnsElement } from "../../../types"
 import styled from "styled-components"
 import DocElement from "./DocElement"
+import DnDPlaceholder from "./dndPlaceholder"
 
 type props = {
   columnsElement: ColumnsElement
@@ -13,14 +14,26 @@ const ColumnsDocElement = ({ columnsElement }: props) => {
     <StyledColumnsElement>
       <section className="column">
         {left.map((element) => (
-          <DocElement
-            key={element._id}
-            docElementObj={element}
-            column={[_id, "left"]}
-          />
+          <div key={element._id}>
+            <DnDPlaceholder
+              indexBefore={element.orderIndex}
+              columnTarget={[_id, "left"]}
+            />
+            <DocElement docElementObj={element} column={[_id, "left"]} />
+          </div>
         ))}
       </section>
-      <section className="column">right</section>
+      <section className="column">
+        {right.map((element) => (
+          <div key={element._id}>
+            <DnDPlaceholder
+              indexBefore={element.orderIndex}
+              columnTarget={[_id, "right"]}
+            />
+            <DocElement docElementObj={element} column={[_id, "right"]} />
+          </div>
+        ))}
+      </section>
     </StyledColumnsElement>
   )
 }
@@ -33,6 +46,11 @@ const StyledColumnsElement = styled.div`
 
   .column {
     margin-left: 4px;
+    display: flex;
+    flex-direction: column;
+
     flex-grow: 1;
+    flex-shrink: 0;
+    max-width: 50%;
   }
 `

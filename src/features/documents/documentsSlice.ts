@@ -9,6 +9,7 @@ import {
   ParagraphElement,
 } from "../../types"
 import { reoderArray } from "../../functions/reorderArray"
+import { insertElementIntoArray } from "../../functions/insertElementIntoArray"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -27,7 +28,7 @@ const documentsSlice = createSlice({
       { payload }: PayloadAction<{ projectId: number | null }>,
     ) => {
       const newDocPreview: DocumentPreviewInterface = {
-        _id: Math.round(Math.random() * 10000),
+        _id: Math.round(Math.random() * 1000000),
         projectId: payload.projectId,
         title: "New doc",
         createdOn: new Date().getTime(),
@@ -115,7 +116,7 @@ const documentsSlice = createSlice({
           break
       }
       const orderIndex = after ?? state.activeContent!.components.length
-      const _id = new Date().getMilliseconds()
+      const _id = Math.round(Math.random() * 1000000)
       const newHeading: HeadingElement = {
         _id,
         type: "heading",
@@ -236,7 +237,7 @@ const documentsSlice = createSlice({
     addParagraph: (state, { payload }: PayloadAction<{ after?: number }>) => {
       const orderIndex = payload.after ?? state.activeContent!.components.length
       const newPEl: ParagraphElement = {
-        _id: new Date().getMilliseconds(),
+        _id: Math.round(Math.random() * 1000000),
         type: "paragraph",
         content: "",
         orderIndex,
@@ -251,27 +252,242 @@ const documentsSlice = createSlice({
     ) => {
       state.activeElementId = payload
     },
+
     moveElement: (
       state,
       {
         payload,
-      }: PayloadAction<{ elementId: number; newPlacementIdx: number }>,
+      }: PayloadAction<{
+        elementId: number
+        newPlacementIdx: number
+        columnSource: null | [number, "left" | "right"]
+        columnTarget: null | [number, "left" | "right"]
+      }>,
     ) => {
       const oldElements = [...state.activeContent!.components]
       try {
-        const newProjects = reoderArray(
-          oldElements,
-          payload.elementId,
-          payload.newPlacementIdx,
-        ) as DocContentComponent[]
-        state.activeContent!.components = newProjects.map((project, idx) => ({
-          ...project,
-          orderIndex: idx,
-        }))
+        if (payload.columnSource === null) {
+          //moving element is not a part of a column
+          if (payload.columnTarget === null) {
+            //element is not moving into a column AND is not a column
+            const newProjects = reoderArray(
+              oldElements,
+              payload.elementId,
+              payload.newPlacementIdx,
+            ) as DocContentComponent[]
+            state.activeContent!.components = newProjects.map(
+              (project, idx) => ({
+                ...project,
+                orderIndex: idx,
+              }),
+            )
+          } else {
+            //element is moving into a column
+
+            //checking if moving element is not a ColumnsElement
+            const sourceElement = state.activeContent?.components.find(
+              (el) => el._id === payload.elementId,
+            )
+            const isNotColumnsElAndFound =
+              sourceElement && sourceElement.type !== "columns"
+
+            const [targetColumnId, targetSide] = payload.columnTarget
+
+            const targetColumn = state.activeContent?.components.find(
+              (el) => el._id === targetColumnId && el.type === "columns",
+            ) as ColumnsElement | undefined
+
+            if (targetColumn && isNotColumnsElAndFound) {
+              //moving only if source elemnt is not ColumnsElement and targetColumn ss found
+              const sideToUpdate = targetColumn[targetSide]
+              const newSide0 = insertElementIntoArray(
+                sourceElement,
+                sideToUpdate,
+                payload.newPlacementIdx,
+              ) as DocContentComponent[]
+
+              //fixing order Indexes
+              const newSide = newSide0.map((el, idx) => ({
+                ...el,
+                orderIndex: idx,
+              }))
+              const newTargetColumnsEl: ColumnsElement = {
+                ...targetColumn,
+                [targetSide]: newSide,
+              }
+
+              //removing element from the old placement
+              state.activeContent!.components =
+                state.activeContent!.components.filter(
+                  (el) => el._id !== payload.elementId,
+                )
+
+              //replacing old columnsEl with new one
+              state.activeContent!.components =
+                state.activeContent!.components.map((el) => {
+                  if (el._id === targetColumnId) {
+                    return newTargetColumnsEl
+                  }
+                  return el
+                })
+            }
+          }
+        } else {
+          //moving element is a part of a column
+          const [sourceColumnId, sourceColumnSide] = payload.columnSource
+
+          //getting source column and source element
+          const sourceColumnsEl = state.activeContent!.components.find(
+            (el) => el._id === sourceColumnId && el.type === "columns",
+          ) as ColumnsElement
+
+          const sourceElement = sourceColumnsEl[sourceColumnSide].find(
+            (el) => el._id === payload.elementId,
+          )!
+
+          if (payload.columnTarget !== null) {
+            //element will be placed in a columns element
+            const [targetColumnId, targetColumnSide] = payload.columnTarget
+
+            if (
+              targetColumnId === sourceColumnId &&
+              targetColumnSide === sourceColumnSide
+            ) {
+              //element is placed in the same column => reorder operation
+              const newSide0 = reoderArray(
+                sourceColumnsEl[sourceColumnSide],
+                payload.elementId,
+                payload.newPlacementIdx,
+              )
+              //fixing order indexes
+              const newSide = newSide0.map((el, idx) => ({
+                ...el,
+                orderIndex: idx,
+              })) as DocContentComponent[]
+
+              //new ColumnsElement to replace the old one (with the old placement of element that was moved)
+              const newColumnsEl: ColumnsElement = {
+                ...sourceColumnsEl,
+                [sourceColumnSide]: newSide,
+              }
+              state.activeContent!.components =
+                state.activeContent!.components.map((el) => {
+                  if (el._id === sourceColumnId) {
+                    return newColumnsEl
+                  }
+                  return el
+                })
+            } else {
+              //element is moved from one column to another
+
+              //removing source element from the old column and fixing order indexes
+              const newSourceSide = sourceColumnsEl[sourceColumnSide]
+                .filter((el) => el._id !== payload.elementId)
+                .map((el, idx) => ({ ...el, orderIndex: idx }))
+
+              if (sourceColumnId === targetColumnId) {
+                //if element is a part of the same ColumnsElement, but placed in a different column (side)
+                const newTargetSide0 = insertElementIntoArray(
+                  sourceElement,
+                  sourceColumnsEl[targetColumnSide],
+                  payload.newPlacementIdx,
+                ) as DocContentComponent[]
+                const newTargetSide = newTargetSide0.map((el, idx) => ({
+                  ...el,
+                  orderIndex: idx,
+                }))
+
+                const newSourceColumnsElement: ColumnsElement = {
+                  ...sourceColumnsEl,
+                  [sourceColumnSide]: newSourceSide,
+                  [targetColumnSide]: newTargetSide,
+                }
+
+                state.activeContent!.components =
+                  state.activeContent!.components.map((el) => {
+                    if (el._id === sourceColumnId) {
+                      return newSourceColumnsElement
+                    }
+                    return el
+                  })
+              } else {
+                //element is placed from one columnsElement's side to another
+
+                //ColumnsElement where element will be moved
+                const targetColumnsElement =
+                  state.activeContent!.components.find(
+                    (el) => el._id === targetColumnId && el.type === "columns",
+                  ) as ColumnsElement
+
+                //source ColumnsElement without element that was moved
+                const newSourceColumnsElement: ColumnsElement = {
+                  ...sourceColumnsEl,
+                  [sourceColumnSide]: newSourceSide,
+                }
+
+                //inserting moved element into a target column and fixing order indexes
+                const newTargetSide0 = insertElementIntoArray(
+                  sourceElement,
+                  targetColumnsElement[targetColumnSide],
+                  payload.newPlacementIdx,
+                ) as DocContentComponent[]
+                const newTargetSide = newTargetSide0.map((el, idx) => ({
+                  ...el,
+                  orderIndex: idx,
+                }))
+
+                //target ColumnsElement with the moved element
+                const newTargetColumnsEl: ColumnsElement = {
+                  ...targetColumnsElement,
+                  [targetColumnSide]: newTargetSide,
+                }
+
+                state.activeContent!.components =
+                  state.activeContent!.components.map((el) => {
+                    if (el._id === sourceColumnId) {
+                      return newSourceColumnsElement
+                    }
+                    if (el._id === targetColumnId) {
+                      return newTargetColumnsEl
+                    }
+                    return el
+                  })
+              }
+            }
+          } else {
+            //element is moved from a column to a canvas as a separate DocContent Element
+
+            //removing element from the source columnsElement
+            const newSourceSide = sourceColumnsEl[sourceColumnSide]
+              .filter((el) => el._id !== payload.elementId)
+              .map((el, idx) => ({ ...el, orderIndex: idx }))
+
+            const newSourceColumnsElement: ColumnsElement = {
+              ...sourceColumnsEl,
+              [sourceColumnSide]: newSourceSide,
+            }
+
+            //inserting element in the components array
+            const newComponents = insertElementIntoArray(
+              sourceElement,
+              oldElements,
+              payload.newPlacementIdx,
+            ) as (DocContentComponent | ColumnsElement)[]
+
+            //fixing indexes and setting new source ColumnsElement (without moved element)
+            state.activeContent!.components = newComponents.map((el, idx) => {
+              if (el._id === sourceColumnId) {
+                return { ...newSourceColumnsElement, orderIndex: idx }
+              }
+              return { ...el, orderIndex: idx }
+            })
+          }
+        }
       } catch (e) {
         state.activeContent!.components = oldElements
       }
     },
+
     deleteElement: (
       state,
       {
@@ -305,33 +521,41 @@ const documentsSlice = createSlice({
         }
       }
     },
+
     insertColumn: (
       state,
       { payload }: PayloadAction<{ elementId: number; side: "right" | "left" }>,
     ) => {
-      if (state.activeContent)
+      if (state.activeContent) {
+        const newParagraphEl: ParagraphElement = {
+          _id: Math.round(Math.random() * 1000000),
+          orderIndex: 0,
+          type: "paragraph",
+          content: "New par",
+        }
+
         state.activeContent.components = state.activeContent.components.map(
           (element) => {
             if (
               element._id === payload.elementId &&
               element.type !== "columns"
             ) {
-              const { _id, orderIndex } = element
+              const { orderIndex } = element
               if (payload.side === "left") {
                 const newElement: ColumnsElement = {
-                  _id,
+                  _id: new Date().getMilliseconds(),
                   orderIndex,
                   type: "columns",
                   left: [element],
-                  right: [],
+                  right: [newParagraphEl],
                 }
                 return newElement
               }
               const newElement: ColumnsElement = {
-                _id,
+                _id: new Date().getMilliseconds(),
                 orderIndex,
                 type: "columns",
-                left: [],
+                left: [newParagraphEl],
                 right: [element],
               }
               return newElement
@@ -339,6 +563,80 @@ const documentsSlice = createSlice({
             return element
           },
         )
+      }
+    },
+
+    duplicateElement: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        elementId: number
+        column: null | [number, "left" | "right"]
+      }>,
+    ) => {
+      if (payload.column === null) {
+        //element is not a part of a column
+        const targetElement = state.activeContent!.components.find(
+          (el) => el._id === payload.elementId,
+        )
+
+        if (targetElement) {
+          const duplicate: DocContentComponent | ColumnsElement = {
+            ...targetElement,
+            _id: Math.round(Math.random() * 1000000),
+          }
+          //inserting duplicate after the original
+          const newComponentsArray = insertElementIntoArray(
+            duplicate,
+            state.activeContent!.components,
+            targetElement.orderIndex,
+          ) as (DocContentComponent | ColumnsElement)[]
+          // fixing order indexes in the state array
+          state.activeContent!.components = newComponentsArray.map(
+            (el, idx) => ({ ...el, orderIndex: idx }),
+          )
+        }
+      } else {
+        //element is a part of a column
+        const [columnId, side] = payload.column
+        const targetColumn = state.activeContent!.components.find(
+          (el) => el._id === columnId && el.type === "columns",
+        ) as ColumnsElement | undefined
+
+        if (targetColumn) {
+          const targetElement = targetColumn[side].find(
+            (el) => el._id === payload.elementId,
+          ) as DocContentComponent | undefined
+
+          if (targetElement) {
+            const duplicate: DocContentComponent = {
+              ...targetElement,
+              _id: new Date().getMilliseconds(),
+            }
+            const newSide0 = insertElementIntoArray(
+              duplicate,
+              targetColumn[side],
+              targetElement.orderIndex,
+            ) as DocContentComponent[]
+            //fixing order indexes
+            const newSide = newSide0.map((el, idx) => ({
+              ...el,
+              orderIndex: idx,
+            }))
+            const newColumn = { ...targetColumn, [side]: newSide }
+
+            //replacing old columns with columns element with a duplicate
+            state.activeContent!.components =
+              state.activeContent!.components.map((el) => {
+                if (el._id === columnId) {
+                  return newColumn
+                }
+                return el
+              })
+          }
+        }
+      }
     },
   },
 })
@@ -362,4 +660,5 @@ export const {
   moveElement,
   deleteElement,
   insertColumn,
+  duplicateElement,
 } = documentsSlice.actions

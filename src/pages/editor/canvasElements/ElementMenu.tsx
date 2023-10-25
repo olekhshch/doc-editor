@@ -4,6 +4,7 @@ import { ContentComponentType } from "../../../types"
 import { useAppDispatch } from "../../../app/hooks"
 import {
   deleteElement,
+  duplicateElement,
   insertColumn,
 } from "../../../features/documents/documentsSlice"
 type props = {
@@ -12,6 +13,10 @@ type props = {
 }
 const ElementMenu = ({ elementId, elementType }: props) => {
   const dispatch = useAppDispatch()
+
+  const handleDuplicate = () => {
+    dispatch(duplicateElement({ elementId, column: null }))
+  }
 
   const ColumnsMenu = () => {
     const addLeft = () => {
@@ -35,8 +40,8 @@ const ElementMenu = ({ elementId, elementType }: props) => {
 
     return (
       <ul className="secondary-menu">
-        <li onClick={addLeft}>to the left</li>
-        <li onClick={addRight}>to the right</li>
+        <li onClick={addLeft}>to the right</li>
+        <li onClick={addRight}>to the left</li>
       </ul>
     )
   }
@@ -51,8 +56,7 @@ const ElementMenu = ({ elementId, elementType }: props) => {
           <ColumnsMenu />
         </li>
         <div className="divider" />
-        <li>Copy</li>
-        <li>Paste</li>
+        <li onClick={handleDuplicate}>Duplicate</li>
         <li
           onClick={() => dispatch(deleteElement({ elementId, column: null }))}
         >

@@ -15,12 +15,13 @@ export default StyledElementToolbar
 const StyledToolbar = styled.div`
   position: absolute;
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
+  gap: 12px;
   align-items: center;
   /* gap: 24px; */
   font-size: var(--small-size);
   width: 90%;
-  min-width: 120px;
+  min-width: 240px;
 
   display: none;
 

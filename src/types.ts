@@ -1,3 +1,5 @@
+import { RemirrorJSON } from "remirror"
+
 export interface ProjectInterface {
   _id: number
   title: string
@@ -38,7 +40,7 @@ export interface HeadingElement extends BasicComponent {
 
 export interface ParagraphElement extends BasicComponent {
   type: "paragraph"
-  content: string
+  content: RemirrorJSON[]
 }
 
 export interface ColumnsElement extends BasicComponent {

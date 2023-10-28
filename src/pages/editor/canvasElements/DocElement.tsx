@@ -3,6 +3,7 @@ import {
   ColumnsElement,
   DocContentComponent,
   HeadingElement,
+  ParagraphElement,
 } from "../../../types"
 import HeadingEl from "./HeadingEl"
 import styled from "styled-components"
@@ -16,6 +17,7 @@ import { useAppDispatch } from "../../../app/hooks"
 import { setActiveElementId } from "../../../features/documents/documentsSlice"
 import { MenuState } from "../Editor"
 import ColumnsDocElement from "./ColumnsDocElement"
+import TextBlockEl from "./TextBlockEl"
 
 type props = {
   docElementObj: DocContentComponent | ColumnsElement
@@ -33,6 +35,11 @@ const DocElement = ({ docElementObj, column }: props) => {
     if (type === "heading") {
       const headingObj = docElementObj as HeadingElement
       return <HeadingEl headingElementObj={headingObj} column={column} />
+    }
+
+    if (type === "paragraph") {
+      const textBlockObj = docElementObj as ParagraphElement
+      return <TextBlockEl textBlockObj={textBlockObj} column={column} />
     }
     return <>element</>
   }, [docElementObj, type, column])

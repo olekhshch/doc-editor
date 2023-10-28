@@ -36,3 +36,12 @@ export const initialState: DocumentsState = {
   activeElementId: null,
   disableElementsAdding: true,
 }
+
+export const initialParagraph: ParagraphElement = {
+  _id: 0,
+  type: "paragraph",
+  content: [
+    { type: "paragraph", content: [{ type: "text", text: "initial text" }] },
+  ],
+  orderIndex: 0,
+}

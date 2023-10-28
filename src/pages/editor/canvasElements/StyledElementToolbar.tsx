@@ -25,11 +25,13 @@ const StyledToolbar = styled.div`
 
   display: none;
 
-  .toolbar-section {
+  .toolbar-section,
+  .toolbar-section-text-block {
     background-color: white;
     border: 1px solid var(--main);
     border-radius: 8px;
-    padding: 0 4px;
+    padding: 0;
+    height: fit-content;
   }
 
   button {

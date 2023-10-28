@@ -1,5 +1,9 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
-import { activeElementInColumn, initialState } from "./initialState"
+import {
+  activeElementInColumn,
+  initialState,
+  initialParagraph,
+} from "./initialState"
 import {
   ColumnsElement,
   DocContentComponent,
@@ -10,6 +14,8 @@ import {
 } from "../../types"
 import { reoderArray } from "../../functions/reorderArray"
 import { insertElementIntoArray } from "../../functions/insertElementIntoArray"
+import { RemirrorJSON } from "remirror"
+import { removeElementFromArray } from "../../functions/removeElementFromArray"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -67,18 +73,16 @@ const documentsSlice = createSlice({
         state.activeContent = cachedDoc
       } else {
         //Untill persist functionality is created
-
-        const initialParagraph: ParagraphElement = {
-          _id: new Date().getMilliseconds(),
-          type: "paragraph",
-          content: "empty par",
-          orderIndex: 0,
+        const _id = new Date().getMilliseconds()
+        const initialP: ParagraphElement = {
+          ...initialParagraph,
+          _id,
         }
 
         state.activeContent = {
           _id: 100000000,
           docId: payload,
-          components: [initialParagraph],
+          components: [initialP],
         }
       }
     },
@@ -237,13 +241,73 @@ const documentsSlice = createSlice({
     addParagraph: (state, { payload }: PayloadAction<{ after?: number }>) => {
       const orderIndex = payload.after ?? state.activeContent!.components.length
       const newPEl: ParagraphElement = {
-        _id: Math.round(Math.random() * 1000000),
-        type: "paragraph",
-        content: "",
-        orderIndex,
+        ...initialParagraph,
+        _id: Math.round(Math.random() * 10000),
       }
       const newElements = [...state.activeContent!.components, newPEl]
       state.activeContent!.components = newElements
+    },
+
+    setParagraphContent: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        newContentArray: RemirrorJSON[]
+        elementId?: number
+        column: null | [number, "left" | "right"]
+      }>,
+    ) => {
+      if (state.activeContent) {
+        if (!Array.isArray(state.activeElementId) && payload.column === null) {
+          //element is not a part of a column
+          const elementId = payload.elementId
+            ? payload.elementId
+            : state.activeElementId
+
+          state.activeContent.components = state.activeContent.components.map(
+            (el) => {
+              if (el._id === elementId && el.type === "paragraph") {
+                return { ...el, content: payload.newContentArray }
+              }
+              return el
+            },
+          )
+        } else {
+          //element is a part of a column
+          let elementId: number
+          let columnsElId: number
+          let side: "left" | "right"
+
+          if (!payload.elementId && Array.isArray(state.activeElementId)) {
+            //active element is a target
+            elementId = state.activeElementId[0]
+            columnsElId = state.activeElementId[1]
+            side = state.activeElementId[2]
+          } else if (payload.elementId && payload.column !== null) {
+            //target element is deffined, not specifically active one
+            elementId = payload.elementId
+            columnsElId = payload.column[0]
+            side = payload.column[1]
+          }
+
+          //finds columns with a target element and replaces
+          state.activeContent.components = state.activeContent.components.map(
+            (element) => {
+              if (element._id === columnsElId && element.type === "columns") {
+                const updatedColumn = element[side].map((el) => {
+                  if (el._id === elementId && el.type === "paragraph") {
+                    return { ...el, content: payload.newContentArray }
+                  }
+                  return el
+                })
+                return { ...element, [side]: updatedColumn }
+              }
+              return element
+            },
+          )
+        }
+      }
     },
 
     setActiveElementId: (
@@ -488,6 +552,47 @@ const documentsSlice = createSlice({
       }
     },
 
+    deleteActiveElement: (state) => {
+      const oldContent = [...state.activeContent!.components]
+      try {
+        if (state.activeElementId !== null) {
+          if (!Array.isArray(state.activeElementId)) {
+            const targetId = state.activeElementId
+
+            state.activeContent!.components = removeElementFromArray(
+              targetId,
+              oldContent,
+            )
+          } else {
+            //active element is a part of a column
+            const [targetId, columnId, columnSide] = state.activeElementId
+            const targetColumnsEl = state.activeContent!.components.find(
+              (el) => el._id === columnId && el.type === "columns",
+            ) as ColumnsElement
+
+            const newSide = removeElementFromArray(
+              targetId,
+              targetColumnsEl[columnSide],
+            )
+            const newColumn: ColumnsElement = {
+              ...targetColumnsEl,
+              [columnSide]: newSide,
+            }
+
+            state.activeContent!.components =
+              state.activeContent!.components.map((el) => {
+                if (el._id === columnId) {
+                  return newColumn
+                }
+                return el
+              })
+          }
+        }
+      } catch (e) {
+        state.activeContent!.components = oldContent
+      }
+    },
+
     deleteElement: (
       state,
       {
@@ -528,10 +633,8 @@ const documentsSlice = createSlice({
     ) => {
       if (state.activeContent) {
         const newParagraphEl: ParagraphElement = {
+          ...initialParagraph,
           _id: Math.round(Math.random() * 1000000),
-          orderIndex: 0,
-          type: "paragraph",
-          content: "New par",
         }
 
         state.activeContent.components = state.activeContent.components.map(
@@ -657,7 +760,9 @@ export const {
   setHeadingLevel,
   setHeadingContent,
   addParagraph,
+  setParagraphContent,
   moveElement,
+  deleteActiveElement,
   deleteElement,
   insertColumn,
   duplicateElement,

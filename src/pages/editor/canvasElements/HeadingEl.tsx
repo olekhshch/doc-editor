@@ -2,6 +2,7 @@ import React, { useMemo, useCallback, useContext } from "react"
 import { HeadingElement } from "../../../types"
 import { useAppDispatch } from "../../../app/hooks"
 import {
+  deleteActiveElement,
   deleteElement,
   duplicateElement,
   setActiveElementId,
@@ -16,6 +17,7 @@ import { MdOutlineDragIndicator } from "react-icons/md"
 import { HiDuplicate } from "react-icons/hi"
 import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
+import styled from "styled-components"
 
 const hooks = [
   () => {
@@ -25,7 +27,12 @@ const hooks = [
     const handleEnterPress = useCallback(
       (state: any) => {
         const newContent = getText(state)
-        dispatch(setHeadingContent({ newContent }))
+        if (newContent.trim() !== "") {
+          dispatch(setHeadingContent({ newContent }))
+        } else {
+          //if content is empty and Enter is pressed - delete heading as the current active element
+          dispatch(deleteActiveElement())
+        }
         return true
       },
       [getText, dispatch],
@@ -138,10 +145,24 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
   })
 
   const HeadingMemo = useMemo(() => {
+    const handleTextChange = (props: any) => {
+      const { getText } = props.helpers
+      const newContent = getText(props)
+      if (newContent.trim() !== "") {
+        dispatch(setHeadingContent({ headingId: _id, newContent }))
+      }
+    }
+
     if (level === 1) {
       return (
         <h2 spellCheck="false" ref={dragPreview}>
-          <Remirror manager={manager} initialContent={state} hooks={hooks} />
+          <Remirror
+            classNames={["heading-element"]}
+            manager={manager}
+            initialContent={state}
+            hooks={hooks}
+            onChange={handleTextChange}
+          />
         </h2>
       )
     }
@@ -149,24 +170,42 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
     if (level === 2) {
       return (
         <h3 spellCheck="false" ref={dragPreview}>
-          <Remirror manager={manager} initialContent={state} hooks={hooks} />
+          <Remirror
+            classNames={["heading-element"]}
+            manager={manager}
+            initialContent={state}
+            hooks={hooks}
+            onChange={handleTextChange}
+          />
         </h3>
       )
     }
 
     return (
       <h4 spellCheck="false" ref={dragPreview}>
-        <Remirror manager={manager} initialContent={state} hooks={hooks} />
+        <Remirror
+          classNames={["heading-element"]}
+          manager={manager}
+          initialContent={state}
+          hooks={hooks}
+          onChange={handleTextChange}
+        />
       </h4>
     )
-  }, [level, manager, state])
+  }, [level, manager, state, _id, dispatch, dragPreview])
 
   return (
-    <div onClick={(e) => handleClick(e)}>
+    <StyledHeading onClick={(e) => handleClick(e)}>
       {!isDragging && <Toolbar />}
       {HeadingMemo}
-    </div>
+    </StyledHeading>
   )
 }
 
 export default React.memo(HeadingEl)
+
+export const StyledHeading = styled.div`
+  .heading-element {
+    padding: 0 4px;
+  }
+`

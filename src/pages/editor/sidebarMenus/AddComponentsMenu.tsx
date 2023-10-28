@@ -10,6 +10,7 @@ import { BiHeading, BiImage } from "react-icons/bi"
 import { BsCardText } from "react-icons/bs"
 import { ImTable } from "react-icons/im"
 import { IconContext } from "react-icons"
+import { CgFormatSeparator } from "react-icons/cg"
 
 const AddComponentsMenu = () => {
   const { beginsWithTitle, disableElementsAdding } = useAppSelector(
@@ -79,6 +80,17 @@ const AddComponentsMenu = () => {
                   <ImTable />
                 </span>{" "}
                 Table 2x3
+              </button>
+            </li>
+            <li>
+              <button
+                className="constructor-btn"
+                disabled={disableElementsAdding}
+              >
+                <span className="icon">
+                  <CgFormatSeparator />
+                </span>{" "}
+                Separator
               </button>
             </li>
           </ul>

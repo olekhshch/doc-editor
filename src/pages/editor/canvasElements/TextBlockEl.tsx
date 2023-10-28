@@ -9,19 +9,29 @@ import {
   useHelpers,
   useKeymap,
 } from "@remirror/react"
-import { PlaceholderExtension } from "remirror/extensions"
+import {
+  BoldExtension,
+  ItalicExtension,
+  PlaceholderExtension,
+  UnderlineExtension,
+} from "remirror/extensions"
 import StyledElementToolbar from "./StyledElementToolbar"
 import { MenuState } from "../Editor"
 import { useAppDispatch } from "../../../app/hooks"
 import {
+  deleteElement,
+  duplicateElement,
   setActiveElementId,
   setParagraphContent,
 } from "../../../features/documents/documentsSlice"
 import { FaTrash } from "react-icons/fa"
 import { HiDuplicate } from "react-icons/hi"
+import { MdOutlineDragIndicator } from "react-icons/md"
 
 import styled from "styled-components"
 import "remirror/styles/theme.css"
+import { useDrag } from "react-dnd"
+import { DnDTypes } from "../../../DnDtypes"
 // import "remirror/styles/all.css"
 
 type props = {
@@ -56,10 +66,23 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
   useEffect(() => {
     setFocused(false)
   }, [])
-  //Remirror setup
+  //DnD setup
+  const [{ isDragging }, dragHandle, dragPreview] = useDrag({
+    type: DnDTypes.ELEMENT,
+    collect: (monitor: any) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    item: { _id, columnSource: column },
+  })
 
+  //Remirror setup
   const extensions = useCallback(
-    () => [new PlaceholderExtension({ placeholder: "Text block" })],
+    () => [
+      new PlaceholderExtension({ placeholder: "Text block" }),
+      new BoldExtension(),
+      new ItalicExtension(),
+      new UnderlineExtension(),
+    ],
     [],
   )
 
@@ -73,25 +96,58 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
 
   const Toolbar = () => {
     const chain = useChainedCommands()
+
+    const handleDelete = () => {
+      dispatch(deleteElement({ column, elementId: _id }))
+    }
+
+    const handleDuplicate = () => {
+      dispatch(duplicateElement({ elementId: _id, column }))
+    }
+
+    const makeBold = () => {
+      chain.toggleBold().focus().run()
+    }
+
+    const makeItalic = () => {
+      chain.toggleItalic().focus().run()
+    }
+
+    const makeUnderline = () => {
+      chain.toggleUnderline().focus().run()
+    }
     return (
       <StyledElementToolbar>
         <>
-          <div className="toolbar-section-text-block">
-            <button className="element-toolbar-btn">B</button>
-            <button className="element-toolbar-btn">I</button>
-            <button className="element-toolbar-btn">U</button>
+          {column !== null && (
+            <div className="toolbar-section">
+              <button className="dnd-handle" ref={dragHandle}>
+                <MdOutlineDragIndicator />
+              </button>
+            </div>
+          )}
+          <div className="toolbar-section">
+            <button className="element-toolbar-btn" onClick={makeBold}>
+              <b>B</b>
+            </button>
+            <button className="element-toolbar-btn" onClick={makeItalic}>
+              <i>I</i>
+            </button>
+            <button className="element-toolbar-btn" onClick={makeUnderline}>
+              U
+            </button>
           </div>
           <div className="toolbar-section">
             <button
               className="element-toolbar-btn"
-              // onClick={handleDuplicate}
+              onClick={handleDuplicate}
               title="Duplicate"
             >
               <HiDuplicate />
             </button>
             <button
               className="element-toolbar-btn delete-btn"
-              // onClick={handleDelete}
+              onClick={handleDelete}
               title="Remove component"
             >
               <FaTrash />
@@ -122,6 +178,9 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
           border: "none",
           outline: "none",
         },
+        lineHeight: {
+          default: "1em",
+        },
         space: { "1": "fit-content" },
         boxShadow: {
           1: "none",
@@ -131,6 +190,7 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
       }}
     >
       <StyledTextContent
+        ref={dragPreview}
         onClick={(e) => handleClick(e)}
         // className="remirror-theme"
       >
@@ -164,7 +224,7 @@ const StyledTextContent = styled.div`
   height: fit-content;
 
   .text-block {
-    padding: 0 4px;
+    padding: 4px;
     min-height: auto;
     min-width: 48px;
     border: none;

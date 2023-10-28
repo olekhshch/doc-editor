@@ -8,7 +8,7 @@ export default styled.article`
   height: fit-content;
 
   .doc-element-toolbar {
-    top: -12px;
+    top: -16px;
   }
 
   &:hover {

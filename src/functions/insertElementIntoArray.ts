@@ -1,12 +1,12 @@
 export const insertElementIntoArray = (
-  element: any,
-  array: any[],
+  element: { orderIndex: number },
+  array: { orderIndex: number }[],
   insertAfterIdx: number,
 ) => {
   const arrayCopy = [...array]
   if (insertAfterIdx >= 0 && insertAfterIdx < arrayCopy.length) {
-    arrayCopy.splice(insertAfterIdx, 0, element)
+    arrayCopy.splice(insertAfterIdx + 1, 0, element)
   }
 
-  return arrayCopy
+  return arrayCopy.map((el, idx) => ({ ...el, orderIndex: idx }))
 }

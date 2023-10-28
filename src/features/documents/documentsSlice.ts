@@ -106,8 +106,11 @@ const documentsSlice = createSlice({
     addHeading: (
       state,
       {
-        payload: { level, after },
-      }: PayloadAction<{ level: 1 | 2 | 3; after?: number }>,
+        payload: { level, where },
+      }: PayloadAction<{
+        level: 1 | 2 | 3
+        where?: number | [number, number, "left" | "right"]
+      }>,
     ) => {
       let content = "Main heading"
       switch (level) {
@@ -119,22 +122,65 @@ const documentsSlice = createSlice({
           content = "Small heading"
           break
       }
-      const orderIndex = after ?? state.activeContent!.components.length
-      const _id = Math.round(Math.random() * 1000000)
-      const newHeading: HeadingElement = {
+
+      const currentActiveElId = where
+        ? where
+        : state.activeElementId ?? state.activeContent!.components.length
+
+      const _id = Math.round(Math.random() * 10000)
+      const newHeadingEl: HeadingElement = {
         _id,
         type: "heading",
-        level,
         content,
-        orderIndex,
+        level,
+        orderIndex: 100,
       }
-      state.disableElementsAdding = true
-      try {
-        const newComponents = [...state.activeContent!.components, newHeading]
-        state.activeContent!.components = newComponents
+
+      if (!Array.isArray(currentActiveElId)) {
+        //insert as an separate element (not part of a column)
+        const activeEl = state.activeContent!.components.find(
+          (el) => el._id === currentActiveElId,
+        )
+        const orderIndex = activeEl ? activeEl.orderIndex : 0
+        const newElements = insertElementIntoArray(
+          newHeadingEl,
+          state.activeContent!.components,
+          orderIndex,
+        ) as (DocContentComponent | ColumnsElement)[]
+        state.activeContent!.components = newElements
         state.activeElementId = _id
-      } catch (e) {
-        alert("Couldn't add new heading")
+      } else {
+        //heading will be inserted inside of a existing column
+        const [elementId, columnsElId, side] = currentActiveElId
+
+        const targetColumnsEl = state.activeContent!.components.find(
+          (el) => el._id === columnsElId && el.type === "columns",
+        ) as ColumnsElement | undefined
+
+        if (targetColumnsEl) {
+          const { orderIndex } = targetColumnsEl[side].find(
+            (el) => el._id === elementId,
+          )!
+          const newSide = insertElementIntoArray(
+            newHeadingEl,
+            targetColumnsEl[side],
+            orderIndex,
+          )
+          const newColumnsEl: ColumnsElement = {
+            ...targetColumnsEl,
+            [side]: newSide,
+          }
+
+          state.activeContent!.components = state.activeContent!.components.map(
+            (el) => {
+              if (el._id === columnsElId) {
+                return newColumnsEl
+              }
+              return el
+            },
+          )
+          state.activeElementId = [_id, columnsElId, side]
+        }
       }
       state.disableElementsAdding = false
     },
@@ -238,14 +284,68 @@ const documentsSlice = createSlice({
       }
     },
 
-    addParagraph: (state, { payload }: PayloadAction<{ after?: number }>) => {
-      const orderIndex = payload.after ?? state.activeContent!.components.length
+    addParagraph: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{ where?: number | [number, number, "left" | "right"] }>,
+    ) => {
+      const currentActiveElId = payload.where
+        ? payload.where
+        : state.activeElementId ?? state.activeContent!.components.length
+
+      const _id = Math.round(Math.random() * 10000)
       const newPEl: ParagraphElement = {
         ...initialParagraph,
-        _id: Math.round(Math.random() * 10000),
+        _id,
       }
-      const newElements = [...state.activeContent!.components, newPEl]
-      state.activeContent!.components = newElements
+
+      if (!Array.isArray(currentActiveElId)) {
+        //insert as an separate element (not part of a column)
+        const activeEl = state.activeContent!.components.find(
+          (el) => el._id === currentActiveElId,
+        )
+        const orderIndex = activeEl ? activeEl.orderIndex : 0
+        const newElements = insertElementIntoArray(
+          newPEl,
+          state.activeContent!.components,
+          orderIndex,
+        ) as (DocContentComponent | ColumnsElement)[]
+        state.activeContent!.components = newElements
+        state.activeElementId = _id
+      } else {
+        //paragraph will be inserted inside of a existing column
+        const [elementId, columnsElId, side] = currentActiveElId
+
+        const targetColumnsEl = state.activeContent!.components.find(
+          (el) => el._id === columnsElId && el.type === "columns",
+        ) as ColumnsElement | undefined
+
+        if (targetColumnsEl) {
+          const { orderIndex } = targetColumnsEl[side].find(
+            (el) => el._id === elementId,
+          )!
+          const newSide = insertElementIntoArray(
+            newPEl,
+            targetColumnsEl[side],
+            orderIndex,
+          )
+          const newColumnsEl: ColumnsElement = {
+            ...targetColumnsEl,
+            [side]: newSide,
+          }
+
+          state.activeContent!.components = state.activeContent!.components.map(
+            (el) => {
+              if (el._id === columnsElId) {
+                return newColumnsEl
+              }
+              return el
+            },
+          )
+          state.activeElementId = [_id, columnsElId, side]
+        }
+      }
     },
 
     setParagraphContent: (

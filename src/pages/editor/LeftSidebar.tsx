@@ -5,6 +5,7 @@ import { useAppSelector } from "../../app/hooks"
 import { Link } from "react-router-dom"
 import { CurrentDocContext } from "./Editor"
 import Loading from "../../Loading"
+import DocNavigation from "./sidebarMenus/DocNavigation"
 
 const LeftSidebar = () => {
   const { activeElementId } = useAppSelector((state) => state.documents)
@@ -38,12 +39,13 @@ const LeftSidebar = () => {
             {"<"} All projects
           </Link>
         </article>
-        <p>Navigation: </p>
-        <SbTabs
+        <h3>Navigation: </h3>
+        {/* <SbTabs
           options={sbOptions}
           activeIdx={activeIdx}
           setActiveIdx={setActiveIdx}
-        />
+        /> */}
+        <DocNavigation />
         <p>Current element ID: {activeElementId}</p>
       </div>
     </StyledLeftSb>

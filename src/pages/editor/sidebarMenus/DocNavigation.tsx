@@ -1,7 +1,11 @@
 import React, { useMemo } from "react"
 import { useAppSelector } from "../../../app/hooks"
 import styled from "styled-components"
-import { HeadingElement } from "../../../types"
+import {
+  ColumnsElement,
+  DocContentComponent,
+  HeadingElement,
+} from "../../../types"
 
 const DocNavigation = () => {
   const { activeContent, activeDocumentId } = useAppSelector(
@@ -10,11 +14,32 @@ const DocNavigation = () => {
 
   const headings = useMemo<HeadingElement[]>(() => {
     if (activeDocumentId && activeContent) {
-      return activeContent.components.filter(
-        (component) => component.type === "heading",
-      ) as HeadingElement[]
+      const checkArrayForHeadings = (
+        componentsArray: (DocContentComponent | ColumnsElement)[],
+      ) => {
+        let res: HeadingElement[] = []
+
+        componentsArray.forEach((element) => {
+          if (element.type === "heading") {
+            res.push(element)
+          } else if (element.type === "columns") {
+            const leftRes = checkArrayForHeadings(element.left)
+            const rightRes = checkArrayForHeadings(element.right)
+
+            res = [...res, ...leftRes, ...rightRes]
+          }
+        })
+
+        return res
+      }
+
+      return checkArrayForHeadings(activeContent.components)
+      // return activeContent.components.filter(
+      //   (component) => component.type === "heading",
+      // ) as HeadingElement[]
+    } else {
+      return []
     }
-    return []
   }, [activeContent, activeDocumentId])
 
   return (

@@ -16,6 +16,7 @@ import { reoderArray } from "../../functions/reorderArray"
 import { insertElementIntoArray } from "../../functions/insertElementIntoArray"
 import { RemirrorJSON } from "remirror"
 import { removeElementFromArray } from "../../functions/removeElementFromArray"
+import addSeparator0 from "./separator/addSeparator"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -706,9 +707,22 @@ const documentsSlice = createSlice({
         element._id !== payload.elementId
 
       if (state.activeContent) {
+        const parId = Math.round(Math.random() * 100000)
+        const newParEl: ParagraphElement = {
+          ...initialParagraph,
+          _id: parId,
+        }
+
         if (payload.column === null) {
           state.activeContent.components =
             state.activeContent.components.filter((el) => deleteElementCb(el))
+
+          if (state.activeContent.components.length === 0) {
+            state.activeContent.components = [
+              ...state.activeContent.components,
+              newParEl,
+            ]
+          }
         } else {
           const [columnId, side] = payload.column
 
@@ -718,6 +732,9 @@ const documentsSlice = createSlice({
                 const updatedSide = component[side].filter((el) =>
                   deleteElementCb(el),
                 )
+                if (updatedSide.length === 0) {
+                  updatedSide.push(newParEl)
+                }
                 return { ...component, [side]: updatedSide }
               }
               return component
@@ -726,6 +743,8 @@ const documentsSlice = createSlice({
         }
       }
     },
+
+    addSeparator: addSeparator0,
 
     insertColumn: (
       state,
@@ -767,6 +786,35 @@ const documentsSlice = createSlice({
           },
         )
       }
+    },
+
+    deleteSideOfColumn: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{ columnsElId: number; side: "left" | "right" }>,
+    ) => {
+      state.activeContent!.components = state.activeContent!.components.reduce(
+        (acc, element, idx) => {
+          if (
+            element._id === payload.columnsElId &&
+            element.type === "columns"
+          ) {
+            const remainingSide = payload.side === "left" ? "right" : "left"
+            const remainingElements = element[remainingSide]
+
+            return [...acc, ...remainingElements]
+          } else {
+            const newElement: DocContentComponent | ColumnsElement = {
+              ...element,
+              orderIndex: idx,
+            }
+            const newAcc = [...acc, newElement]
+            return newAcc
+          }
+        },
+        [] as (DocContentComponent | ColumnsElement)[],
+      )
     },
 
     duplicateElement: (
@@ -865,5 +913,7 @@ export const {
   deleteActiveElement,
   deleteElement,
   insertColumn,
+  deleteSideOfColumn,
   duplicateElement,
+  addSeparator,
 } = documentsSlice.actions

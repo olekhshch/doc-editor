@@ -4,6 +4,7 @@ import { ContentComponentType } from "../../../types"
 import { useAppDispatch } from "../../../app/hooks"
 import {
   deleteElement,
+  deleteSideOfColumn,
   duplicateElement,
   insertColumn,
 } from "../../../features/documents/documentsSlice"
@@ -30,8 +31,24 @@ const ElementMenu = ({ elementId, elementType }: props) => {
     if (elementType === "columns") {
       return (
         <ul className="secondary-menu" aria-label="columns">
-          <li>Remove left</li>
-          <li>Remove right</li>
+          <li
+            onClick={() =>
+              dispatch(
+                deleteSideOfColumn({ columnsElId: elementId, side: "left" }),
+              )
+            }
+          >
+            Remove left
+          </li>
+          <li
+            onClick={() =>
+              dispatch(
+                deleteSideOfColumn({ columnsElId: elementId, side: "right" }),
+              )
+            }
+          >
+            Remove right
+          </li>
           <li>Collapse, left first</li>
           <li>Collapse, right first</li>
         </ul>

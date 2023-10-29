@@ -18,6 +18,7 @@ import { setActiveElementId } from "../../../features/documents/documentsSlice"
 import { MenuState } from "../Editor"
 import ColumnsDocElement from "./ColumnsDocElement"
 import TextBlockEl from "./TextBlockEl"
+import SepratorEl from "./SepratorEl"
 
 type props = {
   docElementObj: DocContentComponent | ColumnsElement
@@ -40,6 +41,10 @@ const DocElement = ({ docElementObj, column }: props) => {
     if (type === "paragraph") {
       const textBlockObj = docElementObj as ParagraphElement
       return <TextBlockEl textBlockObj={textBlockObj} column={column} />
+    }
+
+    if (type === "separator") {
+      return <SepratorEl />
     }
     return <>element</>
   }, [docElementObj, type, column])
@@ -84,6 +89,7 @@ const DocElement = ({ docElementObj, column }: props) => {
           <StyledContent
             onClick={() => setElementMenuId(null)}
             ref={dragPreview}
+            $max_width={type === "separator"}
           >
             {ContentMemo}
           </StyledContent>

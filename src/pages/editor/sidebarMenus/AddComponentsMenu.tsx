@@ -5,6 +5,7 @@ import {
   toggleBegingsWithTitle,
   addHeading,
   addParagraph,
+  addSeparator,
 } from "../../../features/documents/documentsSlice"
 import { BiHeading, BiImage } from "react-icons/bi"
 import { BsCardText } from "react-icons/bs"
@@ -29,6 +30,10 @@ const AddComponentsMenu = () => {
 
   const addParagraphEl = () => {
     dispatch(addParagraph({}))
+  }
+
+  const addSeparatorEl = () => {
+    dispatch(addSeparator({}))
   }
 
   return (
@@ -85,6 +90,7 @@ const AddComponentsMenu = () => {
             <li>
               <button
                 className="constructor-btn"
+                onClick={addSeparatorEl}
                 disabled={disableElementsAdding}
               >
                 <span className="icon">

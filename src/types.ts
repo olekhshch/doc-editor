@@ -22,9 +22,17 @@ export interface DocumentContent {
   components: (DocContentComponent | ColumnsElement)[]
 }
 
-export type DocContentComponent = HeadingElement | ParagraphElement
+export type DocContentComponent =
+  | HeadingElement
+  | ParagraphElement
+  | SeparatorElement
 
-export type ContentComponentType = "heading" | "paragraph" | "image" | "columns"
+export type ContentComponentType =
+  | "heading"
+  | "paragraph"
+  | "image"
+  | "columns"
+  | "separator"
 
 export interface BasicComponent {
   _id: number
@@ -47,4 +55,11 @@ export interface ColumnsElement extends BasicComponent {
   type: "columns"
   left: DocContentComponent[]
   right: DocContentComponent[]
+}
+
+export interface SeparatorElement extends BasicComponent {
+  type: "separator"
+  width: number
+  line: string
+  colour: string
 }

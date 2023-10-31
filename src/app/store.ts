@@ -1,10 +1,13 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit"
 import projectsReducer from "../features/projects/projectsSlice"
 import documentsReducer from "../features/documents/documentsSlice"
+import stylingReducer from "../features/styling/stylingSlice"
+
 export const store = configureStore({
   reducer: {
     projects: projectsReducer,
     documents: documentsReducer,
+    styling: stylingReducer,
   },
 })
 

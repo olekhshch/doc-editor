@@ -44,6 +44,7 @@ const StyledContentContainer = styled.main`
   min-width: 210mm;
   width: 297mm;
   min-height: 100vh;
+  font-family: var(--font-2);
 
   /* border: 1px solid blue; */
 `

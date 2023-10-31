@@ -12,7 +12,7 @@ export const reoderArray = (
         ? placementIndex
         : placementIndex - 1
     filteredArray.splice(newPlaceIndex, 0, elementToMove)
-    return filteredArray
+    return filteredArray.map((el, idx) => ({ ...el, orderIndex: idx }))
   }
   return array
 }

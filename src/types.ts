@@ -61,5 +61,18 @@ export interface SeparatorElement extends BasicComponent {
   type: "separator"
   width: number
   line: string
-  colour: string
+  colour: SwatchesColour
+}
+
+export type SwatchesColour = "--main" | "--black" | "--white"
+export const availableSwatches: SwatchesColour[] = [
+  "--black",
+  "--main",
+  "--white",
+]
+
+export type rgbColour = {
+  r: number
+  g: number
+  b: number
 }

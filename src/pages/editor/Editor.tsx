@@ -11,7 +11,7 @@ import {
   setActiveElementId,
   setDocAsCurrent,
 } from "../../features/documents/documentsSlice"
-import { DocumentPreviewInterface } from "../../types"
+import { DocumentPreviewInterface, rgbColour } from "../../types"
 import Loading from "../../Loading"
 import MainToolbar from "./MainToolbar"
 import { screenwidth_editor } from "../../screenwidth_treshholds"
@@ -39,6 +39,10 @@ const Editor = () => {
   const [showRightSb, setShowRightSb] = useState(
     window.innerWidth >= screenwidth_editor.only_one_sb,
   )
+  //general styling state
+  const {
+    general: { doc_bg_colour },
+  } = useAppSelector((state) => state.styling)
 
   const [currentDocDetails, setCurrentDocDetails] = useState<
     DocumentPreviewInterface | undefined
@@ -103,7 +107,10 @@ const Editor = () => {
   return (
     <CurrentDocContext.Provider value={currentDocDetails}>
       <MenuState.Provider value={menuContextValue}>
-        <StyledEditorPage onClick={handleEditorClicks}>
+        <StyledEditorPage
+          onClick={handleEditorClicks}
+          $bg_main_colour={doc_bg_colour}
+        >
           {showLeftSb && <LeftSidebar />}
           <Canvas />
           {showRightSb && <RightSidebar />}
@@ -115,9 +122,18 @@ const Editor = () => {
 
 export default Editor
 
-const StyledEditorPage = styled.div`
+type styledProps = {
+  $bg_main_colour: rgbColour
+}
+
+const StyledEditorPage = styled.div<styledProps>`
   display: flex;
   * {
     outline: none;
   }
+  background-color: ${(props) => {
+    const { r, g, b } = props.$bg_main_colour
+    const colorValue = r + "," + g + "," + b
+    return `rgb(${colorValue})`
+  }};
 `

@@ -17,6 +17,7 @@ import { insertElementIntoArray } from "../../functions/insertElementIntoArray"
 import { RemirrorJSON } from "remirror"
 import { removeElementFromArray } from "../../functions/removeElementFromArray"
 import addSeparator0 from "./separator/addSeparator"
+import setSeparatorColourAction from "./separator/setSeparatorColour"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -745,6 +746,7 @@ const documentsSlice = createSlice({
     },
 
     addSeparator: addSeparator0,
+    setColourForSeprator: setSeparatorColourAction,
 
     insertColumn: (
       state,
@@ -916,4 +918,5 @@ export const {
   deleteSideOfColumn,
   duplicateElement,
   addSeparator,
+  setColourForSeprator,
 } = documentsSlice.actions

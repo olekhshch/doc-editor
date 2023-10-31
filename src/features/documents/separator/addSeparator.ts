@@ -17,7 +17,7 @@ const addSeparator = (
       _id: separatorId,
       type: "separator",
       width: 10,
-      colour: "black",
+      colour: "--main",
       line: "normal",
       orderIndex: 1000,
     }

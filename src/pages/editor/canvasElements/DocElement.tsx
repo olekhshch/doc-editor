@@ -4,6 +4,7 @@ import {
   DocContentComponent,
   HeadingElement,
   ParagraphElement,
+  SeparatorElement,
 } from "../../../types"
 import HeadingEl from "./HeadingEl"
 import styled from "styled-components"
@@ -44,7 +45,8 @@ const DocElement = ({ docElementObj, column }: props) => {
     }
 
     if (type === "separator") {
-      return <SepratorEl />
+      const separatorObj = docElementObj as SeparatorElement
+      return <SepratorEl separatorObj={separatorObj} column={column} />
     }
     return <>element</>
   }, [docElementObj, type, column])
@@ -110,7 +112,7 @@ const StyledElementWrapper = styled.li`
   /* border-bottom: 1px solid black; */
 
   .element-left-margin {
-    width: var(--editor-left-mg);
+    min-width: var(--editor-left-mg);
     display: flex;
     justify-content: right;
   }
@@ -137,5 +139,6 @@ const StyledElementWrapper = styled.li`
 
   .right-margin {
     width: 48px;
+    max-width: 48px;
   }
 `

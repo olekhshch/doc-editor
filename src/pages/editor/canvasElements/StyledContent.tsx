@@ -5,12 +5,13 @@ type styledProps = {
 }
 
 export default styled.article<styledProps>`
-  padding: 0 8px;
+  padding: 0px;
   position: relative;
   border: 1px solid transparent;
   border-radius: 8px;
   height: fit-content;
   width: ${(props) => (props.$max_width ? "100%" : "auto")};
+  max-width: ${(props) => (props.$max_width ? "100%" : "auto")};
 
   .doc-element-toolbar {
     top: -16px;

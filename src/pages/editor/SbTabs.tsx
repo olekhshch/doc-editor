@@ -2,6 +2,7 @@ import React from "react"
 import styled from "styled-components"
 import AddComponentsMenu from "./sidebarMenus/AddComponentsMenu"
 import DocNavigation from "./sidebarMenus/DocNavigation"
+import StylingMenu from "./sidebarMenus/StylingMenu"
 export type sbTabOption = "Doc" | "Project" | "Add..." | "Style..."
 
 type props = {
@@ -26,6 +27,8 @@ const SbTabs = ({ options, activeIdx, setActiveIdx }: props) => {
         return <AddComponentsMenu />
       case "Doc":
         return <DocNavigation />
+      case "Style...":
+        return <StylingMenu />
       default:
         return <span>Sb Menu</span>
     }

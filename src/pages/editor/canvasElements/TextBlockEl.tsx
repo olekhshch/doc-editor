@@ -226,9 +226,13 @@ const StyledTextContent = styled.div`
   .text-block {
     padding: 4px;
     min-height: auto;
+    max-height: fit-content;
     min-width: 48px;
+    max-width: 100%;
     border: none;
     outline: none;
+    text-align: justify;
+    font-family: var(--font-2);
   }
 
   .text-block > .toolbar-section {

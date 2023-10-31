@@ -1,6 +1,7 @@
 :root {
   --main: rgb(153, 0, 224);
   --main-lighter: rgb(167, 59, 234);
+  --main-light: rgb(208, 178, 226);
   --gray: rgb(217, 200, 228);
   --main-darker0: 93,5,147;
   --main-darker: rgb(var(--main-darker0));
@@ -23,6 +24,7 @@
 
   --editor-left-mg: 72px;
   --font-1: 'Roboto Condensed', sans-serif;
+  --font-2: 'Carlito', sans-serif;
 }
 
 * {

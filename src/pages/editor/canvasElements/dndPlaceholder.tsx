@@ -1,9 +1,10 @@
-import React from "react"
+import React, { useContext } from "react"
 import { useDrop } from "react-dnd"
 import styled from "styled-components"
 import { DnDTypes } from "../../../DnDtypes"
 import { useAppDispatch } from "../../../app/hooks"
 import { moveElement } from "../../../features/documents/documentsSlice"
+import { CurrentThemeContext } from "../Editor"
 
 type props = {
   indexBefore: number
@@ -45,11 +46,15 @@ const DnDPlaceholder = ({ indexBefore, columnTarget }: props) => {
     },
   })
 
+  //Styling
+  const { gray, main } = useContext(CurrentThemeContext)
   return (
     <StyledPlaceholder
       ref={dropRef}
       $canDrop={isStart}
       $isOver={isOver}
+      $gray={gray}
+      $main={main}
     ></StyledPlaceholder>
   )
 }
@@ -59,10 +64,12 @@ export default DnDPlaceholder
 type StyledProps = {
   $canDrop: boolean
   $isOver: boolean
+  $gray: string
+  $main: string
 }
 
 const StyledPlaceholder = styled.div<StyledProps>`
   height: ${(props) => (props.$canDrop ? "4px" : "2px")};
-  background-color: var(--main);
-  opacity: ${(props) => (props.$isOver ? 1 : 0)};
+  background-color: ${(props) => (props.$isOver ? props.$main : props.$gray)};
+  opacity: ${(props) => (props.$canDrop ? 1 : 0)};
 `

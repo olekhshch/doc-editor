@@ -30,7 +30,7 @@ const RightSidebar = () => {
 
   return (
     <StyledRightSb className="editor-sb">
-      <div>
+      <div className="sb-inner">
         <SbTabs
           options={sbOptions}
           activeIdx={activeIdx}
@@ -41,7 +41,7 @@ const RightSidebar = () => {
   )
 }
 
-export default RightSidebar
+export default React.memo(RightSidebar)
 
 const StyledRightSb = styled.aside`
   top: 0;
@@ -52,10 +52,11 @@ const StyledRightSb = styled.aside`
   flex-grow: 1;
   flex-basis: 200px;
 
-  /* .sb-inner {
+  .sb-inner {
     position: fixed;
     top: 32px;
-  } */
+    right: 12px;
+  }
 
   /* @media (max-width: ${screenwidth_editor.only_one_sb}px) {
     left: 100px;

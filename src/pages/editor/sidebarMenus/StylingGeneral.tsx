@@ -1,48 +1,69 @@
 import React, {
   useState,
   useEffect,
-  useRef,
-  FormEventHandler,
-  FormEvent,
-  ChangeEvent,
+  useMemo,
+  useCallback,
+  useContext,
 } from "react"
 import { StyledSection } from "./StyledSection"
-import { MdOutlineDragIndicator } from "react-icons/md"
+import {
+  MdOutlineDragIndicator,
+  MdOutlineNavigateBefore,
+  MdOutlineNavigateNext,
+} from "react-icons/md"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import { rgbColour } from "../../../types"
 import { ChromePicker, ColorChangeHandler } from "react-color"
-import { setGeneralBg } from "../../../features/styling/stylingSlice"
+import {
+  setGeneralBg,
+  setGeneralFontColour,
+  setTheme,
+} from "../../../features/styling/stylingSlice"
 import ColourPicker from "./ColourPicker"
 import useDebounce from "../../../app/useDebaunce"
 import { rgbObjToString } from "../../../functions/rgbObjToString"
+import { GeneralParam } from "../../../features/styling/initialState"
+import { COLORS } from "remirror/extensions"
+import { StylingParamsContext } from "./StylingMenu"
+import Swatches from "./Swatches"
+import { CurrentThemeContext } from "../Editor"
 
 type props = {
   collapsed: boolean
 }
+
 const StylingGeneral = ({ collapsed }: props) => {
   const dispatch = useAppDispatch()
 
-  const swatchRef = useRef<HTMLDivElement>(null)
+  //Styling
+  const { main, gray } = useContext(CurrentThemeContext)
+
+  const { general, themes, activeTheme } = useAppSelector(
+    (state) => state.styling,
+  )
+  const { doc_bg_colour, font_colour } = general
 
   const {
-    general: { doc_bg_colour },
-  } = useAppSelector((state) => state.styling)
+    general_all_params,
+    general_active_param_idx,
+    set_general_active_param,
+  } = useContext(StylingParamsContext)
 
-  const [bgColour, setBgColour] = useState<rgbColour>(doc_bg_colour)
+  const activeParam = useMemo(
+    () => general_all_params[general_active_param_idx],
+    [general_active_param_idx, general_all_params],
+  )
+
+  const generalParameters: GeneralParam[] = useMemo(() => {
+    return Object.keys(general) as GeneralParam[]
+  }, [general])
+
+  // const [bgColour, setBgColour] = useState<rgbColour>(doc_bg_colour.colour)
+  const [fontColour, setFontColour] = useState<rgbColour>(font_colour.colour)
   const [dragging, setDragging] = useState(false)
 
-  const debauncedValue = useDebounce(bgColour, 70)
-
-  // const handleBgChange = (ev: ChangeEvent) => {
-  //   const colourInput = ev.target as HTMLInputElement
-  //   const hex_colour = colourInput.value
-  //   setBgColour(hex_colour)
-  // }
-
-  const handleBgChange: ColorChangeHandler = (colour) => {
-    const { rgb } = colour
-    setBgColour(rgb)
-  }
+  const debauncedBgValue = useDebounce(doc_bg_colour.colour, 70)
+  const debauncedFontValue = useDebounce(font_colour.colour, 70)
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setDragging(true)
@@ -54,43 +75,96 @@ const StylingGeneral = ({ collapsed }: props) => {
 
   useEffect(() => {
     if (!dragging) {
-      dispatch(setGeneralBg(debauncedValue))
+      switch (activeParam) {
+        case "doc_bg_colour":
+          dispatch(setGeneralBg(debauncedBgValue))
+          break
+        case "font_colour":
+          dispatch(setGeneralFontColour(debauncedFontValue))
+          break
+        default:
+          break
+      }
     }
-  }, [debauncedValue, dispatch, dragging])
+  }, [debauncedBgValue, dispatch, dragging, debauncedBgValue])
+
+  const setNextParameter = useCallback(() => {
+    if (general_active_param_idx === general_all_params.length - 1) {
+      set_general_active_param(0)
+    } else {
+      set_general_active_param(general_active_param_idx + 1)
+    }
+  }, [general_active_param_idx, set_general_active_param, general_all_params])
+
+  const setPrevParameter = useCallback(() => {
+    if (general_active_param_idx === 0) {
+      set_general_active_param(general_all_params.length - 1)
+    } else {
+      set_general_active_param(general_active_param_idx - 1)
+    }
+  }, [general_active_param_idx, set_general_active_param, general_all_params])
+
+  const ParamSelector = useMemo(() => {
+    return (
+      <label className="flex param-selector ">
+        <button onClick={setPrevParameter} className="nav-btn">
+          <MdOutlineNavigateBefore />
+        </button>
+        <span>{general[activeParam].title}:</span>
+        <button onClick={setNextParameter} className="nav-btn">
+          <MdOutlineNavigateNext />
+        </button>
+      </label>
+    )
+  }, [activeParam, general, setNextParameter, setPrevParameter])
+
+  const getActiveColour = useMemo(() => {
+    return general[activeParam].colour
+  }, [general, activeParam])
+
+  const handleColourChange: ColorChangeHandler = useCallback(
+    (color) => {
+      if (activeParam === "font_colour") {
+        dispatch(setGeneralFontColour(color.rgb))
+      } else if (activeParam === "doc_bg_colour") {
+        dispatch(setGeneralBg(color.rgb))
+      }
+    },
+    [activeParam, dispatch],
+  )
+
+  const memoPicker = useMemo(() => {
+    switch (activeParam) {
+      case "main_colour":
+        return <Swatches />
+      case "doc_bg_colour":
+      default:
+        return (
+          <ColourPicker
+            colour={getActiveColour}
+            changeHandler={handleColourChange}
+          />
+        )
+    }
+  }, [handleColourChange, getActiveColour, activeParam])
 
   return (
-    <StyledSection>
+    <StyledSection $gray={gray} $main={main}>
       <div className="title">
-        <div className="dnd-handle">
-          <MdOutlineDragIndicator />
-        </div>
         <h4>General</h4>
       </div>
       {!collapsed && (
         <section className="styling-params">
-          <label className="param">
-            <span>Backgroung colour:</span>
-            {/* <div
-              className="swatch"
-              ref={swatchRef}
-              style={{ backgroundColor: rgbObjToString(bgColour) }}
-            /> */}
-            {/* <ColourPicker
-              colour={doc_bg_colour}
-              changeHandler={handleBgChange}
-            /> */}
-            <div
-              className="mouse-click-wraper"
-              onMouseDown={(e) => handleMouseDown(e)}
-              onMouseUp={(e) => handleMouseUp(e)}
-            >
-              <ChromePicker
-                color={bgColour}
-                disableAlpha={true}
-                onChange={handleBgChange}
-              />
-              {/* <ColourPicker colour={bgColour} changeHandler={handleBgChange} /> */}
-            </div>
+          {ParamSelector}
+          {memoPicker}
+          <label className="param-selector">
+            <span>Main colour:</span>
+            <Swatches />
+            {themes.map((theme) => (
+              <button onClick={() => dispatch(setTheme(theme.name))}>
+                {theme.name}
+              </button>
+            ))}
           </label>
         </section>
       )}

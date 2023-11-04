@@ -6,23 +6,19 @@ import { rgbColour } from "../../../types"
 import { setGeneralBg } from "../../../features/styling/stylingSlice"
 
 type props = {
-  colour: rgbColour | string
-  changeHandler: (e: ChangeEvent) => void
+  colour: rgbColour
+  changeHandler: ColorChangeHandler
 }
 const ColourPicker = ({ colour, changeHandler }: props) => {
-  const dispatch = useAppDispatch()
-
-  const memoPicker = useMemo(() => {
-    console.log("MEMO picker rendered")
-
-    return <input type="color" value="#000000" onChange={changeHandler} />
-  }, [colour])
-
   return (
     <div className="picker" style={{ width: "100%" }}>
-      {memoPicker}
+      <ChromePicker
+        color={colour}
+        onChange={changeHandler}
+        disableAlpha={true}
+      />
     </div>
   )
 }
 
-export default ColourPicker
+export default React.memo(ColourPicker)

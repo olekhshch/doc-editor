@@ -2,6 +2,7 @@ import styled from "styled-components"
 
 type styledProps = {
   $max_width: boolean
+  $gray: string
 }
 
 export default styled.article<styledProps>`
@@ -18,7 +19,7 @@ export default styled.article<styledProps>`
   }
 
   &:hover {
-    border: 1px solid grey;
+    border: 1px solid ${(props) => props.$gray};
   }
 
   &:hover .doc-element-toolbar {

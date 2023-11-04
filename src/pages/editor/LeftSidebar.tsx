@@ -3,7 +3,7 @@ import styled from "styled-components"
 import SbTabs, { sbTabOption } from "./SbTabs"
 import { useAppSelector } from "../../app/hooks"
 import { Link } from "react-router-dom"
-import { CurrentDocContext } from "./Editor"
+import { CurrentDocContext, CurrentThemeContext } from "./Editor"
 import Loading from "../../Loading"
 import DocNavigation from "./sidebarMenus/DocNavigation"
 
@@ -26,6 +26,9 @@ const LeftSidebar = () => {
     }
   }, [docInfo])
 
+  //theme
+  const { main } = useContext(CurrentThemeContext)
+
   if (!docInfo) {
     return <Loading />
   }
@@ -34,9 +37,15 @@ const LeftSidebar = () => {
     <StyledLeftSb className="editor-sb">
       <div className="sb-inner">
         <article className="flex-col top-panel">
-          <p className="doc-title">{docTitle}</p>
-          <Link to="../.." className="back-btn">
-            {"<"} All projects
+          <p className="doc-title" style={{ color: main }}>
+            {docTitle}
+          </p>
+          <Link
+            to="../.."
+            className="back-btn"
+            style={{ backgroundColor: main }}
+          >
+            {"<"} Main page
           </Link>
         </article>
         <h3>Navigation: </h3>
@@ -60,7 +69,6 @@ const StyledLeftSb = styled.aside`
   flex-grow: 1;
   flex-basis: 300px;
   min-width: 154px;
-  /* width: 100%; */
 
   .sb-inner {
     position: fixed;
@@ -72,7 +80,6 @@ const StyledLeftSb = styled.aside`
   }
 
   .doc-title {
-    color: var(--main);
     font-size: var(--p-size);
     font-weight: bold;
     cursor: pointer;
@@ -86,7 +93,6 @@ const StyledLeftSb = styled.aside`
   .back-btn {
     padding: 4px 8px;
     width: max-content;
-    background-color: var(--main);
     border: none;
     color: var(--white);
     font-size: var(--h3-size);

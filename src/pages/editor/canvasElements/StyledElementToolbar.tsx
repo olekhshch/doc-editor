@@ -1,18 +1,28 @@
 import styled from "styled-components"
+import { useContext } from "react"
+import { CurrentThemeContext } from "../Editor"
 
 type props = {
   children?: JSX.Element | string
 }
 
 const StyledElementToolbar = ({ children }: props) => {
+  const { main, gray } = useContext(CurrentThemeContext)
   return (
-    <StyledToolbar className="doc-element-toolbar">{children}</StyledToolbar>
+    <StyledToolbar className="doc-element-toolbar" $main={main} $gray={gray}>
+      {children}
+    </StyledToolbar>
   )
 }
 
 export default StyledElementToolbar
 
-const StyledToolbar = styled.div`
+type styledProps = {
+  $main: string
+  $gray: string
+}
+
+const StyledToolbar = styled.div<styledProps>`
   position: absolute;
   display: flex;
   justify-content: left;
@@ -28,7 +38,7 @@ const StyledToolbar = styled.div`
   .toolbar-section,
   .toolbar-section-text-block {
     background-color: white;
-    border: 1px solid var(--main);
+    border: 1px solid ${(props) => props.$main};
     border-radius: 8px;
     padding: 0;
     height: fit-content;
@@ -49,7 +59,7 @@ const StyledToolbar = styled.div`
 
   .element-toolbar-btn:hover,
   .active {
-    background-color: var(--main);
+    background-color: ${(props) => props.$main};
     color: var(--white);
   }
 
@@ -60,6 +70,6 @@ const StyledToolbar = styled.div`
   .colour-swatch div {
     width: 0.8em;
     height: 0.8em;
-    border: 1px solid var(--gray);
+    border: 1px solid ${(props) => props.$gray};
   }
 `

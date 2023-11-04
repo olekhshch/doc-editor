@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from "react"
+import React, { createContext, useEffect, useState, useMemo } from "react"
 import styled from "styled-components"
 import LeftSidebar from "./LeftSidebar"
 import Canvas from "./Canvas"
@@ -15,10 +15,19 @@ import { DocumentPreviewInterface, rgbColour } from "../../types"
 import Loading from "../../Loading"
 import MainToolbar from "./MainToolbar"
 import { screenwidth_editor } from "../../screenwidth_treshholds"
+import { rgbObjToString } from "../../functions/rgbObjToString"
+import { ColourTheme, ThemeName } from "../../features/styling/initialState"
 
 export const CurrentDocContext = createContext<
   DocumentPreviewInterface | undefined
 >(undefined)
+
+export const CurrentThemeContext = createContext({
+  main: rgbObjToString({ r: 100, g: 120, b: 130 }),
+  gray: rgbObjToString({ r: 100, g: 120, b: 130 }),
+  lighter: rgbObjToString({ r: 100, g: 120, b: 130 }),
+  name: "violet",
+})
 
 interface EditorMenuState {
   elementMenuId: number | null
@@ -39,10 +48,49 @@ const Editor = () => {
   const [showRightSb, setShowRightSb] = useState(
     window.innerWidth >= screenwidth_editor.only_one_sb,
   )
+
   //general styling state
   const {
-    general: { doc_bg_colour },
+    general: { doc_bg_colour, font_colour },
+    themes,
+    activeTheme,
   } = useAppSelector((state) => state.styling)
+
+  const currentTheme = themes.find((theme) => theme.name === activeTheme)!
+
+  const themeToRgb = (themeObj: ColourTheme) => {
+    const { name, main, gray, lighter } = themeObj
+    return {
+      name,
+      main: `rgb(${rgbObjToString(main)})`,
+      gray: `rgb(${rgbObjToString(gray)})`,
+      lighter: `rgb(${rgbObjToString(lighter)})`,
+    }
+  }
+
+  const [themeObj, setThemeObj] = useState(themeToRgb(currentTheme))
+
+  useEffect(() => {
+    const currentTheme = themes.find((theme) => theme.name === activeTheme)!
+    setThemeObj(themeToRgb(currentTheme))
+  }, [activeTheme, themes])
+
+  // const activeThemeObj = useMemo(() => {
+  //   return (
+  //     themes.find((theme) => theme.name === activeTheme) ??
+  //     themes.find((theme) => theme.name === "violet")!
+  //   )
+  // }, [activeTheme, themes])
+
+  const themeContextValue = useMemo(() => {
+    const activeThemeObj = themes.find((theme) => theme.name === activeTheme)!
+    return {
+      main: `rgb(${rgbObjToString(activeThemeObj.main)})`,
+      gray: `rgb(${rgbObjToString(activeThemeObj.gray)})`,
+      lighter: `rgb(${rgbObjToString(activeThemeObj.lighter)})`,
+      name: activeThemeObj.name,
+    }
+  }, [activeTheme, themes])
 
   const [currentDocDetails, setCurrentDocDetails] = useState<
     DocumentPreviewInterface | undefined
@@ -107,14 +155,19 @@ const Editor = () => {
   return (
     <CurrentDocContext.Provider value={currentDocDetails}>
       <MenuState.Provider value={menuContextValue}>
-        <StyledEditorPage
-          onClick={handleEditorClicks}
-          $bg_main_colour={doc_bg_colour}
-        >
-          {showLeftSb && <LeftSidebar />}
-          <Canvas />
-          {showRightSb && <RightSidebar />}
-        </StyledEditorPage>
+        <CurrentThemeContext.Provider value={themeObj}>
+          <StyledEditorPage
+            onClick={handleEditorClicks}
+            style={{
+              backgroundColor: `rgb(${rgbObjToString(doc_bg_colour.colour)})`,
+              color: `rgb(${rgbObjToString(font_colour.colour)})`,
+            }}
+          >
+            {showLeftSb && <LeftSidebar />}
+            <Canvas />
+            {showRightSb && <RightSidebar />}
+          </StyledEditorPage>
+        </CurrentThemeContext.Provider>
       </MenuState.Provider>
     </CurrentDocContext.Provider>
   )
@@ -122,18 +175,15 @@ const Editor = () => {
 
 export default Editor
 
-type styledProps = {
-  $bg_main_colour: rgbColour
-}
+// type styledProps = {
+//   $theme: ColourTheme
+// }
 
-const StyledEditorPage = styled.div<styledProps>`
+const StyledEditorPage = styled.div`
   display: flex;
+
   * {
     outline: none;
+    caret-color: black;
   }
-  background-color: ${(props) => {
-    const { r, g, b } = props.$bg_main_colour
-    const colorValue = r + "," + g + "," + b
-    return `rgb(${colorValue})`
-  }};
 `

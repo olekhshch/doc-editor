@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react"
+import React, { ChangeEvent, useContext } from "react"
 import styled from "styled-components"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import {
@@ -12,6 +12,7 @@ import { BsCardText } from "react-icons/bs"
 import { ImTable } from "react-icons/im"
 import { IconContext } from "react-icons"
 import { CgFormatSeparator } from "react-icons/cg"
+import { CurrentThemeContext } from "../Editor"
 
 const AddComponentsMenu = () => {
   const { beginsWithTitle, disableElementsAdding } = useAppSelector(
@@ -36,8 +37,11 @@ const AddComponentsMenu = () => {
     dispatch(addSeparator({}))
   }
 
+  //Styling
+  const { main, gray } = useContext(CurrentThemeContext)
+
   return (
-    <StyledAddMenu className="sb-menu">
+    <StyledAddMenu className="sb-menu" $main={main} $gray={gray}>
       <IconContext.Provider value={{ size: "24" }}>
         <section>
           <ul className="constructor-btn-container">
@@ -128,9 +132,14 @@ const AddComponentsMenu = () => {
 
 export default AddComponentsMenu
 
-const StyledAddMenu = styled.section`
+type styledProps = {
+  $main: string
+  $gray: string
+}
+const StyledAddMenu = styled.section<styledProps>`
+  color: var(--black);
   h4 {
-    color: var(--main);
+    color: ${(props) => props.$main};
   }
   ul {
     list-style-type: none;
@@ -153,18 +162,19 @@ const StyledAddMenu = styled.section`
     align-items: top;
 
     background-color: transparent;
+    color: var(--black);
     border: none;
     border-radius: 16px;
     font-size: var(--h4-size);
   }
 
   .constructor-btn:disabled {
-    color: var(--gray);
+    color: ${(props) => props.$gray};
   }
 
   .constructor-btn:hover {
-    background-color: var(--gray);
-    color: var(--main);
+    background-color: ${(props) => props.$gray};
+    color: ${(props) => props.$main};
   }
 
   span.icon {

@@ -16,7 +16,7 @@ import { DnDTypes } from "../../../DnDtypes"
 import ElementMenu from "./ElementMenu"
 import { useAppDispatch } from "../../../app/hooks"
 import { setActiveElementId } from "../../../features/documents/documentsSlice"
-import { MenuState } from "../Editor"
+import { CurrentThemeContext, MenuState } from "../Editor"
 import ColumnsDocElement from "./ColumnsDocElement"
 import TextBlockEl from "./TextBlockEl"
 import SepratorEl from "./SepratorEl"
@@ -27,7 +27,6 @@ type props = {
 }
 
 const DocElement = ({ docElementObj, column }: props) => {
-  // const dispatch = useAppDispatch()
   const { type, _id } = docElementObj
 
   const { elementMenuId, setElementMenuId } = useContext(MenuState)
@@ -51,6 +50,7 @@ const DocElement = ({ docElementObj, column }: props) => {
     return <>element</>
   }, [docElementObj, type, column])
 
+  //DnD set up
   const [{ isDragging }, dragHandle, dragPreview] = useDrag({
     type: DnDTypes.ELEMENT,
     collect: (monitor: any) => ({
@@ -68,10 +68,13 @@ const DocElement = ({ docElementObj, column }: props) => {
     setShowMenu(elementMenuId === _id)
   }, [elementMenuId, _id])
 
+  //Styling
+  const { gray, main } = useContext(CurrentThemeContext)
+
   return (
-    <StyledElementWrapper draggable>
+    <StyledElementWrapper draggable $gray={gray}>
       {column === null && (
-        <IconContext.Provider value={{ size: "24" }}>
+        <IconContext.Provider value={{ size: "24", color: main }}>
           <div className="element-left-margin" draggable>
             <button
               className={showMenu ? "dnd-handle pressed" : "dnd-handle"}
@@ -92,6 +95,7 @@ const DocElement = ({ docElementObj, column }: props) => {
             onClick={() => setElementMenuId(null)}
             ref={dragPreview}
             $max_width={type === "separator"}
+            $gray={gray}
           >
             {ContentMemo}
           </StyledContent>
@@ -107,7 +111,11 @@ const DocElement = ({ docElementObj, column }: props) => {
 
 export default DocElement
 
-const StyledElementWrapper = styled.li`
+type styledProps = {
+  $gray: string
+}
+
+const StyledElementWrapper = styled.li<styledProps>`
   display: flex;
   /* border-bottom: 1px solid black; */
 
@@ -118,7 +126,8 @@ const StyledElementWrapper = styled.li`
   }
 
   .dnd-handle {
-    padding: 2px 0;
+    vertical-align: middle;
+    padding: 2px 0 0;
     width: fit-content;
     height: fit-content;
     background-color: transparent;
@@ -130,7 +139,7 @@ const StyledElementWrapper = styled.li`
 
   .pressed {
     opacity: 1;
-    background-color: var(--gray);
+    background-color: ${(props) => props.$gray};
   }
 
   &:hover .dnd-handle {

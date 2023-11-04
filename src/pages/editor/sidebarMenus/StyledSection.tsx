@@ -1,14 +1,21 @@
 import styled from "styled-components"
 
-export const StyledSection = styled.section`
+type styledProps = {
+  $main: string
+  $gray: string
+}
+
+export const StyledSection = styled.section<styledProps>`
   width: 100%;
   display: flex;
   flex-direction: column;
+  color: var(--black);
 
   .title {
+    padding: 0 12px;
     display: flex;
     cursor: pointer;
-    background-color: var(--main-light);
+    background-color: ${(props) => props.$gray};
   }
 
   .dnd-handle {
@@ -17,21 +24,35 @@ export const StyledSection = styled.section`
   }
 
   .styling-params {
-    margin: 0 auto;
+    margin: 4px auto;
+    width: 90%;
     display: flex;
     flex-direction: column;
-    border-bottom: 2px solid var(--main-light);
   }
 
   .param {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    user-select: none;
   }
 
-  .swatch {
-    width: 36px;
-    height: 1em;
-    border: 4px solid white;
+  .param-selector {
+    margin: 8px;
+    gap: 4px 0;
+    width: 100%;
+  }
+
+  .param-selector span {
+    flex-grow: 1;
+    letter-spacing: 1px;
+  }
+
+  .param-selector .nav-btn {
+    width: 1.4em;
+    height: 1.4em;
+    background-color: transparent;
+    border: none;
+    border-radius: 50%;
   }
 `

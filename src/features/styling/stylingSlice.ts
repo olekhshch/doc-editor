@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
-import { initialState } from "./initialState"
+import { ThemeName, initialState } from "./initialState"
 import { rgbColour } from "../../types"
 
 const stylingSlice = createSlice({
@@ -7,11 +7,20 @@ const stylingSlice = createSlice({
   initialState,
   reducers: {
     setGeneralBg: (state, { payload }: PayloadAction<rgbColour>) => {
-      state.general.doc_bg_colour = payload
+      state.general.doc_bg_colour.colour = payload
+    },
+    setGeneralFontColour: (state, { payload }: PayloadAction<rgbColour>) => {
+      state.general.font_colour.colour = payload
+    },
+    setTheme: (state, { payload }: PayloadAction<ThemeName>) => {
+      console.log("PAYLOAD: " + payload)
+      state.activeTheme = payload
+      console.log("THEME REDUX: " + state.activeTheme)
     },
   },
 })
 
 export default stylingSlice.reducer
 
-export const { setGeneralBg } = stylingSlice.actions
+export const { setGeneralBg, setGeneralFontColour, setTheme } =
+  stylingSlice.actions

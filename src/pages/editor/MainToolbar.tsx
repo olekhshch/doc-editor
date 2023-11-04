@@ -1,12 +1,17 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
-import { MenuState } from "./Editor"
+import { CurrentThemeContext, MenuState } from "./Editor"
 
 const MainToolbar = () => {
   const { showLeftSb, showRightSb } = useContext(MenuState)
+  const { gray } = useContext(CurrentThemeContext)
   return (
     <StyledMainToolbar>
-      {!showRightSb && <section id="main-toolbar">Toolbar</section>}
+      {!showRightSb && (
+        <section id="main-toolbar" style={{ boxShadow: `0 4px 6px ${gray}` }}>
+          Toolbar
+        </section>
+      )}
     </StyledMainToolbar>
   )
 }
@@ -21,6 +26,5 @@ const StyledMainToolbar = styled.aside`
     width: 100%;
     height: 48px;
     min-width: 210mm;
-    box-shadow: 0 4px 6px var(--gray);
   }
 `

@@ -1,13 +1,17 @@
-import React from "react"
+import React, { useContext } from "react"
 import { StyledSection } from "./StyledSection"
 import { MdOutlineDragIndicator } from "react-icons/md"
+import { CurrentThemeContext } from "../Editor"
 
 type props = {
   collapsed: boolean
 }
 const StylingMainTitle = ({ collapsed }: props) => {
+  //Styling
+  const { main, gray } = useContext(CurrentThemeContext)
+
   return (
-    <StyledSection>
+    <StyledSection $gray={gray} $main={main}>
       <div className="title">
         <div className="dnd-handle">
           <MdOutlineDragIndicator />

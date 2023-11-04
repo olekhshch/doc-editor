@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import { ContentComponentType } from "../../../types"
 import { useAppDispatch } from "../../../app/hooks"
@@ -8,6 +8,7 @@ import {
   duplicateElement,
   insertColumn,
 } from "../../../features/documents/documentsSlice"
+import { CurrentThemeContext } from "../Editor"
 type props = {
   elementId: number
   elementType: ContentComponentType
@@ -18,6 +19,10 @@ const ElementMenu = ({ elementId, elementType }: props) => {
   const handleDuplicate = () => {
     dispatch(duplicateElement({ elementId, column: null }))
   }
+
+  //Styling
+
+  const { main, gray, lighter } = useContext(CurrentThemeContext)
 
   const ColumnsMenu = () => {
     const addLeft = () => {
@@ -64,7 +69,7 @@ const ElementMenu = ({ elementId, elementType }: props) => {
   }
 
   return (
-    <StyledMenu>
+    <StyledMenu $gray={gray} $lighter={lighter} $main={main}>
       <ul className="primary-menu">
         <li>Add element...</li>
         <div className="divider" />
@@ -86,9 +91,16 @@ const ElementMenu = ({ elementId, elementType }: props) => {
 
 export default ElementMenu
 
-const StyledMenu = styled.section`
+type styledProps = {
+  $main: string
+  $gray: string
+  $lighter: string
+}
+
+const StyledMenu = styled.section<styledProps>`
   position: absolute;
   z-index: 10;
+  color: var(--black);
 
   .primary-menu,
   .secondary-menu {
@@ -98,7 +110,7 @@ const StyledMenu = styled.section`
     transform: translateX(calc(var(--element-menu-width) + 14px));
     border-radius: 8px;
     font-size: var(--context-menu-size);
-    box-shadow: 0 0 6px var(--gray);
+    box-shadow: 0 0 8px ${(props) => props.$gray};
   }
 
   .primary-menu {
@@ -112,6 +124,7 @@ const StyledMenu = styled.section`
       calc(var(--editor-menu-li-height) * -1)
     );
     opacity: 0;
+    color: var(--black);
   }
 
   li[aria-label="columns"]:hover > ul {
@@ -126,16 +139,17 @@ const StyledMenu = styled.section`
 
   .divider {
     flex-basis: 2px;
-    background-color: var(--gray);
+    background-color: ${(props) => props.$gray};
   }
 
   li {
-    padding: 0 4px;
+    padding: 2px 4px;
     height: var(--editor-menu-li-height);
     cursor: pointer;
   }
 
   li:hover {
-    background-color: var(--gray);
+    background-color: ${(props) => props.$gray};
+    color: ${(props) => props.$main};
   }
 `

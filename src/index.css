@@ -7,7 +7,8 @@
   --main-darker: rgb(var(--main-darker0));
   --white: rgb(247, 240, 250);
   --black0: 93, 5, 147;
-  --black: rgb(var(--black0));
+  /* --black: rgb(var(--black0)); */
+  --black: rgb(20, 27, 30);
 
   --p-size: 22px;
   --h1-size: 72px;
@@ -97,3 +98,7 @@ button {
   height: 1em;
   
 } */
+
+.picker {
+  user-select: none;
+}

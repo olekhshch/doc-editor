@@ -1,8 +1,9 @@
-import React from "react"
+import React, { useContext, useMemo } from "react"
 import styled from "styled-components"
 import AddComponentsMenu from "./sidebarMenus/AddComponentsMenu"
 import DocNavigation from "./sidebarMenus/DocNavigation"
 import StylingMenu from "./sidebarMenus/StylingMenu"
+import { CurrentThemeContext } from "./Editor"
 export type sbTabOption = "Doc" | "Project" | "Add..." | "Style..."
 
 type props = {
@@ -20,7 +21,10 @@ const SbTabs = ({ options, activeIdx, setActiveIdx }: props) => {
     }
   }
 
-  const SbMenu = () => {
+  //Syling
+  const { main } = useContext(CurrentThemeContext)
+
+  const SbMenu = useMemo(() => {
     const activeOption = options[activeIdx]
     switch (activeOption) {
       case "Add...":
@@ -32,9 +36,10 @@ const SbTabs = ({ options, activeIdx, setActiveIdx }: props) => {
       default:
         return <span>Sb Menu</span>
     }
-  }
+  }, [activeIdx, options])
+
   return (
-    <StyledTabs>
+    <StyledTabs $main={main}>
       <div className="options flex">
         <button
           className={
@@ -53,21 +58,26 @@ const SbTabs = ({ options, activeIdx, setActiveIdx }: props) => {
           {secondOption}
         </button>
       </div>
-      <SbMenu />
+      {SbMenu}
     </StyledTabs>
   )
 }
 
 export default SbTabs
 
-const StyledTabs = styled.section`
+type styledProps = {
+  $main: string
+}
+
+const StyledTabs = styled.section<styledProps>`
   display: flex;
   flex-direction: column;
+  color: ${(props) => props.$main};
 
   .options {
     margin-bottom: 12px;
     display: flex;
-    border-bottom: 2px solid var(--main);
+    border-bottom: 2px solid ${(props) => props.$main};
     min-height: calc(1.2 * var(--h4-size));
   }
 

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useMemo, useContext } from "react"
 import { useAppSelector } from "../../../app/hooks"
 import styled from "styled-components"
 import {
@@ -6,11 +6,14 @@ import {
   DocContentComponent,
   HeadingElement,
 } from "../../../types"
+import { CurrentThemeContext } from "../Editor"
 
 const DocNavigation = () => {
   const { activeContent, activeDocumentId } = useAppSelector(
     (state) => state.documents,
   )
+
+  const { main } = useContext(CurrentThemeContext)
 
   const headings = useMemo<HeadingElement[]>(() => {
     if (activeDocumentId && activeContent) {
@@ -43,7 +46,7 @@ const DocNavigation = () => {
   }, [activeContent, activeDocumentId])
 
   return (
-    <StyledDocNav>
+    <StyledDocNav $main={main}>
       <ul className="doc-headings">
         {headings.map(({ level, content, orderIndex }) => (
           <li key={orderIndex} className={`heading-${level}`}>
@@ -57,7 +60,11 @@ const DocNavigation = () => {
 
 export default DocNavigation
 
-const StyledDocNav = styled.section`
+type styledProps = {
+  $main: string
+}
+
+const StyledDocNav = styled.section<styledProps>`
   max-width: 270px;
 
   .doc-headings {
@@ -66,7 +73,7 @@ const StyledDocNav = styled.section`
   }
 
   .doc-headings li:hover {
-    color: var(--main);
+    color: ${(props) => props.$main};
     cursor: pointer;
   }
 

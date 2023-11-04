@@ -9,7 +9,7 @@ import {
   useKeymap,
   useCommands,
 } from "@remirror/react"
-import { CurrentDocContext } from "../Editor"
+import { CurrentDocContext, CurrentThemeContext } from "../Editor"
 
 type props = {
   docTitle: string
@@ -42,6 +42,7 @@ const hooks = [
 
 const MainTitle = ({ docTitle }: props) => {
   console.log("MAIN TITLE RENDERED")
+  const { main } = useContext(CurrentThemeContext)
 
   const { manager, state } = useRemirror({
     content: docTitle,
@@ -49,7 +50,7 @@ const MainTitle = ({ docTitle }: props) => {
   })
 
   return (
-    <StyledDocTitle>
+    <StyledDocTitle $main={main} $underlined={true}>
       <Remirror manager={manager} initialContent={state} hooks={hooks} />
     </StyledDocTitle>
   )
@@ -57,9 +58,15 @@ const MainTitle = ({ docTitle }: props) => {
 
 export default React.memo(MainTitle)
 
-const StyledDocTitle = styled.h1`
+type styledProps = {
+  $main: string
+  $underlined: boolean
+}
+
+const StyledDocTitle = styled.h1<styledProps>`
   margin: 0 var(--editor-left-mg) 24px;
-  border-bottom: 4px solid var(--main);
+  border-bottom: 4px solid
+    ${(props) => (props.$underlined ? props.$main : "transparent")};
   font-family: "Roboto Condensed", sans-serif;
   font-size: var(--h1-size);
   font-weight: normal;

@@ -18,6 +18,8 @@ import { RemirrorJSON } from "remirror"
 import { removeElementFromArray } from "../../functions/removeElementFromArray"
 import addSeparator0 from "./separator/addSeparator"
 import setSeparatorColourAction from "./separator/setSeparatorColour"
+import addImageAction from "./image/addImage"
+import setImageWidthAction from "./image/setImageWidth"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -748,6 +750,9 @@ const documentsSlice = createSlice({
     addSeparator: addSeparator0,
     setColourForSeprator: setSeparatorColourAction,
 
+    addImage: addImageAction,
+    setImageWidth: setImageWidthAction,
+
     insertColumn: (
       state,
       { payload }: PayloadAction<{ elementId: number; side: "right" | "left" }>,
@@ -919,4 +924,6 @@ export const {
   duplicateElement,
   addSeparator,
   setColourForSeprator,
+  addImage,
+  setImageWidth,
 } = documentsSlice.actions

@@ -12,12 +12,14 @@ import { BsCardText } from "react-icons/bs"
 import { ImTable } from "react-icons/im"
 import { IconContext } from "react-icons"
 import { CgFormatSeparator } from "react-icons/cg"
-import { CurrentThemeContext } from "../Editor"
+import { CurrentThemeContext, MenuState } from "../Editor"
 
 const AddComponentsMenu = () => {
   const { beginsWithTitle, disableElementsAdding } = useAppSelector(
     (state) => state.documents,
   )
+
+  const { setPopUpFor } = useContext(MenuState)
   const dispatch = useAppDispatch()
 
   const handleShowTitleChange = (e: ChangeEvent) => {
@@ -35,6 +37,10 @@ const AddComponentsMenu = () => {
 
   const addSeparatorEl = () => {
     dispatch(addSeparator({}))
+  }
+
+  const addImageEl = () => {
+    setPopUpFor("new_image")
   }
 
   //Styling
@@ -73,6 +79,7 @@ const AddComponentsMenu = () => {
               <button
                 className="constructor-btn"
                 disabled={disableElementsAdding}
+                onClick={addImageEl}
               >
                 <span className="icon">
                   <BiImage />

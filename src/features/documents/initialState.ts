@@ -1,7 +1,6 @@
 import {
   DocumentContent,
   DocumentPreviewInterface,
-  HeadingElement,
   ParagraphElement,
 } from "../../types"
 

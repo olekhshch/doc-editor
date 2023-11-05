@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useContext } from "react"
 import styled from "styled-components"
-import { useAppDispatch } from "../../../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import { renameDoc } from "../../../features/documents/documentsSlice"
 import {
   useRemirror,
@@ -10,6 +10,8 @@ import {
   useCommands,
 } from "@remirror/react"
 import { CurrentDocContext, CurrentThemeContext } from "../Editor"
+import { rgbColour } from "../../../types"
+import { rgbObjToString } from "../../../functions/rgbObjToString"
 
 type props = {
   docTitle: string
@@ -43,6 +45,9 @@ const hooks = [
 const MainTitle = ({ docTitle }: props) => {
   console.log("MAIN TITLE RENDERED")
   const { main } = useContext(CurrentThemeContext)
+  const {
+    main_title: { text_colour, underlined },
+  } = useAppSelector((state) => state.styling)
 
   const { manager, state } = useRemirror({
     content: docTitle,
@@ -50,7 +55,11 @@ const MainTitle = ({ docTitle }: props) => {
   })
 
   return (
-    <StyledDocTitle $main={main} $underlined={true}>
+    <StyledDocTitle
+      $main={main}
+      $underlined={underlined}
+      $text_colour={text_colour}
+    >
       <Remirror manager={manager} initialContent={state} hooks={hooks} />
     </StyledDocTitle>
   )
@@ -60,6 +69,7 @@ export default React.memo(MainTitle)
 
 type styledProps = {
   $main: string
+  $text_colour?: rgbColour
   $underlined: boolean
 }
 
@@ -70,6 +80,9 @@ const StyledDocTitle = styled.h1<styledProps>`
   font-family: "Roboto Condensed", sans-serif;
   font-size: var(--h1-size);
   font-weight: normal;
+
+  color: ${(props) =>
+    props.$text_colour ? `rgb(${rgbObjToString(props.$text_colour)})` : "auto"};
 
   //remirror
   white-space: pre-wrap;

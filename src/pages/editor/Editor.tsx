@@ -3,7 +3,7 @@ import styled from "styled-components"
 import LeftSidebar from "./LeftSidebar"
 import Canvas from "./Canvas"
 import RightSidebar from "./RightSidebar"
-import { useLoaderData, useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import {
   cacheContent,
@@ -11,12 +11,12 @@ import {
   setActiveElementId,
   setDocAsCurrent,
 } from "../../features/documents/documentsSlice"
-import { DocumentPreviewInterface, rgbColour } from "../../types"
+import { DocumentPreviewInterface } from "../../types"
 import Loading from "../../Loading"
-import MainToolbar from "./MainToolbar"
 import { screenwidth_editor } from "../../screenwidth_treshholds"
 import { rgbObjToString } from "../../functions/rgbObjToString"
-import { ColourTheme, ThemeName } from "../../features/styling/initialState"
+import { ColourTheme } from "../../features/styling/initialState"
+import PopUpWindow from "./PopUpWindow"
 
 export const CurrentDocContext = createContext<
   DocumentPreviewInterface | undefined
@@ -29,11 +29,15 @@ export const CurrentThemeContext = createContext({
   name: "violet",
 })
 
+type popUpWindow = "new_image" | "doc_info"
+
 interface EditorMenuState {
   elementMenuId: number | null
   setElementMenuId: (id: number | null) => void
   showLeftSb: boolean
   showRightSb: boolean
+  popUpFor: popUpWindow | null
+  setPopUpFor: (a: popUpWindow | null) => void
 }
 
 export const MenuState = createContext<EditorMenuState>({
@@ -41,6 +45,8 @@ export const MenuState = createContext<EditorMenuState>({
   setElementMenuId: (id) => {},
   showLeftSb: true,
   showRightSb: true,
+  popUpFor: "new_image",
+  setPopUpFor: (a) => {},
 })
 
 const Editor = () => {
@@ -75,13 +81,6 @@ const Editor = () => {
     setThemeObj(themeToRgb(currentTheme))
   }, [activeTheme, themes])
 
-  // const activeThemeObj = useMemo(() => {
-  //   return (
-  //     themes.find((theme) => theme.name === activeTheme) ??
-  //     themes.find((theme) => theme.name === "violet")!
-  //   )
-  // }, [activeTheme, themes])
-
   const themeContextValue = useMemo(() => {
     const activeThemeObj = themes.find((theme) => theme.name === activeTheme)!
     return {
@@ -96,12 +95,17 @@ const Editor = () => {
     DocumentPreviewInterface | undefined
   >(undefined)
 
+  //Editor additional windows and menus
+
   const [elementMenuId, setElementMenuId] = useState<number | null>(null)
+  const [popUpFor, setPopUpFor] = useState<popUpWindow | null>(null)
   const menuContextValue: EditorMenuState = {
     elementMenuId,
     setElementMenuId,
     showLeftSb,
     showRightSb,
+    popUpFor,
+    setPopUpFor,
   }
   const dispatch = useAppDispatch()
 
@@ -167,6 +171,7 @@ const Editor = () => {
             <Canvas />
             {showRightSb && <RightSidebar />}
           </StyledEditorPage>
+          {popUpFor !== null && <PopUpWindow />}
         </CurrentThemeContext.Provider>
       </MenuState.Provider>
     </CurrentDocContext.Provider>

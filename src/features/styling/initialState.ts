@@ -6,8 +6,8 @@ export interface StylingState {
   stylingOptions: stylingOrderState
   general: GeneralStyling
   main_title: {
-    font_colour: string
-    underline: null | string //if !== null => underline colour
+    text_colour?: rgbColour
+    underlined: boolean
   }
 }
 
@@ -32,6 +32,18 @@ export const initialState: StylingState = {
       gray: { r: 182, g: 186, b: 222 },
       lighter: { r: 226, g: 229, b: 255 },
     },
+    {
+      name: "red",
+      main: { r: 244, g: 67, b: 131 },
+      gray: { r: 250, g: 177, b: 204 },
+      lighter: { r: 255, g: 224, b: 235 },
+    },
+    {
+      name: "turquoise",
+      main: { r: 51, g: 225, b: 249 },
+      gray: { r: 178, g: 232, b: 239 },
+      lighter: { r: 224, g: 251, b: 255 },
+    },
   ],
   activeTheme: "violet",
   stylingOptions: stylingOptionsState0,
@@ -44,8 +56,7 @@ export const initialState: StylingState = {
     main_colour: { title: "Main colour", colour: { r: 153, g: 0, b: 224 } },
   },
   main_title: {
-    font_colour: "main",
-    underline: "main",
+    underlined: true,
   },
 }
 
@@ -66,7 +77,7 @@ export type GeneralStyling = {
   }
 }
 
-export type ThemeName = "violet" | "blue" | "red"
+export type ThemeName = "violet" | "blue" | "red" | "yellow" | "turquoise"
 
 export interface ColourTheme {
   name: ThemeName

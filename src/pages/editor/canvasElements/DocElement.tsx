@@ -3,6 +3,7 @@ import {
   ColumnsElement,
   DocContentComponent,
   HeadingElement,
+  ImageElement,
   ParagraphElement,
   SeparatorElement,
 } from "../../../types"
@@ -20,6 +21,7 @@ import { CurrentThemeContext, MenuState } from "../Editor"
 import ColumnsDocElement from "./ColumnsDocElement"
 import TextBlockEl from "./TextBlockEl"
 import SepratorEl from "./SepratorEl"
+import ImageEl from "./ImageEl"
 
 type props = {
   docElementObj: DocContentComponent | ColumnsElement
@@ -46,6 +48,11 @@ const DocElement = ({ docElementObj, column }: props) => {
     if (type === "separator") {
       const separatorObj = docElementObj as SeparatorElement
       return <SepratorEl separatorObj={separatorObj} column={column} />
+    }
+
+    if (type === "image") {
+      const imageElObj = docElementObj as ImageElement
+      return <ImageEl imageElObj={imageElObj} column={column} />
     }
     return <>element</>
   }, [docElementObj, type, column])

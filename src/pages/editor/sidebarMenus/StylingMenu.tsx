@@ -6,11 +6,16 @@ import { StyledSection } from "./StyledSection"
 import StylingHeadings from "./StylingHeadings"
 import StylingTextBlocks from "./StylingTextBlocks"
 import StylingMainTitle from "./StylingMainTitle"
-import { GeneralParam } from "../../../features/styling/initialState"
+import {
+  GeneralParam,
+  stylingOption,
+} from "../../../features/styling/initialState"
 import { IconContext } from "react-icons"
 import { CurrentThemeContext } from "../Editor"
 
 interface stylingContext {
+  active_styling_section: stylingOption | null
+  set_active_styling_section: (st: stylingOption | null) => void
   general_all_params: GeneralParam[]
   general_active_param_idx: number
   set_general_active_param: (i: number) => void
@@ -19,6 +24,8 @@ interface stylingContext {
 const general_all_params: GeneralParam[] = ["doc_bg_colour", "font_colour"]
 
 export const StylingParamsContext = createContext<stylingContext>({
+  active_styling_section: "general",
+  set_active_styling_section: (st) => {},
   general_all_params: ["doc_bg_colour", "font_colour", "main_colour"],
   general_active_param_idx: 0,
   set_general_active_param: (idx) => {},
@@ -26,9 +33,13 @@ export const StylingParamsContext = createContext<stylingContext>({
 
 const StylingMenu = () => {
   const { main } = useContext(CurrentThemeContext)
+  const [active_styling_section, set_active_styling_section] =
+    useState<stylingOption | null>("general")
   const [generalParamIdx, setGeneralParamIdx] = useState<number>(0)
 
   const defaultContextValue: stylingContext = {
+    active_styling_section,
+    set_active_styling_section,
     general_all_params,
     general_active_param_idx: generalParamIdx,
     set_general_active_param: setGeneralParamIdx,
@@ -38,10 +49,14 @@ const StylingMenu = () => {
     <IconContext.Provider value={{ color: main, size: "20" }}>
       <StyledList>
         <StylingParamsContext.Provider value={defaultContextValue}>
-          <StylingGeneral collapsed={false} />
-          <StylingMainTitle collapsed={true} />
-          <StylingHeadings collapsed={true} />
-          <StylingTextBlocks collapsed={true} />
+          <StylingGeneral collapsed={active_styling_section !== "general"} />
+          <StylingMainTitle
+            collapsed={active_styling_section !== "main_title"}
+          />
+          <StylingHeadings collapsed={active_styling_section !== "headings"} />
+          <StylingTextBlocks
+            collapsed={active_styling_section !== "text_blocks"}
+          />
         </StylingParamsContext.Provider>
       </StyledList>
     </IconContext.Provider>

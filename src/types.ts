@@ -26,6 +26,7 @@ export type DocContentComponent =
   | HeadingElement
   | ParagraphElement
   | SeparatorElement
+  | ImageElement
 
 export type ContentComponentType =
   | "heading"
@@ -75,4 +76,13 @@ export type rgbColour = {
   r: number
   g: number
   b: number
+}
+
+export interface ImageElement extends BasicComponent {
+  type: "image"
+  src: string
+  description: string
+  decription_position: "top" | "bottom" | "left" | "right"
+  width: undefined | number
+  left_margin: number
 }

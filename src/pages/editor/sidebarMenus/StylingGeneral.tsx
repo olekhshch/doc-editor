@@ -47,6 +47,7 @@ const StylingGeneral = ({ collapsed }: props) => {
     general_all_params,
     general_active_param_idx,
     set_general_active_param,
+    set_active_styling_section,
   } = useContext(StylingParamsContext)
 
   const activeParam = useMemo(
@@ -54,39 +55,21 @@ const StylingGeneral = ({ collapsed }: props) => {
     [general_active_param_idx, general_all_params],
   )
 
-  const generalParameters: GeneralParam[] = useMemo(() => {
-    return Object.keys(general) as GeneralParam[]
-  }, [general])
-
-  // const [bgColour, setBgColour] = useState<rgbColour>(doc_bg_colour.colour)
-  const [fontColour, setFontColour] = useState<rgbColour>(font_colour.colour)
-  const [dragging, setDragging] = useState(false)
-
   const debauncedBgValue = useDebounce(doc_bg_colour.colour, 70)
   const debauncedFontValue = useDebounce(font_colour.colour, 70)
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setDragging(true)
-  }
-
-  const handleMouseUp = (e: React.MouseEvent) => {
-    setDragging(false)
-  }
-
   useEffect(() => {
-    if (!dragging) {
-      switch (activeParam) {
-        case "doc_bg_colour":
-          dispatch(setGeneralBg(debauncedBgValue))
-          break
-        case "font_colour":
-          dispatch(setGeneralFontColour(debauncedFontValue))
-          break
-        default:
-          break
-      }
+    switch (activeParam) {
+      case "doc_bg_colour":
+        dispatch(setGeneralBg(debauncedBgValue))
+        break
+      case "font_colour":
+        dispatch(setGeneralFontColour(debauncedFontValue))
+        break
+      default:
+        break
     }
-  }, [debauncedBgValue, dispatch, dragging, debauncedBgValue])
+  }, [debauncedBgValue, dispatch, activeParam, debauncedFontValue])
 
   const setNextParameter = useCallback(() => {
     if (general_active_param_idx === general_all_params.length - 1) {
@@ -150,7 +133,10 @@ const StylingGeneral = ({ collapsed }: props) => {
 
   return (
     <StyledSection $gray={gray} $main={main}>
-      <div className="title">
+      <div
+        className="title"
+        onClick={() => set_active_styling_section(collapsed ? "general" : null)}
+      >
         <h4>General</h4>
       </div>
       {!collapsed && (
@@ -160,11 +146,6 @@ const StylingGeneral = ({ collapsed }: props) => {
           <label className="param-selector">
             <span>Main colour:</span>
             <Swatches />
-            {themes.map((theme) => (
-              <button onClick={() => dispatch(setTheme(theme.name))}>
-                {theme.name}
-              </button>
-            ))}
           </label>
         </section>
       )}

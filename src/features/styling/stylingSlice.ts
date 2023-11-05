@@ -13,14 +13,26 @@ const stylingSlice = createSlice({
       state.general.font_colour.colour = payload
     },
     setTheme: (state, { payload }: PayloadAction<ThemeName>) => {
-      console.log("PAYLOAD: " + payload)
       state.activeTheme = payload
-      console.log("THEME REDUX: " + state.activeTheme)
+    },
+    toggleTitleUnderline: (state) => {
+      state.main_title.underlined = !state.main_title.underlined
+    },
+    setMainTitleTextColour: (
+      state,
+      { payload }: PayloadAction<rgbColour | undefined>,
+    ) => {
+      state.main_title.text_colour = payload
     },
   },
 })
 
 export default stylingSlice.reducer
 
-export const { setGeneralBg, setGeneralFontColour, setTheme } =
-  stylingSlice.actions
+export const {
+  setGeneralBg,
+  setGeneralFontColour,
+  setTheme,
+  toggleTitleUnderline,
+  setMainTitleTextColour,
+} = stylingSlice.actions

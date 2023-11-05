@@ -88,7 +88,7 @@ const StyledTabs = styled.section<styledProps>`
     background: none;
     border: none;
     font-size: var(--h4-size);
-    color: var(--main);
+    color: ${(props) => props.$main};
   }
 
   .active-btn {

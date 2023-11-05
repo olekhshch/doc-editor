@@ -44,6 +44,7 @@ export const StyledSection = styled.section<styledProps>`
   }
 
   .param-selector span {
+    margin: 0 4px;
     flex-grow: 1;
     letter-spacing: 1px;
   }

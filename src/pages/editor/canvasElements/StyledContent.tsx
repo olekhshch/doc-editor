@@ -16,6 +16,7 @@ export default styled.article<styledProps>`
 
   .doc-element-toolbar {
     top: -16px;
+    left: 8px;
   }
 
   &:hover {

@@ -1,11 +1,7 @@
-import React from "react"
+import React, { useMemo } from "react"
 import styled from "styled-components"
 import StyledElementToolbar from "./StyledElementToolbar"
-import {
-  availableSwatches,
-  SeparatorElement,
-  SwatchesColour,
-} from "../../../types"
+import { SeparatorElement, SwatchesColour } from "../../../types"
 import { HiDuplicate } from "react-icons/hi"
 import { FaTrash } from "react-icons/fa"
 import { useAppDispatch } from "../../../app/hooks"
@@ -14,6 +10,9 @@ import {
   duplicateElement,
   setColourForSeprator,
 } from "../../../features/documents/documentsSlice"
+import Swatches from "../Swatches"
+import { ThemeName, themes } from "../../../features/styling/initialState"
+import { rgbObjToString } from "../../../functions/rgbObjToString"
 
 type props = {
   separatorObj: SeparatorElement
@@ -22,6 +21,14 @@ type props = {
 const SepratorEl = ({ separatorObj, column }: props) => {
   const dispatch = useAppDispatch()
   const { _id, colour, line, width } = separatorObj
+
+  const rgbColour = useMemo(() => {
+    const matchingTheme = themes.find((theme) => theme.name === colour)
+    return (
+      matchingTheme?.main ??
+      themes.find((theme) => theme.name === "violet")!.main
+    )
+  }, [colour])
 
   const Toolbar = () => {
     const handleDuplicate = () => {
@@ -32,7 +39,7 @@ const SepratorEl = ({ separatorObj, column }: props) => {
       dispatch(deleteElement({ elementId: _id, column }))
     }
 
-    const setColour = (colour: SwatchesColour) => {
+    const setColour = (colour: ThemeName) => {
       dispatch(
         setColourForSeprator({ elementId: _id, column, newColour: colour }),
       )
@@ -42,17 +49,7 @@ const SepratorEl = ({ separatorObj, column }: props) => {
       <StyledElementToolbar>
         <>
           <div className="toolbar-section">
-            {availableSwatches.map((colour) => {
-              return (
-                <button
-                  key={colour}
-                  className="element-toolbar-btn colour-swatch"
-                  onClick={() => setColour(colour)}
-                >
-                  <div style={{ backgroundColor: `var(${colour})` }} />
-                </button>
-              )
-            })}
+            <Swatches handleChange={setColour} activeThemeName={colour} />
           </div>
           <div className="toolbar-section">
             <button
@@ -77,7 +74,7 @@ const SepratorEl = ({ separatorObj, column }: props) => {
   return (
     <>
       <Toolbar />
-      <StyledSeparator $width={width} $colour={colour} />
+      <StyledSeparator $width={width} $colour={rgbObjToString(rgbColour)} />
     </>
   )
 }
@@ -93,5 +90,5 @@ const StyledSeparator = styled.div<styledProps>`
   margin: 8px 0;
   width: 100%;
   height: ${(props) => props.$width}px;
-  background-color: var(${(props) => props.$colour});
+  background-color: rgb(${(props) => props.$colour});
 `

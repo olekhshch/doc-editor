@@ -1,4 +1,5 @@
 import { RemirrorJSON } from "remirror"
+import { ThemeName } from "./features/styling/initialState"
 
 export interface ProjectInterface {
   _id: number
@@ -65,12 +66,12 @@ export interface SeparatorElement extends BasicComponent {
   colour: SwatchesColour
 }
 
-export type SwatchesColour = "--main" | "--black" | "--white"
-export const availableSwatches: SwatchesColour[] = [
-  "--black",
-  "--main",
-  "--white",
-]
+export type SwatchesColour = ThemeName //same colours as main theme colors
+// export const availableSwatches: SwatchesColour[] = [
+//   "--black",
+//   "--main",
+//   "--white",
+// ]
 
 export type rgbColour = {
   r: number
@@ -82,7 +83,8 @@ export interface ImageElement extends BasicComponent {
   type: "image"
   src: string
   description: string
-  decription_position: "top" | "bottom" | "left" | "right"
+  description_position: "top" | "bottom" | "left" | "right"
+  showDescription: boolean
   width: undefined | number
   left_margin: number
 }

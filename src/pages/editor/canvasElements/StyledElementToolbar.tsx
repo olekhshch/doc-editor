@@ -24,6 +24,7 @@ type styledProps = {
 
 const StyledToolbar = styled.div<styledProps>`
   position: absolute;
+  z-index: 100;
   display: flex;
   justify-content: left;
   gap: 12px;

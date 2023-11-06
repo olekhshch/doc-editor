@@ -18,33 +18,35 @@ const stylingOptionsState0: stylingOrderState = [
   { option: "text_blocks", collapsed: true },
 ]
 
+export const themes: ColourTheme[] = [
+  {
+    name: "violet",
+    main: { r: 153, g: 0, b: 224 },
+    gray: { r: 217, g: 200, b: 228 },
+    lighter: { r: 167, g: 59, b: 234 },
+  },
+  {
+    name: "blue",
+    main: { r: 52, g: 72, b: 248 },
+    gray: { r: 182, g: 186, b: 222 },
+    lighter: { r: 226, g: 229, b: 255 },
+  },
+  {
+    name: "red",
+    main: { r: 244, g: 67, b: 131 },
+    gray: { r: 250, g: 177, b: 204 },
+    lighter: { r: 255, g: 224, b: 235 },
+  },
+  {
+    name: "turquoise",
+    main: { r: 51, g: 225, b: 249 },
+    gray: { r: 178, g: 232, b: 239 },
+    lighter: { r: 224, g: 251, b: 255 },
+  },
+]
+
 export const initialState: StylingState = {
-  themes: [
-    {
-      name: "violet",
-      main: { r: 153, g: 0, b: 224 },
-      gray: { r: 217, g: 200, b: 228 },
-      lighter: { r: 167, g: 59, b: 234 },
-    },
-    {
-      name: "blue",
-      main: { r: 52, g: 72, b: 248 },
-      gray: { r: 182, g: 186, b: 222 },
-      lighter: { r: 226, g: 229, b: 255 },
-    },
-    {
-      name: "red",
-      main: { r: 244, g: 67, b: 131 },
-      gray: { r: 250, g: 177, b: 204 },
-      lighter: { r: 255, g: 224, b: 235 },
-    },
-    {
-      name: "turquoise",
-      main: { r: 51, g: 225, b: 249 },
-      gray: { r: 178, g: 232, b: 239 },
-      lighter: { r: 224, g: 251, b: 255 },
-    },
-  ],
+  themes,
   activeTheme: "violet",
   stylingOptions: stylingOptionsState0,
   general: {

@@ -18,6 +18,7 @@ const AddComponentsMenu = () => {
   const { beginsWithTitle, disableElementsAdding } = useAppSelector(
     (state) => state.documents,
   )
+  const { activeTheme } = useAppSelector((state) => state.styling)
 
   const { setPopUpFor } = useContext(MenuState)
   const dispatch = useAppDispatch()
@@ -36,7 +37,7 @@ const AddComponentsMenu = () => {
   }
 
   const addSeparatorEl = () => {
-    dispatch(addSeparator({}))
+    dispatch(addSeparator({ currentTheme: activeTheme }))
   }
 
   const addImageEl = () => {

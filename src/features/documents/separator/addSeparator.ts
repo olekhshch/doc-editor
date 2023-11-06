@@ -2,6 +2,7 @@ import { PayloadAction } from "@reduxjs/toolkit"
 import { DocumentsState } from "../initialState"
 import { SeparatorElement } from "../../../types"
 import { insertElementIntoArray } from "../../../functions/insertElementIntoArray"
+import { ThemeName } from "../../styling/initialState"
 
 const addSeparator = (
   state: DocumentsState,
@@ -9,6 +10,7 @@ const addSeparator = (
     payload,
   }: PayloadAction<{
     afterElementId?: number | [number, number, "left" | "right"]
+    currentTheme: ThemeName
   }>,
 ) => {
   if (state.activeContent) {
@@ -17,7 +19,7 @@ const addSeparator = (
       _id: separatorId,
       type: "separator",
       width: 10,
-      colour: "--main",
+      colour: payload.currentTheme,
       line: "normal",
       orderIndex: 1000,
     }

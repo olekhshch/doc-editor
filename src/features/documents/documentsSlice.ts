@@ -20,6 +20,7 @@ import addSeparator0 from "./separator/addSeparator"
 import setSeparatorColourAction from "./separator/setSeparatorColour"
 import addImageAction from "./image/addImage"
 import setImageWidthAction from "./image/setImageWidth"
+import setImageDescriptionAction from "./image/setImageDescription"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -752,6 +753,7 @@ const documentsSlice = createSlice({
 
     addImage: addImageAction,
     setImageWidth: setImageWidthAction,
+    setImageDescription: setImageDescriptionAction,
 
     insertColumn: (
       state,
@@ -926,4 +928,5 @@ export const {
   setColourForSeprator,
   addImage,
   setImageWidth,
+  setImageDescription,
 } = documentsSlice.actions

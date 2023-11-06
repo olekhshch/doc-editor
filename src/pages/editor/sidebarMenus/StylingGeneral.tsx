@@ -25,7 +25,7 @@ import { rgbObjToString } from "../../../functions/rgbObjToString"
 import { GeneralParam } from "../../../features/styling/initialState"
 import { COLORS } from "remirror/extensions"
 import { StylingParamsContext } from "./StylingMenu"
-import Swatches from "./Swatches"
+import Swatches from "../Swatches"
 import { CurrentThemeContext } from "../Editor"
 
 type props = {

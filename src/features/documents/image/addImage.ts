@@ -20,10 +20,11 @@ const addImageAction = (
       type: "image",
       src: payload.src,
       description: "",
-      decription_position: "bottom",
+      description_position: "bottom",
+      showDescription: false,
       orderIndex: 10000,
       width: undefined,
-      left_margin: 20,
+      left_margin: 0,
     }
 
     const insertAfterId = payload.afterElementId

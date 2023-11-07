@@ -32,6 +32,7 @@ import styled from "styled-components"
 import "remirror/styles/theme.css"
 import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
+import useDebaunce from "../../../app/useDebaunce"
 // import "remirror/styles/all.css"
 
 type props = {
@@ -63,6 +64,20 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
   const { setElementMenuId } = useContext(MenuState)
   const [focused, setFocused] = useState(true)
 
+  const [currentContent, setCurrentContent] = useState(content)
+
+  const debouncedContent = useDebaunce(currentContent, 1000)
+
+  useEffect(() => {
+    dispatch(
+      setParagraphContent({
+        column,
+        newContentArray: debouncedContent,
+        elementId: _id,
+      }),
+    )
+  }, [debouncedContent, dispatch])
+
   useEffect(() => {
     setFocused(false)
   }, [])
@@ -90,7 +105,7 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
     extensions,
     content: {
       type: "doc",
-      content,
+      content: currentContent,
     },
   })
 
@@ -205,9 +220,10 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
             const { state } = props
             const docJSON: { doc: any } = state.toJSON()
             const newContent = docJSON.doc.content
-            dispatch(
-              setParagraphContent({ column, newContentArray: newContent }),
-            )
+            // dispatch(
+            //   setParagraphContent({ column, newContentArray: newContent }),
+            // )
+            setCurrentContent(newContent)
           }}
         >
           <Toolbar />

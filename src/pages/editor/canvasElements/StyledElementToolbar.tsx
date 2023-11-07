@@ -73,4 +73,12 @@ const StyledToolbar = styled.div<styledProps>`
     height: 0.8em;
     border: 1px solid ${(props) => props.$gray};
   }
+
+  input[type="range"] {
+    margin: 4px 2px;
+    -webkit-appearance: none;
+    background-color: ${(props) => props.$main};
+    width: 100px;
+    height: 6px;
+  }
 `

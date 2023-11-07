@@ -21,6 +21,7 @@ import setSeparatorColourAction from "./separator/setSeparatorColour"
 import addImageAction from "./image/addImage"
 import setImageWidthAction from "./image/setImageWidth"
 import setImageDescriptionAction from "./image/setImageDescription"
+import setSeparatorWidthAction from "./separator/setSeparatorWidth"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -750,6 +751,7 @@ const documentsSlice = createSlice({
 
     addSeparator: addSeparator0,
     setColourForSeprator: setSeparatorColourAction,
+    setSeparatorWidth: setSeparatorWidthAction,
 
     addImage: addImageAction,
     setImageWidth: setImageWidthAction,
@@ -929,4 +931,5 @@ export const {
   addImage,
   setImageWidth,
   setImageDescription,
+  setSeparatorWidth,
 } = documentsSlice.actions

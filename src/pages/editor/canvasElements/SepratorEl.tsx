@@ -1,4 +1,4 @@
-import React, { useMemo } from "react"
+import React, { useMemo, useState, useEffect } from "react"
 import styled from "styled-components"
 import StyledElementToolbar from "./StyledElementToolbar"
 import { SeparatorElement, SwatchesColour } from "../../../types"
@@ -9,10 +9,12 @@ import {
   deleteElement,
   duplicateElement,
   setColourForSeprator,
+  setSeparatorWidth,
 } from "../../../features/documents/documentsSlice"
 import Swatches from "../Swatches"
 import { ThemeName, themes } from "../../../features/styling/initialState"
 import { rgbObjToString } from "../../../functions/rgbObjToString"
+import useDebaunce from "../../../app/useDebaunce"
 
 type props = {
   separatorObj: SeparatorElement
@@ -22,6 +24,16 @@ const SepratorEl = ({ separatorObj, column }: props) => {
   const dispatch = useAppDispatch()
   const { _id, colour, line, width } = separatorObj
 
+  const [currentWidth, setCurrentWidth] = useState(width)
+
+  const debouncedWidth = useDebaunce(currentWidth, 1000)
+
+  useEffect(() => {
+    dispatch(
+      setSeparatorWidth({ separatorId: _id, column, newWidth: debouncedWidth }),
+    )
+  }, [debouncedWidth, _id])
+
   const rgbColour = useMemo(() => {
     const matchingTheme = themes.find((theme) => theme.name === colour)
     return (
@@ -30,7 +42,7 @@ const SepratorEl = ({ separatorObj, column }: props) => {
     )
   }, [colour])
 
-  const Toolbar = () => {
+  const Toolbar = useMemo(() => {
     const handleDuplicate = () => {
       dispatch(duplicateElement({ elementId: _id, column }))
     }
@@ -45,11 +57,32 @@ const SepratorEl = ({ separatorObj, column }: props) => {
       )
     }
 
+    const handleWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = e.target
+      const valueNum = parseInt(value, 10)
+      // dispatch(
+      //   setSeparatorWidth({ separatorId: _id, column, newWidth: valueNum }),
+      // )
+      setCurrentWidth(valueNum)
+    }
+
     return (
       <StyledElementToolbar>
         <>
           <div className="toolbar-section">
             <Swatches handleChange={setColour} activeThemeName={colour} />
+          </div>
+          <div className="toolbar-section">
+            <input
+              title="Separator's width"
+              type="range"
+              min={1}
+              max={10}
+              step={1}
+              value={currentWidth}
+              onChange={handleWidthChange}
+            />
+            <span className="separator-width">{currentWidth}</span>
           </div>
           <div className="toolbar-section">
             <button
@@ -70,11 +103,15 @@ const SepratorEl = ({ separatorObj, column }: props) => {
         </>
       </StyledElementToolbar>
     )
-  }
+  }, [colour, currentWidth, dispatch, _id, column])
+
   return (
     <>
-      <Toolbar />
-      <StyledSeparator $width={width} $colour={rgbObjToString(rgbColour)} />
+      {Toolbar}
+      <StyledSeparator
+        $width={currentWidth}
+        $colour={rgbObjToString(rgbColour)}
+      />
     </>
   )
 }

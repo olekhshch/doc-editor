@@ -48,8 +48,8 @@ const DocNavigation = () => {
   return (
     <StyledDocNav $main={main}>
       <ul className="doc-headings">
-        {headings.map(({ level, content, orderIndex }) => (
-          <li key={orderIndex} className={`heading-${level}`}>
+        {headings.map(({ level, content, orderIndex, _id }) => (
+          <li key={_id} className={`heading-${level}`}>
             {content}
           </li>
         ))}

@@ -29,7 +29,7 @@ const AddComponentsMenu = () => {
   }
 
   const addHeadingEl = () => {
-    dispatch(addHeading({ level: 2 }))
+    dispatch(addHeading({ level: 2, column: null }))
   }
 
   const addParagraphEl = () => {

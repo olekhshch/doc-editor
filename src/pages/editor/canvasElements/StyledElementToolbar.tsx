@@ -32,14 +32,15 @@ const StyledToolbar = styled.div<styledProps>`
   /* gap: 24px; */
   font-size: var(--small-size);
   width: 90%;
-  min-width: 240px;
+  min-width: 400px;
 
   display: none;
 
   .toolbar-section,
   .toolbar-section-text-block {
     background-color: white;
-    border: 1px solid ${(props) => props.$main};
+    border: 1px solid ${(props) => props.$gray};
+    box-shadow: 0 0 6px ${(props) => props.$gray};
     border-radius: 8px;
     padding: 0;
     height: fit-content;

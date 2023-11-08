@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, useContext } from "react"
-import { HeadingElement } from "../../../types"
+import { HeadingElement, columnParam } from "../../../types"
 import { useAppDispatch } from "../../../app/hooks"
 import {
   deleteActiveElement,
@@ -27,10 +27,7 @@ const hooks = [
     const handleEnterPress = useCallback(
       (state: any) => {
         const newContent = getText(state)
-        if (newContent.trim() !== "") {
-          dispatch(setHeadingContent({ newContent }))
-        } else {
-          //if content is empty and Enter is pressed - delete heading as the current active element
+        if (newContent.trim() === "") {
           dispatch(deleteActiveElement())
         }
         return true
@@ -44,7 +41,7 @@ const hooks = [
 
 type props = {
   headingElementObj: HeadingElement
-  column: null | [number, "left" | "right"]
+  column: columnParam
 }
 
 const HeadingEl = ({ headingElementObj, column }: props) => {
@@ -149,7 +146,7 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
       const { getText } = props.helpers
       const newContent = getText(props)
       if (newContent.trim() !== "") {
-        dispatch(setHeadingContent({ headingId: _id, newContent }))
+        dispatch(setHeadingContent({ headingId: _id, newContent, column }))
       }
     }
 

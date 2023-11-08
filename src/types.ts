@@ -88,3 +88,5 @@ export interface ImageElement extends BasicComponent {
   width: undefined | number
   left_margin: number
 }
+
+export type columnParam = null | [number, "left" | "right"]

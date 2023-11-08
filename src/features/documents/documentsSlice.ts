@@ -3,6 +3,7 @@ import {
   activeElementInColumn,
   initialState,
   initialParagraph,
+  DocumentsState,
 } from "./initialState"
 import {
   ColumnsElement,
@@ -22,6 +23,9 @@ import addImageAction from "./image/addImage"
 import setImageWidthAction from "./image/setImageWidth"
 import setImageDescriptionAction from "./image/setImageDescription"
 import setSeparatorWidthAction from "./separator/setSeparatorWidth"
+import addHeadingAction from "./heading/addHeading"
+import setHeadingLevelAction from "./heading/setHeadingLevel"
+import setHeadingContentAction from "./heading/setHeadingContent"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -109,186 +113,73 @@ const documentsSlice = createSlice({
       state.beginsWithTitle = !state.beginsWithTitle
     },
 
-    addHeading: (
-      state,
-      {
-        payload: { level, where },
-      }: PayloadAction<{
-        level: 1 | 2 | 3
-        where?: number | [number, number, "left" | "right"]
-      }>,
-    ) => {
-      let content = "Main heading"
-      switch (level) {
-        case 2:
-          content = "Medium heading"
-          break
-        case 3:
-        default:
-          content = "Small heading"
-          break
-      }
+    addHeading: addHeadingAction,
+    setHeadingLevel: setHeadingLevelAction,
+    setHeadingContent: setHeadingContentAction,
 
-      const currentActiveElId = where
-        ? where
-        : state.activeElementId ?? state.activeContent!.components.length
+    // setHeadingContent: (
+    //   state,
+    //   {
+    //     payload,
+    //   }: PayloadAction<{
+    //     headingId?: number
+    //     newContent: string
+    //   }>,
+    // ) => {
+    //   //checking if heading is a part of a column
+    //   const isPartOfAColumn = Array.isArray(state.activeElementId)
 
-      const _id = Math.round(Math.random() * 10000)
-      const newHeadingEl: HeadingElement = {
-        _id,
-        type: "heading",
-        content,
-        level,
-        orderIndex: 100,
-      }
+    //   //cb for map
+    //   const setNewContentCb =
+    //     (targetId: number) =>
+    //     (element: DocContentComponent | ColumnsElement) => {
+    //       if (element._id === targetId && element.type === "heading") {
+    //         const newValue =
+    //           payload.newContent.trim() !== ""
+    //             ? payload.newContent
+    //             : element.content
+    //         return { ...element, content: newValue } as HeadingElement
+    //       }
+    //       return element
+    //     }
 
-      if (!Array.isArray(currentActiveElId)) {
-        //insert as an separate element (not part of a column)
-        const activeEl = state.activeContent!.components.find(
-          (el) => el._id === currentActiveElId,
-        )
-        const orderIndex = activeEl ? activeEl.orderIndex : 0
-        const newElements = insertElementIntoArray(
-          newHeadingEl,
-          state.activeContent!.components,
-          orderIndex,
-        ) as (DocContentComponent | ColumnsElement)[]
-        state.activeContent!.components = newElements
-        state.activeElementId = _id
-      } else {
-        //heading will be inserted inside of a existing column
-        const [elementId, columnsElId, side] = currentActiveElId
+    //   //if heading is not part of a column
+    //   if (!isPartOfAColumn) {
+    //     const targetId = payload.headingId ?? (state.activeElementId as number)
 
-        const targetColumnsEl = state.activeContent!.components.find(
-          (el) => el._id === columnsElId && el.type === "columns",
-        ) as ColumnsElement | undefined
+    //     state.activeContent!.components = state.activeContent!.components.map(
+    //       (element) => setNewContentCb(targetId)(element),
+    //     )
+    //   } else {
+    //     //if heading is a part of a column
+    //     const [headingId, columnId, side] =
+    //       state.activeElementId as activeElementInColumn
 
-        if (targetColumnsEl) {
-          const { orderIndex } = targetColumnsEl[side].find(
-            (el) => el._id === elementId,
-          )!
-          const newSide = insertElementIntoArray(
-            newHeadingEl,
-            targetColumnsEl[side],
-            orderIndex,
-          )
-          const newColumnsEl: ColumnsElement = {
-            ...targetColumnsEl,
-            [side]: newSide,
-          }
+    //     //original column which contains heading
+    //     const targetColumn = state.activeContent!.components.find(
+    //       (el) => el._id === columnId && el.type === "columns",
+    //     ) as ColumnsElement | undefined
 
-          state.activeContent!.components = state.activeContent!.components.map(
-            (el) => {
-              if (el._id === columnsElId) {
-                return newColumnsEl
-              }
-              return el
-            },
-          )
-          state.activeElementId = [_id, columnsElId, side]
-        }
-      }
-      state.disableElementsAdding = false
-    },
+    //     if (targetColumn) {
+    //       //updated column
+    //       const newColumnsElement = {
+    //         ...targetColumn,
+    //         [side]: targetColumn[side].map((el) =>
+    //           setNewContentCb(headingId)(el),
+    //         ),
+    //       }
 
-    setHeadingLevel: (
-      state,
-      {
-        payload,
-      }: PayloadAction<{
-        newLevel: 1 | 2 | 3
-        headingElId: number
-        column: null | [number, "left" | "right"]
-      }>,
-    ) => {
-      const setNewLevelCb = (element: DocContentComponent) => {
-        if (element._id === payload.headingElId) {
-          return { ...element, level: payload.newLevel }
-        }
-        return element
-      }
-
-      state.activeContent!.components = state.activeContent!.components.map(
-        (component) => {
-          //if header is a part of a column
-          if (payload.column !== null) {
-            const [columnId, side] = payload.column
-
-            if (component._id === columnId && component.type === "columns") {
-              const updatedSide = component[side].map((el) => setNewLevelCb(el))
-              return { ...component, [side]: updatedSide }
-            }
-            return component
-          }
-          //if not part of a column
-          return setNewLevelCb(component as DocContentComponent)
-        },
-      )
-    },
-
-    setHeadingContent: (
-      state,
-      {
-        payload,
-      }: PayloadAction<{
-        headingId?: number
-        newContent: string
-      }>,
-    ) => {
-      //checking if heading is a part of a column
-      const isPartOfAColumn = Array.isArray(state.activeElementId)
-
-      //cb for map
-      const setNewContentCb =
-        (targetId: number) =>
-        (element: DocContentComponent | ColumnsElement) => {
-          if (element._id === targetId && element.type === "heading") {
-            const newValue =
-              payload.newContent.trim() !== ""
-                ? payload.newContent
-                : element.content
-            return { ...element, content: newValue } as HeadingElement
-          }
-          return element
-        }
-
-      //if heading is not part of a column
-      if (!isPartOfAColumn) {
-        const targetId = payload.headingId ?? (state.activeElementId as number)
-
-        state.activeContent!.components = state.activeContent!.components.map(
-          (element) => setNewContentCb(targetId)(element),
-        )
-      } else {
-        //if heading is a part of a column
-        const [headingId, columnId, side] =
-          state.activeElementId as activeElementInColumn
-
-        //original column which contains heading
-        const targetColumn = state.activeContent!.components.find(
-          (el) => el._id === columnId && el.type === "columns",
-        ) as ColumnsElement | undefined
-
-        if (targetColumn) {
-          //updated column
-          const newColumnsElement = {
-            ...targetColumn,
-            [side]: targetColumn[side].map((el) =>
-              setNewContentCb(headingId)(el),
-            ),
-          }
-
-          state.activeContent!.components = state.activeContent!.components.map(
-            (el) => {
-              if (el._id === columnId) {
-                return newColumnsElement
-              }
-              return el
-            },
-          )
-        }
-      }
-    },
+    //       state.activeContent!.components = state.activeContent!.components.map(
+    //         (el) => {
+    //           if (el._id === columnId) {
+    //             return newColumnsElement
+    //           }
+    //           return el
+    //         },
+    //       )
+    //     }
+    //   }
+    // },
 
     addParagraph: (
       state,

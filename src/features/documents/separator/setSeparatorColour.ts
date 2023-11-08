@@ -1,6 +1,10 @@
 import { PayloadAction } from "@reduxjs/toolkit"
 import { DocumentsState } from "../initialState"
-import { SeparatorElement, SwatchesColour } from "../../../types"
+import {
+  ColumnsElement,
+  SeparatorElement,
+  SwatchesColour,
+} from "../../../types"
 
 const setSeparatorColour = (
   state: DocumentsState,
@@ -29,6 +33,26 @@ const setSeparatorColour = (
 
         const { orderIndex } = targetSeparator
         state.activeContent.components[orderIndex] = newSeparator
+      } else {
+        //separator is a part of a column
+        const [columnId, side] = payload.column
+        const targetColumn = state.activeContent!.components.find(
+          (el) => el._id === columnId && el.type === "columns",
+        ) as ColumnsElement
+        const newSide = targetColumn[side].map((el) => {
+          if (el._id === payload.elementId && el.type === "separator") {
+            return { ...el, colour: payload.newColour }
+          }
+          return el
+        })
+        state.activeContent.components = state.activeContent.components.map(
+          (el) => {
+            if (el._id === columnId) {
+              return { ...el, [side]: newSide }
+            }
+            return el
+          },
+        )
       }
     } catch (e) {
       state.activeContent.components = oldElements

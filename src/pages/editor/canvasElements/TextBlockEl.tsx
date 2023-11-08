@@ -14,6 +14,9 @@ import {
   ItalicExtension,
   PlaceholderExtension,
   UnderlineExtension,
+  StrikeExtension,
+  BulletListExtension,
+  OrderedListExtension,
 } from "remirror/extensions"
 import StyledElementToolbar from "./StyledElementToolbar"
 import { MenuState } from "../Editor"
@@ -33,6 +36,7 @@ import "remirror/styles/theme.css"
 import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
 import useDebaunce from "../../../app/useDebaunce"
+import Swatches from "../Swatches"
 // import "remirror/styles/all.css"
 
 type props = {
@@ -81,6 +85,7 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
   useEffect(() => {
     setFocused(false)
   }, [])
+
   //DnD setup
   const [{ isDragging }, dragHandle, dragPreview] = useDrag({
     type: DnDTypes.ELEMENT,
@@ -97,6 +102,9 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
       new BoldExtension(),
       new ItalicExtension(),
       new UnderlineExtension(),
+      new StrikeExtension(),
+      new BulletListExtension(),
+      new OrderedListExtension(),
     ],
     [],
   )
@@ -131,6 +139,19 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
     const makeUnderline = () => {
       chain.toggleUnderline().focus().run()
     }
+
+    const makeStrike = () => {
+      chain.toggleStrike().focus().run()
+    }
+
+    const makeUnorderedList = () => {
+      chain.toggleBulletList().focus().run()
+    }
+
+    const makeOrderedList = () => {
+      chain.toggleOrderedList().focus().run()
+    }
+
     return (
       <StyledElementToolbar>
         <>
@@ -151,6 +172,18 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
             <button className="element-toolbar-btn" onClick={makeUnderline}>
               U
             </button>
+            <button className="element-toolbar-btn" onClick={makeStrike}>
+              S
+            </button>
+            <button className="element-toolbar-btn" onClick={makeUnorderedList}>
+              .L
+            </button>
+            <button className="element-toolbar-btn" onClick={makeOrderedList}>
+              1L
+            </button>
+          </div>
+          <div className="toolbar-section">
+            <button className="element-toolbar-btn">A</button>
           </div>
           <div className="toolbar-section">
             <button
@@ -253,5 +286,9 @@ const StyledTextContent = styled.div`
 
   .text-block > .toolbar-section {
     font-size: var(--small-size);
+  }
+
+  .text-block li {
+    margin-left: 24px;
   }
 `

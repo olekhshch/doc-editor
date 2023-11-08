@@ -15,7 +15,7 @@ export default styled.article<styledProps>`
   max-width: ${(props) => (props.$max_width ? "100%" : "auto")};
 
   .doc-element-toolbar {
-    top: -16px;
+    top: -20px;
     left: 8px;
   }
 

@@ -44,23 +44,23 @@ type props = {
   column: null | [number, "left" | "right"]
 }
 
-const hooks = [
-  () => {
-    const { getJSON } = useHelpers()
+// const hooks = [
+//   () => {
+//     const { getJSON } = useHelpers()
 
-    const handleSave = useCallback(
-      ({ state }: any) => {
-        const content = getJSON(state)
-        console.log(content.content)
+//     const handleSave = useCallback(
+//       ({ state }: any) => {
+//         const content = getJSON(state)
+//         console.log(content.content)
 
-        return true
-      },
-      [getJSON],
-    )
+//         return true
+//       },
+//       [getJSON],
+//     )
 
-    useKeymap("Mod-s", handleSave)
-  },
-]
+//     useKeymap("Mod-s", handleSave)
+//   },
+// ]
 
 const TextBlockEl = ({ textBlockObj, column }: props) => {
   const dispatch = useAppDispatch()
@@ -70,7 +70,7 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
 
   const [currentContent, setCurrentContent] = useState(content)
 
-  const debouncedContent = useDebaunce(currentContent, 1000)
+  const debouncedContent = useDebaunce(currentContent, 500)
 
   useEffect(() => {
     dispatch(
@@ -80,7 +80,7 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
         elementId: _id,
       }),
     )
-  }, [debouncedContent, dispatch])
+  }, [debouncedContent, dispatch, _id])
 
   useEffect(() => {
     setFocused(false)
@@ -247,7 +247,7 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
           initialContent={state}
           placeholder="Text block"
           classNames={["text-block"]}
-          hooks={hooks}
+          // hooks={hooks}
           autoFocus={focused}
           onChange={(props) => {
             const { state } = props

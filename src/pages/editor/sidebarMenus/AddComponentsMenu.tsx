@@ -33,7 +33,7 @@ const AddComponentsMenu = () => {
   }
 
   const addParagraphEl = () => {
-    dispatch(addParagraph({}))
+    dispatch(addParagraph({ column: null }))
   }
 
   const addSeparatorEl = () => {

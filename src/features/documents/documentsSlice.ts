@@ -6,12 +6,14 @@ import {
   DocumentsState,
 } from "./initialState"
 import {
+  BasicComponent,
   ColumnsElement,
   DocContentComponent,
   DocumentInterface,
   DocumentPreviewInterface,
   HeadingElement,
   ParagraphElement,
+  columnParam,
 } from "../../types"
 import { reoderArray } from "../../functions/reorderArray"
 import { insertElementIntoArray } from "../../functions/insertElementIntoArray"
@@ -28,6 +30,9 @@ import setHeadingLevelAction from "./heading/setHeadingLevel"
 import setHeadingContentAction from "./heading/setHeadingContent"
 import addTextBlockAction from "./textblock/addTextBlock"
 import setTextBlockContentAction from "./textblock/setTextBlockContent"
+import insertColumnAction from "./columns/insertColumn"
+import deleteColumnSideAction from "./columns/deleteColumnSide"
+import addElementsToState from "../../functions/addElementsToState"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -238,7 +243,7 @@ const documentsSlice = createSlice({
               //fixing order indexes
               const newSide = newSide0.map((el, idx) => ({
                 ...el,
-                orderIndex: idx,
+                // orderIndex: idx,
               })) as DocContentComponent[]
 
               //new ColumnsElement to replace the old one (with the old placement of element that was moved)
@@ -465,76 +470,8 @@ const documentsSlice = createSlice({
     setImageWidth: setImageWidthAction,
     setImageDescription: setImageDescriptionAction,
 
-    insertColumn: (
-      state,
-      { payload }: PayloadAction<{ elementId: number; side: "right" | "left" }>,
-    ) => {
-      if (state.activeContent) {
-        const newParagraphEl: ParagraphElement = {
-          ...initialParagraph,
-          _id: Math.round(Math.random() * 1000000),
-        }
-
-        state.activeContent.components = state.activeContent.components.map(
-          (element) => {
-            if (
-              element._id === payload.elementId &&
-              element.type !== "columns"
-            ) {
-              const { orderIndex } = element
-              if (payload.side === "left") {
-                const newElement: ColumnsElement = {
-                  _id: new Date().getMilliseconds(),
-                  orderIndex,
-                  type: "columns",
-                  left: [element],
-                  right: [newParagraphEl],
-                }
-                return newElement
-              }
-              const newElement: ColumnsElement = {
-                _id: new Date().getMilliseconds(),
-                orderIndex,
-                type: "columns",
-                left: [newParagraphEl],
-                right: [element],
-              }
-              return newElement
-            }
-            return element
-          },
-        )
-      }
-    },
-
-    deleteSideOfColumn: (
-      state,
-      {
-        payload,
-      }: PayloadAction<{ columnsElId: number; side: "left" | "right" }>,
-    ) => {
-      state.activeContent!.components = state.activeContent!.components.reduce(
-        (acc, element, idx) => {
-          if (
-            element._id === payload.columnsElId &&
-            element.type === "columns"
-          ) {
-            const remainingSide = payload.side === "left" ? "right" : "left"
-            const remainingElements = element[remainingSide]
-
-            return [...acc, ...remainingElements]
-          } else {
-            const newElement: DocContentComponent | ColumnsElement = {
-              ...element,
-              orderIndex: idx,
-            }
-            const newAcc = [...acc, newElement]
-            return newAcc
-          }
-        },
-        [] as (DocContentComponent | ColumnsElement)[],
-      )
-    },
+    insertColumn: insertColumnAction,
+    deleteSideOfColumn: deleteColumnSideAction,
 
     duplicateElement: (
       state,
@@ -542,7 +479,7 @@ const documentsSlice = createSlice({
         payload,
       }: PayloadAction<{
         elementId: number
-        column: null | [number, "left" | "right"]
+        column: columnParam
       }>,
     ) => {
       if (payload.column === null) {
@@ -554,18 +491,15 @@ const documentsSlice = createSlice({
         if (targetElement) {
           const duplicate: DocContentComponent | ColumnsElement = {
             ...targetElement,
-            _id: Math.round(Math.random() * 1000000),
+            _id: new Date().getTime(),
           }
           //inserting duplicate after the original
-          const newComponentsArray = insertElementIntoArray(
-            duplicate,
+          state.activeContent!.components = addElementsToState(
             state.activeContent!.components,
-            targetElement.orderIndex,
+            payload.elementId,
+            payload.column,
+            duplicate,
           ) as (DocContentComponent | ColumnsElement)[]
-          // fixing order indexes in the state array
-          state.activeContent!.components = newComponentsArray.map(
-            (el, idx) => ({ ...el, orderIndex: idx }),
-          )
         }
       } else {
         //element is a part of a column
@@ -575,6 +509,9 @@ const documentsSlice = createSlice({
         ) as ColumnsElement | undefined
 
         if (targetColumn) {
+          const targetColumnIdx = state.activeContent!.components.findIndex(
+            (el) => el._id === columnId && el.type === "columns",
+          )
           const targetElement = targetColumn[side].find(
             (el) => el._id === payload.elementId,
           ) as DocContentComponent | undefined
@@ -582,28 +519,18 @@ const documentsSlice = createSlice({
           if (targetElement) {
             const duplicate: DocContentComponent = {
               ...targetElement,
-              _id: new Date().getMilliseconds(),
+              _id: new Date().getTime(),
             }
-            const newSide0 = insertElementIntoArray(
-              duplicate,
+            const newSide = addElementsToState(
               targetColumn[side],
-              targetElement.orderIndex,
-            ) as DocContentComponent[]
-            //fixing order indexes
-            const newSide = newSide0.map((el, idx) => ({
-              ...el,
-              orderIndex: idx,
-            }))
+              payload.elementId,
+              null,
+              duplicate,
+            )
             const newColumn = { ...targetColumn, [side]: newSide }
 
             //replacing old columns with columns element with a duplicate
-            state.activeContent!.components =
-              state.activeContent!.components.map((el) => {
-                if (el._id === columnId) {
-                  return newColumn
-                }
-                return el
-              })
+            state.activeContent!.components[targetColumnIdx] = newColumn
           }
         }
       }

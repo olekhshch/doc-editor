@@ -13,23 +13,17 @@ const ColumnsDocElement = ({ columnsElement }: props) => {
   return (
     <StyledColumnsElement>
       <section className="column">
-        {left.map((element) => (
+        {left.map((element, idx) => (
           <div key={element._id}>
-            <DnDPlaceholder
-              indexBefore={element.orderIndex}
-              columnTarget={[_id, "left"]}
-            />
+            <DnDPlaceholder indexBefore={idx} columnTarget={[_id, "left"]} />
             <DocElement docElementObj={element} column={[_id, "left"]} />
           </div>
         ))}
       </section>
       <section className="column">
-        {right.map((element) => (
+        {right.map((element, idx) => (
           <div key={element._id}>
-            <DnDPlaceholder
-              indexBefore={element.orderIndex}
-              columnTarget={[_id, "right"]}
-            />
+            <DnDPlaceholder indexBefore={idx} columnTarget={[_id, "right"]} />
             <DocElement docElementObj={element} column={[_id, "right"]} />
           </div>
         ))}

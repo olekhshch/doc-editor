@@ -1,5 +1,7 @@
+import { BasicComponent } from "../types"
+
 export const reoderArray = (
-  array: { _id: number; orderIndex: number }[],
+  array: BasicComponent[],
   elementId: number,
   placementIndex: number,
 ) => {

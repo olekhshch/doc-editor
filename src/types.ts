@@ -39,7 +39,7 @@ export type ContentComponentType =
 export interface BasicComponent {
   _id: number
   type: ContentComponentType
-  orderIndex: number
+  // orderIndex: number
 }
 
 export interface HeadingElement extends BasicComponent {

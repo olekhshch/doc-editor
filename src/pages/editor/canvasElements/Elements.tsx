@@ -21,15 +21,12 @@ const Elements = () => {
 
   return (
     <StyledElementsList>
-      {components.map((element) => {
+      {components.map((element, idx) => {
         const { _id } = element
 
         return (
           <div key={_id} draggable>
-            <DnDPlaceholder
-              indexBefore={element.orderIndex}
-              columnTarget={null}
-            />
+            <DnDPlaceholder indexBefore={idx} columnTarget={null} />
             <Element docElementObj={element} column={null} />
           </div>
         )

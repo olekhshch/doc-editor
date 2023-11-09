@@ -55,7 +55,7 @@ function addElementsToState(
     }
   }
 
-  return elementsArrayCopy.map((el, idx) => ({ ...el, orderIndex: idx }))
+  return elementsArrayCopy
 }
 
 export default addElementsToState

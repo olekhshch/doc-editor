@@ -40,8 +40,5 @@ export const initialState: DocumentsState = {
 export const initialParagraph: ParagraphElement = {
   _id: 0,
   type: "paragraph",
-  content: [
-    { type: "paragraph", content: [{ type: "text", text: "initial text" }] },
-  ],
-  orderIndex: 0,
+  content: [{ type: "paragraph", content: [{ type: "text", text: " init" }] }],
 }

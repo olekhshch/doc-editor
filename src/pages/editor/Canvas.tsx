@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import MainTitle from "./canvasElements/MainTitle"
@@ -6,14 +6,11 @@ import Elements from "./canvasElements/Elements"
 import { CurrentDocContext, CurrentThemeContext } from "./Editor"
 import MainToolbar from "./MainToolbar"
 import { BiHide, BiShowAlt } from "react-icons/bi"
-import { GrFormViewHide } from "react-icons/gr"
 import { toggleBegingsWithTitle } from "../../features/documents/documentsSlice"
 import { IconContext } from "react-icons"
 
 const ContentCanvas = () => {
-  const { beginsWithTitle, activeDocumentId } = useAppSelector(
-    (state) => state.documents,
-  )
+  const { beginsWithTitle } = useAppSelector((state) => state.documents)
 
   const docContext = useContext(CurrentDocContext)
   const { main } = useContext(CurrentThemeContext)

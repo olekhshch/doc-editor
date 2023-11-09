@@ -6,6 +6,7 @@ import {
   ImageElement,
   ParagraphElement,
   SeparatorElement,
+  columnParam,
 } from "../../../types"
 import HeadingEl from "./HeadingEl"
 import styled from "styled-components"
@@ -15,7 +16,6 @@ import { IconContext } from "react-icons"
 import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
 import ElementMenu from "./ElementMenu"
-import { useAppDispatch } from "../../../app/hooks"
 import { setActiveElementId } from "../../../features/documents/documentsSlice"
 import { CurrentThemeContext, MenuState } from "../Editor"
 import ColumnsDocElement from "./ColumnsDocElement"
@@ -25,7 +25,7 @@ import ImageEl from "./ImageEl"
 
 type props = {
   docElementObj: DocContentComponent | ColumnsElement
-  column: null | [number, "left" | "right"]
+  column: columnParam
 }
 
 const DocElement = ({ docElementObj, column }: props) => {

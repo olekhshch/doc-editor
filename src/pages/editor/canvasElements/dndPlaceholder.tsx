@@ -5,15 +5,16 @@ import { DnDTypes } from "../../../DnDtypes"
 import { useAppDispatch } from "../../../app/hooks"
 import { moveElement } from "../../../features/documents/documentsSlice"
 import { CurrentThemeContext } from "../Editor"
+import { columnParam } from "../../../types"
 
 type props = {
   indexBefore: number
-  columnTarget: null | [number, "left" | "right"]
+  columnTarget: columnParam
 }
 
 type DragElementItem = {
   _id: number
-  columnSource: null | [number, "left" | "right"]
+  columnSource: columnParam
 }
 
 type DropCollected = {

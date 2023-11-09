@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react"
 import styled from "styled-components"
 import StyledElementToolbar from "./StyledElementToolbar"
-import { SeparatorElement, SwatchesColour } from "../../../types"
+import { SeparatorElement } from "../../../types"
 import { HiDuplicate } from "react-icons/hi"
 import { FaTrash } from "react-icons/fa"
 import { useAppDispatch } from "../../../app/hooks"

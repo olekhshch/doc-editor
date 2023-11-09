@@ -8,5 +8,5 @@ export function insertElementIntoArray<
     arrayCopy.splice(insertAfterIdx + 1, 0, element)
   }
 
-  return arrayCopy.map((el, idx) => ({ ...el, orderIndex: idx })) as Type[]
+  return arrayCopy as Type[]
 }

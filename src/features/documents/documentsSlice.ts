@@ -33,6 +33,7 @@ import setTextBlockContentAction from "./textblock/setTextBlockContent"
 import insertColumnAction from "./columns/insertColumn"
 import deleteColumnSideAction from "./columns/deleteColumnSide"
 import addElementsToState from "../../functions/addElementsToState"
+import addTextBlockToEmptyColumnAction from "./textblock/addTextBlockToEmptyColumn"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -472,6 +473,7 @@ const documentsSlice = createSlice({
 
     insertColumn: insertColumnAction,
     deleteSideOfColumn: deleteColumnSideAction,
+    addTextBlockToEmptyColumn: addTextBlockToEmptyColumnAction,
 
     duplicateElement: (
       state,
@@ -567,4 +569,5 @@ export const {
   setImageWidth,
   setImageDescription,
   setSeparatorWidth,
+  addTextBlockToEmptyColumn,
 } = documentsSlice.actions

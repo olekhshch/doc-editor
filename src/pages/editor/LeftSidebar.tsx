@@ -48,7 +48,7 @@ const LeftSidebar = () => {
             {"<"} Main page
           </Link>
         </article>
-        <h3>Navigation: </h3>
+        {/* <h3>Navigation: </h3> */}
         {/* <SbTabs
           options={sbOptions}
           activeIdx={activeIdx}

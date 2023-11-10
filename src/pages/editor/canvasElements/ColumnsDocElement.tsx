@@ -1,15 +1,30 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { ColumnsElement } from "../../../types"
 import styled from "styled-components"
 import DocElement from "./DocElement"
 import DnDPlaceholder from "./dndPlaceholder"
+import { useAppDispatch } from "../../../app/hooks"
+import { addTextBlockToEmptyColumn } from "../../../features/documents/documentsSlice"
 
 type props = {
   columnsElement: ColumnsElement
 }
 
 const ColumnsDocElement = ({ columnsElement }: props) => {
+  const dispatch = useAppDispatch()
+
   const { left, right, _id } = columnsElement
+
+  useEffect(() => {
+    if (left.length === 0) {
+      dispatch(addTextBlockToEmptyColumn([_id, "left"]))
+    }
+
+    if (right.length === 0) {
+      dispatch(addTextBlockToEmptyColumn([_id, "right"]))
+    }
+  }, [left.length, right.length, _id, dispatch])
+
   return (
     <StyledColumnsElement>
       <section className="column">

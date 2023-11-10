@@ -8,6 +8,7 @@ import { useAppDispatch } from "../../../app/hooks"
 import {
   deleteElement,
   duplicateElement,
+  setActiveElementId,
   setColourForSeprator,
   setSeparatorWidth,
 } from "../../../features/documents/documentsSlice"
@@ -32,7 +33,7 @@ const SepratorEl = ({ separatorObj, column }: props) => {
     dispatch(
       setSeparatorWidth({ separatorId: _id, column, newWidth: debouncedWidth }),
     )
-  }, [debouncedWidth, _id])
+  }, [debouncedWidth, _id, dispatch])
 
   const rgbColour = useMemo(() => {
     const matchingTheme = themes.find((theme) => theme.name === colour)
@@ -105,12 +106,18 @@ const SepratorEl = ({ separatorObj, column }: props) => {
     )
   }, [colour, currentWidth, dispatch, _id, column])
 
+  const handleClick = (e: React.MouseEvent) => {
+    dispatch(setActiveElementId(column === null ? _id : [_id, ...column]))
+    e.stopPropagation()
+  }
+
   return (
     <>
       {Toolbar}
       <StyledSeparator
         $width={currentWidth}
         $colour={rgbObjToString(rgbColour)}
+        onClick={(e) => handleClick(e)}
       />
     </>
   )

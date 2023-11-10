@@ -10,7 +10,7 @@ import {
   setImageDescription,
   setImageWidth,
 } from "../../../features/documents/documentsSlice"
-import { CurrentThemeContext } from "../Editor"
+import { CurrentThemeContext, MenuState } from "../Editor"
 import { HiDuplicate } from "react-icons/hi"
 import { FaTrash } from "react-icons/fa"
 import { PiPencilSimpleLineFill } from "react-icons/pi"
@@ -52,7 +52,7 @@ const ImageEl = ({ imageElObj, column }: props) => {
     }
   }, [imgWidth, width, fitWidth])
 
-  //set new values after delay (debounce)
+  // set new values after delay (debounce)
   // useEffect(() => {
   //   dispatch(
   //     setImageWidth({
@@ -62,7 +62,7 @@ const ImageEl = ({ imageElObj, column }: props) => {
   //       newWidth: debouncedWidth,
   //     }),
   //   )
-  // }, [_id, column, debauncedMargin, debouncedWidth, dispatch])
+  // }, [_id, debauncedMargin, debouncedWidth, dispatch])
 
   const handleCutomeWidthMode = () => {
     dispatch(setImageWidth({ imageElId: _id, column, newWidth: fitWidth }))
@@ -134,35 +134,39 @@ const ImageEl = ({ imageElObj, column }: props) => {
   }
 
   const handleSlide = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    const x0 = e.clientX
+    if (width) {
+      const x0 = e.clientX
 
-    const handleMouseMove = (ev: MouseEvent) => {
-      const x = ev.clientX
-      const difference = x - x0
-      const new_mrg = left_margin + difference
-      dispatch(
-        setImageWidth({
-          imageElId: _id,
-          column,
-          newLeftMargin: Math.max(new_mrg, 0),
-          newWidth: imgWidth,
-        }),
-      )
+      const handleMouseMove = (ev: MouseEvent) => {
+        const x = ev.clientX
+        const difference = x - x0
+        const new_mrg = left_margin + difference
+        dispatch(
+          setImageWidth({
+            imageElId: _id,
+            column,
+            newLeftMargin: Math.max(new_mrg, 0),
+            newWidth: imgWidth,
+          }),
+        )
+      }
+
+      const handleMouseUp = () => {
+        window.removeEventListener("mousemove", handleMouseMove)
+      }
+
+      window.addEventListener("mousemove", handleMouseMove)
+      window.addEventListener("mouseup", handleMouseUp)
     }
-
-    const handleMouseUp = () => {
-      window.removeEventListener("mousemove", handleMouseMove)
-    }
-
-    window.addEventListener("mousemove", handleMouseMove)
-    window.addEventListener("mouseup", handleMouseUp)
 
     e.stopPropagation()
   }
 
   //styling options
   const { main, gray, lighter } = useContext(CurrentThemeContext)
+
+  //popUpWindow context
+  const { setImageViewObj, setPopUpFor } = useContext(MenuState)
 
   const ImgToolbar = () => {
     const handleDelete = () => {
@@ -171,6 +175,11 @@ const ImageEl = ({ imageElObj, column }: props) => {
 
     const handleDuplicate = () => {
       dispatch(duplicateElement({ elementId: _id, column }))
+    }
+
+    const handleZoom = () => {
+      setImageViewObj(imageElObj)
+      setPopUpFor("image_view")
     }
 
     return (
@@ -189,6 +198,11 @@ const ImageEl = ({ imageElObj, column }: props) => {
                 Auto width
               </button>
             )}
+          </div>
+          <div className="toolbar-section">
+            <button className="element-toolbar-btn" onClick={handleZoom}>
+              Zoom
+            </button>
           </div>
           <div className="toolbar-section">
             <button

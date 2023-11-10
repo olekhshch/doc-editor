@@ -11,7 +11,7 @@ import {
   setActiveElementId,
   setDocAsCurrent,
 } from "../../features/documents/documentsSlice"
-import { DocumentPreviewInterface } from "../../types"
+import { DocumentPreviewInterface, ImageElement } from "../../types"
 import Loading from "../../Loading"
 import { screenwidth_editor } from "../../screenwidth_treshholds"
 import { rgbObjToString } from "../../functions/rgbObjToString"
@@ -29,7 +29,7 @@ export const CurrentThemeContext = createContext({
   name: "violet",
 })
 
-type popUpWindow = "new_image" | "doc_info"
+type popUpWindow = "new_image" | "doc_info" | "image_view"
 
 interface EditorMenuState {
   elementMenuId: number | null
@@ -38,6 +38,8 @@ interface EditorMenuState {
   showRightSb: boolean
   popUpFor: popUpWindow | null
   setPopUpFor: (a: popUpWindow | null) => void
+  imageViewObj: undefined | ImageElement
+  setImageViewObj: (obj: ImageElement) => void
 }
 
 export const MenuState = createContext<EditorMenuState>({
@@ -47,6 +49,8 @@ export const MenuState = createContext<EditorMenuState>({
   showRightSb: true,
   popUpFor: "new_image",
   setPopUpFor: (a) => {},
+  imageViewObj: undefined,
+  setImageViewObj: (obj) => {},
 })
 
 const Editor = () => {
@@ -99,6 +103,9 @@ const Editor = () => {
 
   const [elementMenuId, setElementMenuId] = useState<number | null>(null)
   const [popUpFor, setPopUpFor] = useState<popUpWindow | null>(null)
+  const [imageViewObj, setImageViewObj] = useState<ImageElement | undefined>(
+    undefined,
+  )
   const menuContextValue: EditorMenuState = {
     elementMenuId,
     setElementMenuId,
@@ -106,6 +113,8 @@ const Editor = () => {
     showRightSb,
     popUpFor,
     setPopUpFor,
+    imageViewObj,
+    setImageViewObj,
   }
   const dispatch = useAppDispatch()
 

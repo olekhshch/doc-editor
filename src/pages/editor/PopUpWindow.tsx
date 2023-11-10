@@ -3,6 +3,7 @@ import styled from "styled-components"
 import { CurrentThemeContext, MenuState } from "./Editor"
 import { useAppDispatch } from "../../app/hooks"
 import { addImage } from "../../features/documents/documentsSlice"
+import ImageViewer from "./ImageViewer"
 
 const PopUpWindow = () => {
   const dispatch = useAppDispatch()
@@ -28,32 +29,36 @@ const PopUpWindow = () => {
   const PopUpContent = () => {
     if (popUpFor === "new_image") {
       return (
-        <form onSubmit={handleNewImageSubmit}>
-          <label>
-            <p>Image URL:</p>
-            <input
-              type="url"
-              className="image-url-input"
-              autoFocus
-              value={imgURL}
-              onChange={(e) => setImgURL(e.target.value)}
-            />
-          </label>
-          <div className="flex btns">
-            <button type="submit">OK</button>
-            <button onClick={closePopUp}>Cancel</button>
-          </div>
-        </form>
+        <div className="pop-up">
+          <form onSubmit={handleNewImageSubmit}>
+            <label>
+              <p>Image URL:</p>
+              <input
+                type="url"
+                className="image-url-input"
+                autoFocus
+                value={imgURL}
+                onChange={(e) => setImgURL(e.target.value)}
+              />
+            </label>
+            <div className="flex btns">
+              <button type="submit">OK</button>
+              <button onClick={closePopUp}>Cancel</button>
+            </div>
+          </form>
+        </div>
       )
+    }
+
+    if (popUpFor === "image_view") {
+      return <ImageViewer />
     }
   }
 
   return (
     <StyledPopUpWindow>
       <div className="bg" />
-      <div className="pop-up">
-        <PopUpContent />
-      </div>
+      <PopUpContent />
     </StyledPopUpWindow>
   )
 }
@@ -61,7 +66,7 @@ const PopUpWindow = () => {
 export default PopUpWindow
 
 const StyledPopUpWindow = styled.article`
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;

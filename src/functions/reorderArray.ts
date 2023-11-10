@@ -9,11 +9,11 @@ export const reoderArray = (
 
   if (elementToMove) {
     const filteredArray = array.filter((el) => el._id !== elementId)
-    const newPlaceIndex =
-      elementToMove.orderIndex > placementIndex
-        ? placementIndex
-        : placementIndex - 1
-    filteredArray.splice(newPlaceIndex, 0, elementToMove)
+    // const newPlaceIndex =
+    //   elementToMove.orderIndex > placementIndex
+    //     ? placementIndex
+    //     : placementIndex - 1
+    filteredArray.splice(placementIndex, 0, elementToMove)
     return filteredArray.map((el, idx) => ({ ...el, orderIndex: idx }))
   }
   return array

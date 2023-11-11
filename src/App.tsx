@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Root from "./pages/root/Root"
 import Editor from "./pages/editor/Editor"
 import NotFoundScreen from "./pages/editor/NotFoundScreen"
+import ActiveDocRedirect from "./pages/editor/ActiveDocRedirect"
 
 const router = createBrowserRouter([
   {
@@ -15,7 +16,7 @@ const router = createBrowserRouter([
   },
   {
     path: "docs",
-    element: <Editor />,
+    element: <ActiveDocRedirect />,
   },
   {
     path: "not-found",

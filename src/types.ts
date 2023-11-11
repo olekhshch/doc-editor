@@ -28,6 +28,7 @@ export type DocContentComponent =
   | ParagraphElement
   | SeparatorElement
   | ImageElement
+  | TableElement
 
 export type ContentComponentType =
   | "heading"
@@ -35,6 +36,7 @@ export type ContentComponentType =
   | "image"
   | "columns"
   | "separator"
+  | "table"
 
 export interface BasicComponent {
   _id: number
@@ -90,3 +92,14 @@ export interface ImageElement extends BasicComponent {
 }
 
 export type columnParam = null | [number, "left" | "right"]
+
+export interface TableCell {
+  _id: number
+  content: RemirrorJSON[]
+}
+
+export interface TableElement extends BasicComponent {
+  type: "table"
+  lastCellId: number
+  content: TableCell[][]
+}

@@ -3,45 +3,38 @@ import { DocumentsState } from "../initialState"
 import {
   ColumnsElement,
   DocContentComponent,
-  HeadingElement,
+  TableElement,
   columnParam,
 } from "../../../types"
+import generateEmptyTableContent from "./generateEmptyTableContent"
 import addElementsToState from "../../../functions/addElementsToState"
 
-const addHeadingAction = (
+const addTableAction = (
   state: DocumentsState,
   {
     payload,
   }: PayloadAction<{
-    level: 1 | 2 | 3
+    rows: number
+    columns: number
     column: columnParam
     afterId?: number
   }>,
 ) => {
   state.disableElementsAdding = true
-  //new heading element obj set up
-  let content = "Main heading"
-  switch (payload.level) {
-    case 2:
-      content = "Medium heading"
-      break
-    case 3:
-    default:
-      content = "Small heading"
-      break
-  }
+  const _id = new Date().getTime()
+  const generatedContent = generateEmptyTableContent(
+    payload.rows,
+    payload.columns,
+  )
 
-  const _id = Math.round(Math.random() * 10000)
-  const newHeadingEl: HeadingElement = {
+  const newTableEl: TableElement = {
     _id,
-    type: "heading",
-    content,
-    level: payload.level,
+    type: "table",
+    content: generatedContent.content,
+    lastCellId: generatedContent.lastCellId,
   }
 
   try {
-    //identifying placement of a new heading
-    //if afterIdx was given - using given afterIdx and column params, otherwise - taking it from the activeElementId
     let afterId = payload.afterId
     let column: columnParam = payload.column
 
@@ -63,12 +56,12 @@ const addHeadingAction = (
       state.activeContent!.components,
       afterId!,
       column,
-      newHeadingEl,
+      newTableEl,
     ) as (DocContentComponent | ColumnsElement)[]
   } catch (err) {
-    console.log("ERROR while adding new heading")
+    console.log("ERROR while adding new table element")
   }
   state.disableElementsAdding = false
 }
 
-export default addHeadingAction
+export default addTableAction

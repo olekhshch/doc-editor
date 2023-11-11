@@ -6,6 +6,7 @@ import {
   addHeading,
   addParagraph,
   addSeparator,
+  addTable,
 } from "../../../features/documents/documentsSlice"
 import { BiHeading, BiImage } from "react-icons/bi"
 import { BsCardText } from "react-icons/bs"
@@ -42,6 +43,10 @@ const AddComponentsMenu = () => {
 
   const addImageEl = () => {
     setPopUpFor("new_image")
+  }
+
+  const addTableEl = () => {
+    dispatch(addTable({ rows: 2, columns: 3, column: null }))
   }
 
   //Styling
@@ -92,6 +97,7 @@ const AddComponentsMenu = () => {
               <button
                 className="constructor-btn"
                 disabled={disableElementsAdding}
+                onClick={addTableEl}
               >
                 <span className="icon">
                   <ImTable />

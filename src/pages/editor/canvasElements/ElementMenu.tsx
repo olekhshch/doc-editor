@@ -24,6 +24,7 @@ const ElementMenu = ({ elementId, elementType }: props) => {
 
   const { main, gray, lighter } = useContext(CurrentThemeContext)
 
+  //TODO: Table menu options (colapse table, import .csv etc.)
   const ColumnsMenu = () => {
     const addLeft = () => {
       dispatch(insertColumn({ elementId, side: "left" }))

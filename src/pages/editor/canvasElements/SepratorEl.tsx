@@ -17,6 +17,7 @@ import { ThemeName, themes } from "../../../features/styling/initialState"
 import { rgbObjToString } from "../../../functions/rgbObjToString"
 import useDebaunce from "../../../app/useDebaunce"
 
+//#TODO: Seprator edit bug fix
 type props = {
   separatorObj: SeparatorElement
   column: null | [number, "left" | "right"]

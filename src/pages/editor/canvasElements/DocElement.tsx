@@ -6,6 +6,7 @@ import {
   ImageElement,
   ParagraphElement,
   SeparatorElement,
+  TableElement,
   columnParam,
 } from "../../../types"
 import HeadingEl from "./HeadingEl"
@@ -22,6 +23,7 @@ import ColumnsDocElement from "./ColumnsDocElement"
 import TextBlockEl from "./TextBlockEl"
 import SepratorEl from "./SepratorEl"
 import ImageEl from "./ImageEl"
+import TableEl from "./TableEl"
 
 type props = {
   docElementObj: DocContentComponent | ColumnsElement
@@ -53,6 +55,11 @@ const DocElement = ({ docElementObj, column }: props) => {
     if (type === "image") {
       const imageElObj = docElementObj as ImageElement
       return <ImageEl imageElObj={imageElObj} column={column} />
+    }
+
+    if (type === "table") {
+      const tableElObj = docElementObj as TableElement
+      return <TableEl tableElObj={tableElObj} column={column} />
     }
     return <>element</>
   }, [docElementObj, type, column])
@@ -101,7 +108,7 @@ const DocElement = ({ docElementObj, column }: props) => {
           <StyledContent
             onClick={() => setElementMenuId(null)}
             ref={dragPreview}
-            $max_width={type === "separator"}
+            $max_width={["separator", "table"].includes(type)}
             $gray={gray}
           >
             {ContentMemo}
@@ -154,7 +161,23 @@ const StyledElementWrapper = styled.li<styledProps>`
   }
 
   .right-margin {
-    width: 48px;
-    max-width: 48px;
+    width: 84px;
+    max-width: 84px;
+  }
+
+  .table-row {
+    border-bottom: 1px solid ${(props) => props.$gray};
+  }
+
+  .table-cell {
+    border-right: 1px solid ${(props) => props.$gray};
+  }
+  .cell-btns {
+    box-shadow: 0 0 4px ${(props) => props.$gray};
+  }
+
+  .table-el {
+    border-top: 1px solid ${(props) => props.$gray};
+    border-left: 1px solid ${(props) => props.$gray};
   }
 `

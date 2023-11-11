@@ -9,6 +9,7 @@ import {
   BasicComponent,
   ColumnsElement,
   DocContentComponent,
+  DocumentContent,
   DocumentInterface,
   DocumentPreviewInterface,
   HeadingElement,
@@ -17,7 +18,6 @@ import {
 } from "../../types"
 import { reoderArray } from "../../functions/reorderArray"
 import { insertElementIntoArray } from "../../functions/insertElementIntoArray"
-import { RemirrorJSON } from "remirror"
 import { removeElementFromArray } from "../../functions/removeElementFromArray"
 import addSeparator0 from "./separator/addSeparator"
 import setSeparatorColourAction from "./separator/setSeparatorColour"
@@ -34,6 +34,9 @@ import insertColumnAction from "./columns/insertColumn"
 import deleteColumnSideAction from "./columns/deleteColumnSide"
 import addElementsToState from "../../functions/addElementsToState"
 import addTextBlockToEmptyColumnAction from "./textblock/addTextBlockToEmptyColumn"
+import addTableAction from "./table/addTable"
+import addRowAction from "./table/addRow"
+import addColumnAction from "./table/addColumn"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -47,12 +50,34 @@ const documentsSlice = createSlice({
       state.disableElementsAdding = false
     },
 
+    createNewDoc0: (state) => {
+      const _id = Math.round(Math.random() * 1000000)
+      const newDocument: DocumentPreviewInterface = {
+        _id,
+        projectId: null,
+        title: "New doc",
+        createdOn: new Date().getTime(),
+      }
+
+      const newDocContent: DocumentContent = {
+        _id,
+        docId: _id,
+        components: [],
+      }
+
+      state.activeContent = newDocContent
+
+      state.documents = [...state.documents, newDocument]
+      state.activeDocumentId = _id
+    },
+
     createDoc: (
       state,
       { payload }: PayloadAction<{ projectId: number | null }>,
     ) => {
+      const _id = Math.round(Math.random() * 1000000)
       const newDocPreview: DocumentPreviewInterface = {
-        _id: Math.round(Math.random() * 1000000),
+        _id,
         projectId: payload.projectId,
         title: "New doc",
         createdOn: new Date().getTime(),
@@ -475,6 +500,10 @@ const documentsSlice = createSlice({
     deleteSideOfColumn: deleteColumnSideAction,
     addTextBlockToEmptyColumn: addTextBlockToEmptyColumnAction,
 
+    addTable: addTableAction,
+    insertRowToTable: addRowAction,
+    insertColumnToTable: addColumnAction,
+
     duplicateElement: (
       state,
       {
@@ -570,4 +599,8 @@ export const {
   setImageDescription,
   setSeparatorWidth,
   addTextBlockToEmptyColumn,
+  addTable,
+  insertRowToTable,
+  insertColumnToTable,
+  createNewDoc0,
 } = documentsSlice.actions

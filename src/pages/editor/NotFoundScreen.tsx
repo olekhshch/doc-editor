@@ -1,8 +1,17 @@
 import React from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import styled from "styled-components"
+import { useAppDispatch } from "../../app/hooks"
+import { createNewDoc0 } from "../../features/documents/documentsSlice"
 
 const NotFoundScreen = () => {
+  const dispatch = useAppDispatch()
+  const navigation = useNavigate()
+
+  const handleNewDocCreation = () => {
+    dispatch(createNewDoc0())
+    navigation("/docs")
+  }
   return (
     <StyledNotFound>
       <article>
@@ -11,7 +20,7 @@ const NotFoundScreen = () => {
           <Link to="/" className="option">
             Back to main
           </Link>
-          <button>Create a new doc</button>
+          <button onClick={handleNewDocCreation}>Create a new doc</button>
           <button>Load from file</button>
         </div>
       </article>

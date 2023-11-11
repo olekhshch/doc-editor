@@ -55,9 +55,7 @@ export const MenuState = createContext<EditorMenuState>({
 
 const Editor = () => {
   const [showLeftSb, setShowLeftSb] = useState(true)
-  const [showRightSb, setShowRightSb] = useState(
-    window.innerWidth >= screenwidth_editor.only_one_sb,
-  )
+  const [showRightSb, setShowRightSb] = useState(true)
 
   //general styling state
   const {
@@ -150,17 +148,21 @@ const Editor = () => {
 
   const handleResize = () => {
     const { innerWidth } = window
-    if (innerWidth < screenwidth_editor.only_one_sb) {
-      setShowRightSb(false)
-    } else {
-      setShowLeftSb(true)
-      setShowRightSb(true)
-    }
+    // if (innerWidth < screenwidth_editor.only_one_sb) {
+    //   // setShowRightSb(false)
+    // } else {
+    //   setShowLeftSb(true)
+    //   setShowRightSb(true)
+    // }
   }
 
   useEffect(() => {
     window.addEventListener("resize", handleResize)
   }, [])
+
+  useEffect(() => {
+    document.body.style.overflow = !popUpFor ? "auto" : "hidden"
+  }, [popUpFor])
 
   if (!currentDocDetails) {
     return <Loading />

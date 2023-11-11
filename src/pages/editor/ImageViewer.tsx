@@ -6,19 +6,21 @@ const ImageViewer = () => {
   const imageRef = useRef<HTMLImageElement>(null)
   const { setPopUpFor, imageViewObj } = useContext(MenuState)
 
-  const [maxScale, minScale] = useMemo(() => [0.25, 5], [])
+  const [maxScale, minScale] = useMemo(() => [4, 0.25], [])
 
   const { src, description } = imageViewObj!
 
+  //#TODO: Reset scale to 1 after clicking of the Scale paragraph element
   const [scale, setScale] = useState(1)
   const [imgCoordinates, setImgCoordinates] = useState({ x: 100, y: 100 })
+  const [imgDimensions, setImgDimensions] = useState({ w: 0, h: 0 })
 
   const closeViewer = () => {
     setPopUpFor(null)
   }
 
   useEffect(() => {
-    //centering image
+    //centering the image and getting netural dimentions
     const { innerWidth, innerHeight } = window
     const { naturalHeight, naturalWidth } = imageRef.current!
 
@@ -26,15 +28,37 @@ const ImageViewer = () => {
     const y = (innerHeight - naturalHeight) / 2
 
     setImgCoordinates({ x, y })
+    setImgDimensions({ w: naturalWidth, h: naturalHeight })
   }, [])
+
+  useEffect(() => {
+    //scaling with wheel
+    const handleWheel = (e: WheelEvent) => {
+      const scaleStep = scale < 2 ? 0.25 : 0.5
+
+      let newScale = Math.sign(e.deltaY) * scaleStep + scale
+      newScale =
+        newScale < minScale
+          ? minScale
+          : newScale > maxScale
+          ? maxScale
+          : newScale
+
+      setScale(newScale)
+    }
+
+    window.addEventListener("wheel", handleWheel)
+
+    return () => window.removeEventListener("wheel", handleWheel)
+  }, [scale, maxScale, minScale])
 
   const handleMoving = (e: React.MouseEvent) => {
     const x0 = e.clientX
     const y0 = e.clientY
 
-    const handleMove = (ev: MouseEvent) => {
-      const x1 = ev.clientX
-      const y1 = ev.clientY
+    const handleMove = (ev: Event) => {
+      const x1 = (ev as MouseEvent).clientX
+      const y1 = (ev as MouseEvent).clientY
 
       const dx = x1 - x0
       const dy = y1 - y0
@@ -45,9 +69,9 @@ const ImageViewer = () => {
       setImgCoordinates({ x, y })
     }
 
-    imageRef.current!.addEventListener("mousemove", handleMove)
-    imageRef.current!.addEventListener("mouseup", () => {
-      imageRef.current!.removeEventListener("mousemove", handleMove)
+    e.target.addEventListener("mousemove", handleMove)
+    e.target.addEventListener("mouseup", () => {
+      e.target.removeEventListener("mousemove", handleMove)
     })
   }
 
@@ -56,15 +80,23 @@ const ImageViewer = () => {
       <button className="close-btn" onClick={closeViewer}>
         X
       </button>
-      <img
-        ref={imageRef}
-        src={src}
-        alt={description}
-        className="image"
+      <div
+        className="drag-wrapper"
+        onDragStart={handleMoving}
         style={{ left: imgCoordinates.x, top: imgCoordinates.y }}
-        // draggable={false}
-        onMouseDown={handleMoving}
-      />
+        draggable
+      >
+        <img
+          ref={imageRef}
+          src={src}
+          alt={description}
+          className="image"
+          draggable={false}
+          width={imgDimensions.w * scale}
+          height={imgDimensions.h * scale}
+          // onMouseDown={handleMoving}
+        />
+      </div>
       <p className="scale-info">Scale: {scale}</p>
     </StyledWrapper>
   )
@@ -100,8 +132,11 @@ const StyledWrapper = styled.div`
     background-color: black;
   }
 
-  .image {
+  .drag-wrapper {
     position: absolute;
+  }
+
+  .image {
     cursor: grab;
   }
 `

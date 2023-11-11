@@ -168,6 +168,8 @@ const ImageEl = ({ imageElObj, column }: props) => {
   //popUpWindow context
   const { setImageViewObj, setPopUpFor } = useContext(MenuState)
 
+  //#TODO: Round corners
+  //#TODO: Box shadow
   const ImgToolbar = () => {
     const handleDelete = () => {
       dispatch(deleteElement({ column, elementId: _id }))
@@ -317,6 +319,7 @@ const ImageEl = ({ imageElObj, column }: props) => {
     )
   }
 
+  //#TODO: Make left_margin, width and dimension position (left/right) cooperate
   const Description = useMemo(() => {
     return (
       <div

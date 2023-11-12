@@ -1,192 +1,80 @@
-import React, { useState, useEffect } from "react"
+import React from "react"
 import styled from "styled-components"
-import Header from "./Header"
-import { useAppDispatch, useAppSelector } from "../../app/hooks"
-import { IconContext } from "react-icons"
-import { TbTriangleInvertedFilled } from "react-icons/tb"
-import Project from "./Project"
-import {
-  sortBy,
-  sortBy as sortingOptions,
-} from "../../features/projects/sorting"
-import { setSortBy } from "../../features/projects/projectsSlice"
-import { sortingOption } from "../../features/projects/initialState"
-import DnDProjectPlaceholder from "./DnDProjectPlaceholder"
-import WindowContext, {
-  RootWindow,
-  WindowContextInterface,
-} from "./popUps/WindowsContext"
-import PopUpWindow from "./popUps/PopUpWindow"
-import MainTools from "./MainTools"
+import { useAppDispatch } from "../../app/hooks"
+import { useNavigate } from "react-router-dom"
+import { createNewDoc } from "../../features/documents/documentsSlice"
 
 const Root = () => {
-  const { projects, sortBy } = useAppSelector((state) => state.projects)
   const dispatch = useAppDispatch()
+  const navigation = useNavigate()
 
-  const [projectsSorted, setProjectsSorted] = useState(projects)
-  const [isSortingMenuOpen, setIsSortingMenuOpen] = useState(false)
-
-  const toggleSortingMenu = () => setIsSortingMenuOpen(!isSortingMenuOpen)
-
-  useEffect(() => {
-    const sortProjects = () => {
-      const projectsCopy = [...projects]
-      if (sortBy === "DATE_NEWEST") {
-        return projectsCopy.sort((a, b) => b.createdOn - a.createdOn)
-      }
-      if (sortBy === "ALPHABET") {
-        return projectsCopy.sort((a, b) => (a.title > b.title ? 1 : -1))
-      }
-      return projectsCopy
-    }
-
-    const resortedprojects = sortProjects()
-    if (resortedprojects) {
-      setProjectsSorted(resortedprojects)
-    } else {
-      setProjectsSorted(projects)
-    }
-  }, [projects, sortBy])
-
-  const SortingMenu = () => {
-    const sortingEntries = Object.entries(sortingOptions)
-
-    const changeSorting = (newSorting: sortingOption) => {
-      toggleSortingMenu()
-      dispatch(setSortBy(newSorting))
-    }
-    return (
-      <ul className="menu flex-col">
-        {sortingEntries.map(([key, value]) => {
-          return (
-            <li key={key} onClick={() => changeSorting(key as sortingOption)}>
-              {value}
-            </li>
-          )
-        })}
-      </ul>
-    )
-  }
-
-  const [isWindowOpen, setIsWindowOpen] = useState(false)
-  const [openwindowType, setOpenWindowType] =
-    useState<RootWindow>("create-project")
-
-  const [popUpCoordinates, setPopUpCoordinates] = useState({
-    top: 100,
-    left: 100,
-  })
-  const [renameDocTitle, setRenameDocTitle] = useState("")
-  const [renameDocId, setRenameDocId] = useState<number | null>(null)
-
-  const windowContextValue: WindowContextInterface = {
-    isOpen: isWindowOpen,
-    setIsopen: setIsWindowOpen,
-    windowType: openwindowType,
-    setWindowType: setOpenWindowType,
-    windowCoordinates: popUpCoordinates,
-    setWindowCoordinates: setPopUpCoordinates,
-    renameDocTitle,
-    setRenameDocTitle,
-    renameDocId,
-    setRenameDocId,
+  const handleNewDocCreation = () => {
+    dispatch(createNewDoc())
+    navigation("/docs")
   }
 
   return (
-    <>
-      <WindowContext.Provider value={windowContextValue}>
-        <StyledBg>
-          <Header />
-          <main className="flex-col">
-            <MainTools />
-            <section className="tools-panel">
-              <p>
-                Sort by:{" "}
-                <button className="text-btn" onClick={toggleSortingMenu}>
-                  {sortingOptions[sortBy]}{" "}
-                  <IconContext.Provider value={{ size: "12" }}>
-                    <span>
-                      <TbTriangleInvertedFilled />
-                    </span>
-                  </IconContext.Provider>
-                </button>
-              </p>
-              {isSortingMenuOpen && <SortingMenu />}
-            </section>
-            {projectsSorted.map((project, index) => {
-              return (
-                <div key={project._id}>
-                  <DnDProjectPlaceholder placementIndex={index} />
-                  <Project project={project} />
-                </div>
-              )
-            })}
-          </main>
-          {isWindowOpen && <PopUpWindow />}
-        </StyledBg>
-      </WindowContext.Provider>
-    </>
+    <StyledRoot>
+      <section id="root-main-panel">
+        <canvas id="canvas-bg" height={1200} width={600} />
+        <article id="panel-content">
+          <div className="flex" style={{ gap: "12px", alignItems: "center" }}>
+            <span>Create</span>
+            <span>a</span>
+            <button className="main-btn" onClick={handleNewDocCreation}>
+              {" "}
+              New doc{" "}
+            </button>
+            <span> or </span>
+            <button className="main-btn"> Load from file</button>
+          </div>
+        </article>
+      </section>
+    </StyledRoot>
   )
 }
 
 export default Root
 
-const StyledBg = styled.div`
-  /* position: fixed; */
+const StyledRoot = styled.main`
   width: 100vw;
-  overflow-x: hidden;
-  min-height: 100vh;
-  background: radial-gradient(
-    circle,
-    var(--main-lighter),
-    var(--main),
-    var(--black) 80%
-  );
-  background-attachment: fixed;
-  color: var(--white);
+  height: 100vh;
+  background-color: var(--main);
+  display: flex;
+  color: white;
 
-  main {
-    margin: 90px auto 20px;
-    max-width: 80vw;
-    gap: 12px;
+  #root-main-panel {
+    margin: auto;
+    position: relative;
+    /* border: 1px solid black; */
+    border-radius: 8px;
+    height: fit-content;
+    max-height: 90vh;
+    width: fit-content;
+    max-width: 60vw;
+    overflow: hidden;
   }
 
-  .page-content {
-    position: fixed;
-    top: 0;
-    z-index: 100;
-  }
-
-  .tools-panel {
-    margin-bottom: 64px;
-  }
-
-  .tools-panel .text-btn {
-    text-align: left;
-    border: none;
-    border-bottom: 1px solid var(--white);
-    background: none;
-    font-size: var(--p-size);
-    color: var(--white);
-  }
-
-  .menu {
-    width: 130px;
+  #panel-content {
     position: absolute;
-    color: var(--black);
-    background-color: var(--white);
+    top: 36px;
+    width: 100%;
+    /* background-color: blue; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
-  .menu li {
-    padding-left: 8px;
-    list-style: none;
-    user-select: none;
-    cursor: pointer;
+  #canvas-bg {
+    margin: 0;
+    background-color: rgba(198, 118, 236, 1);
   }
 
-  .menu li:hover {
-    color: var(--white);
+  .main-btn {
+    padding: 8px 12px;
+    border: 1px solid var(--main-light);
+    border-radius: 4px;
     background-color: var(--main);
-    font-weight: bold;
+    color: white;
   }
 `

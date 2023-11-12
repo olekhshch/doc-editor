@@ -21,7 +21,6 @@ export const initialState: DocumentsState = {
     {
       _id: 123,
       createdOn: 1234232222,
-      projectId: null,
       title: "Test first doc",
     },
   ],

@@ -11,7 +11,6 @@ export interface ProjectInterface {
 }
 export interface DocumentPreviewInterface {
   _id: number
-  projectId: number | null
   title: string
   createdOn: number
 }

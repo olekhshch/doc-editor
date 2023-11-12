@@ -52,11 +52,10 @@ const documentsSlice = createSlice({
       state.disableElementsAdding = false
     },
 
-    createNewDoc0: (state) => {
+    createNewDoc: (state) => {
       const _id = Math.round(Math.random() * 1000000)
       const newDocument: DocumentPreviewInterface = {
         _id,
-        projectId: null,
         title: "New doc",
         createdOn: new Date().getTime(),
       }
@@ -73,20 +72,20 @@ const documentsSlice = createSlice({
       state.activeDocumentId = _id
     },
 
-    createDoc: (
-      state,
-      { payload }: PayloadAction<{ projectId: number | null }>,
-    ) => {
-      const _id = Math.round(Math.random() * 1000000)
-      const newDocPreview: DocumentPreviewInterface = {
-        _id,
-        projectId: payload.projectId,
-        title: "New doc",
-        createdOn: new Date().getTime(),
-      }
-      const newDoc: DocumentInterface = { ...newDocPreview }
-      state.documents = [...state.documents, newDocPreview]
-    },
+    // createDoc: (
+    //   state,
+    //   { payload }: PayloadAction<{ projectId: number | null }>,
+    // ) => {
+    //   const _id = Math.round(Math.random() * 1000000)
+    //   const newDocPreview: DocumentPreviewInterface = {
+    //     _id,
+    //     projectId: payload.projectId,
+    //     title: "New doc",
+    //     createdOn: new Date().getTime(),
+    //   }
+    //   const newDoc: DocumentInterface = { ...newDocPreview }
+    //   state.documents = [...state.documents, newDocPreview]
+    // },
 
     deleteDoc: (state, { payload }: PayloadAction<number>) => {
       state.documents = state.documents.filter((doc) => doc._id !== payload)
@@ -578,7 +577,7 @@ export default documentsSlice.reducer
 export const {
   disableAddingElements,
   enableAddingElements,
-  createDoc,
+  // createDoc,
   deleteDoc,
   renameDoc,
   setDocAsCurrent,
@@ -606,7 +605,7 @@ export const {
   addTable,
   insertRowToTable,
   insertColumnToTable,
-  createNewDoc0,
+  createNewDoc,
   deleteTableRow,
   deleteTableColumn,
 } = documentsSlice.actions

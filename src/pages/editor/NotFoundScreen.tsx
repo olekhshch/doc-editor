@@ -2,14 +2,14 @@ import React from "react"
 import { Link, useNavigate } from "react-router-dom"
 import styled from "styled-components"
 import { useAppDispatch } from "../../app/hooks"
-import { createNewDoc0 } from "../../features/documents/documentsSlice"
+import { createNewDoc } from "../../features/documents/documentsSlice"
 
 const NotFoundScreen = () => {
   const dispatch = useAppDispatch()
   const navigation = useNavigate()
 
   const handleNewDocCreation = () => {
-    dispatch(createNewDoc0())
+    dispatch(createNewDoc())
     navigation("/docs")
   }
   return (

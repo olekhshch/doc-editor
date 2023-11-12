@@ -1,8 +1,15 @@
 import { PayloadAction } from "@reduxjs/toolkit"
 import { DocumentsState } from "../initialState"
-import { TableCell, TableElement, columnParam } from "../../../types"
+import {
+  ColumnsElement,
+  DocContentComponent,
+  TableCell,
+  TableElement,
+  columnParam,
+} from "../../../types"
 import findElementFromState from "../../../functions/findElementFromState"
 import { initialCellContent } from "./generateEmptyTableContent"
+import replaceElementInArray from "../../../functions/replaceElementInArray"
 
 const addRowAction = (
   state: DocumentsState,
@@ -16,12 +23,12 @@ const addRowAction = (
 ) => {
   state.disableElementsAdding = true
 
-  const targetTableEl = findElementFromState(
+  const [targetTableEl, targetTableIdx] = findElementFromState(
     state.activeContent!.components,
     payload.tableId,
     payload.column,
     "table",
-  ) as TableElement | undefined
+  ) as [TableElement | undefined, number]
 
   if (targetTableEl) {
     let idx = targetTableEl.lastCellId
@@ -49,14 +56,12 @@ const addRowAction = (
     }
 
     //#TODO: add fnctionality to update table which is part of a column
-    state.activeContent!.components = state.activeContent!.components.map(
-      (el) => {
-        if (el._id === payload.tableId) {
-          return updatedTable
-        }
-        return el
-      },
-    )
+    state.activeContent!.components = replaceElementInArray(
+      updatedTable,
+      state.activeContent!.components,
+      payload.column,
+      targetTableIdx,
+    ) as (DocContentComponent | ColumnsElement)[]
   }
 
   state.disableElementsAdding = false

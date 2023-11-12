@@ -37,6 +37,8 @@ import addTextBlockToEmptyColumnAction from "./textblock/addTextBlockToEmptyColu
 import addTableAction from "./table/addTable"
 import addRowAction from "./table/addRow"
 import addColumnAction from "./table/addColumn"
+import deleteRowAction from "./table/deleteRow"
+import deleteColumnAction from "./table/deleteColumn"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -503,6 +505,8 @@ const documentsSlice = createSlice({
     addTable: addTableAction,
     insertRowToTable: addRowAction,
     insertColumnToTable: addColumnAction,
+    deleteTableRow: deleteRowAction,
+    deleteTableColumn: deleteColumnAction,
 
     duplicateElement: (
       state,
@@ -603,4 +607,6 @@ export const {
   insertRowToTable,
   insertColumnToTable,
   createNewDoc0,
+  deleteTableRow,
+  deleteTableColumn,
 } = documentsSlice.actions

@@ -253,9 +253,6 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
             const { state } = props
             const docJSON: { doc: any } = state.toJSON()
             const newContent = docJSON.doc.content
-            // dispatch(
-            //   setParagraphContent({ column, newContentArray: newContent }),
-            // )
             setCurrentContent(newContent)
           }}
         >

@@ -28,6 +28,9 @@ const RightSidebar = () => {
   //   return <aside>TOP RIGHT SB</aside>
   // }
 
+  //#TODO: Get rid of the "Other elements" on right sb
+  //#TODO: add shortcuts
+
   return (
     <StyledRightSb className="editor-sb">
       <div className="sb-inner">

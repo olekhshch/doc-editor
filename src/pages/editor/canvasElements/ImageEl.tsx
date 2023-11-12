@@ -32,6 +32,8 @@ const ImageEl = ({ imageElObj, column }: props) => {
     showDescription,
   } = imageElObj
 
+  //#TODO: Fix autowidth: no width specified => natural width <= max width
+
   const fitWidth = column === null ? 860 - left_margin : 400 - left_margin
   const [imgWidth, setImgWidth] = useState<number>(width ?? fitWidth)
   const [margin, setMargin] = useState(left_margin)

@@ -1,8 +1,15 @@
 import { PayloadAction } from "@reduxjs/toolkit"
 import { DocumentsState } from "../initialState"
-import { TableCell, TableElement, columnParam } from "../../../types"
+import {
+  ColumnsElement,
+  DocContentComponent,
+  TableCell,
+  TableElement,
+  columnParam,
+} from "../../../types"
 import findElementFromState from "../../../functions/findElementFromState"
 import { initialCellContent } from "./generateEmptyTableContent"
+import replaceElementInArray from "../../../functions/replaceElementInArray"
 
 const addColumnAction = (
   state: DocumentsState,
@@ -15,18 +22,19 @@ const addColumnAction = (
   }>,
 ) => {
   state.disableElementsAdding = true
-  const targetTableEl = findElementFromState(
+  const [targetTableEl, targetTableIdx] = findElementFromState(
     state.activeContent!.components,
     payload.tableId,
     payload.column,
     "table",
-  ) as TableElement
+  ) as [TableElement | undefined, number]
 
   if (targetTableEl) {
     let idx = targetTableEl.lastCellId
     const contentArray = [...targetTableEl.content]
     const colNum = contentArray[0].length
 
+    //#TODO: Allow to create more but after a table viewer implementation
     if (colNum < 8) {
       const updatedContent: TableCell[][] = contentArray.map((row) => {
         const _id = idx
@@ -46,16 +54,12 @@ const addColumnAction = (
         content: updatedContent,
       }
 
-      if (payload.column === null) {
-        state.activeContent!.components = state.activeContent!.components.map(
-          (el) => {
-            if (el._id === payload.tableId) {
-              return updatedTable
-            }
-            return el
-          },
-        )
-      }
+      state.activeContent!.components = replaceElementInArray(
+        updatedTable,
+        state.activeContent!.components,
+        payload.column,
+        targetTableIdx,
+      ) as (DocContentComponent | ColumnsElement)[]
     }
   }
 

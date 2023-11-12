@@ -10,7 +10,6 @@ const ImageViewer = () => {
 
   const { src, description } = imageViewObj!
 
-  //#TODO: Reset scale to 1 after clicking of the Scale paragraph element
   const [scale, setScale] = useState(1)
   const [imgCoordinates, setImgCoordinates] = useState({ x: 100, y: 100 })
   const [imgDimensions, setImgDimensions] = useState({ w: 0, h: 0 })
@@ -97,7 +96,10 @@ const ImageViewer = () => {
           // onMouseDown={handleMoving}
         />
       </div>
-      <p className="scale-info">Scale: {scale}</p>
+      <div className="scale-info">
+        <p>Scale: {scale}</p>
+        {scale !== 1 && <button onClick={() => setScale(1)}>Reset</button>}
+      </div>
     </StyledWrapper>
   )
 }
@@ -124,12 +126,22 @@ const StyledWrapper = styled.div`
   }
 
   .scale-info {
+    display: flex;
+    gap: 8px;
     padding: 2px 4px;
     position: absolute;
     bottom: 12px;
     left: 12px;
     color: white;
     background-color: black;
+  }
+
+  .scale-info button {
+    padding: 2px 4px;
+    color: white;
+    border: 1px solid white;
+    border-radius: 4px;
+    background-color: transparent;
   }
 
   .drag-wrapper {

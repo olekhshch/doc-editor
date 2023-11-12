@@ -180,4 +180,8 @@ const StyledElementWrapper = styled.li<styledProps>`
     border-top: 1px solid ${(props) => props.$gray};
     border-left: 1px solid ${(props) => props.$gray};
   }
+
+  .cell-toolbar {
+    box-shadow: 0 0 6px ${(props) => props.$gray};
+  }
 `

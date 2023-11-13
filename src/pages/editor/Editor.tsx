@@ -54,8 +54,14 @@ export const MenuState = createContext<EditorMenuState>({
 })
 
 const Editor = () => {
-  const [showLeftSb, setShowLeftSb] = useState(true)
-  const [showRightSb, setShowRightSb] = useState(true)
+  const { innerWidth } = window
+
+  const [showLeftSb, setShowLeftSb] = useState(
+    innerWidth > screenwidth_editor.no_sb,
+  )
+  const [showRightSb, setShowRightSb] = useState(
+    innerWidth > screenwidth_editor.only_one_sb,
+  )
 
   //general styling state
   const {
@@ -142,18 +148,23 @@ const Editor = () => {
   }, [dispatch, documents, location.pathname, activeDocumentId])
 
   const handleEditorClicks = () => {
-    // dispatch(setActiveElementId(null))
+    dispatch(setActiveElementId(null))
     setElementMenuId(null)
   }
 
   const handleResize = () => {
     const { innerWidth } = window
-    // if (innerWidth < screenwidth_editor.only_one_sb) {
-    //   // setShowRightSb(false)
-    // } else {
-    //   setShowLeftSb(true)
-    //   setShowRightSb(true)
-    // }
+    if (innerWidth < screenwidth_editor.only_one_sb) {
+      setShowRightSb(false)
+      if (innerWidth < screenwidth_editor.no_sb) {
+        setShowLeftSb(false)
+      } else {
+        setShowLeftSb(true)
+      }
+    } else {
+      setShowLeftSb(true)
+      setShowRightSb(true)
+    }
   }
 
   useEffect(() => {

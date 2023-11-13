@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import styled from "styled-components"
 import { TableCell, columnParam } from "../../../types"
 import { MdOutlineDragIndicator } from "react-icons/md"
@@ -8,6 +8,7 @@ import {
   deleteTableRow,
   insertColumnToTable,
   insertRowToTable,
+  setTableCellContent,
 } from "../../../features/documents/documentsSlice"
 import { RemirrorJSON } from "remirror"
 import {
@@ -26,6 +27,7 @@ import {
   UnderlineExtension,
 } from "remirror/extensions"
 import { TiDelete } from "react-icons/ti"
+import useDebounce from "../../../app/useDebounce"
 
 type props = {
   cellObj: TableCell
@@ -40,17 +42,31 @@ const TableCellEl = ({ cellObj, col, row, column, tableId }: props) => {
 
   const dispatch = useAppDispatch()
 
-  //#TODO: Row and column deletion
   //#TODO: DnD row replacement
   //#TODO: DnD column replacement
-  //#TODO: Remirror cell content (b, i , u, s)
+  //#TODO: Remirror link extension
   //#TODO: Header
   //#TODO: import from .csv
-  //#TODO: row bts to be visible when hover over whole row, the same for columns
-  //#TODO: alow paragraphs as table cells
+  //#TODO: column btns to be visible when hover over whole column
   //#TODO: Sorting in columns
+  //#TODO: Table Columns width
+
   //Remirror set up
   const [cellContent, setCellContent] = useState<RemirrorJSON[]>(content)
+
+  const debouncedContent = useDebounce(cellContent, 500)
+
+  useEffect(() => {
+    dispatch(
+      setTableCellContent({
+        tableId,
+        column,
+        row,
+        col,
+        newContent: debouncedContent,
+      }),
+    )
+  }, [col, debouncedContent, dispatch, row, tableId])
 
   const extensions = useCallback(
     () => [
@@ -65,7 +81,10 @@ const TableCellEl = ({ cellObj, col, row, column, tableId }: props) => {
 
   const { manager, state } = useRemirror({
     extensions,
-    content: { type: "paragraph", content: cellContent },
+    content: {
+      type: "doc",
+      content: cellContent,
+    },
   })
 
   const addRow = () => {

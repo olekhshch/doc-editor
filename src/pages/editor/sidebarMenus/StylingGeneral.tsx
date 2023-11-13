@@ -20,7 +20,7 @@ import {
   setTheme,
 } from "../../../features/styling/stylingSlice"
 import ColourPicker from "./ColourPicker"
-import useDebounce from "../../../app/useDebaunce"
+import useDebounce from "../../../app/useDebounce"
 import { rgbObjToString } from "../../../functions/rgbObjToString"
 import { GeneralParam } from "../../../features/styling/initialState"
 import { COLORS } from "remirror/extensions"

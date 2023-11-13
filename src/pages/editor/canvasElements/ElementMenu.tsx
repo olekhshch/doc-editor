@@ -14,6 +14,7 @@ type props = {
   elementType: ContentComponentType
 }
 const ElementMenu = ({ elementId, elementType }: props) => {
+  //#TODO: Add elements sub menu
   const dispatch = useAppDispatch()
 
   const handleDuplicate = () => {

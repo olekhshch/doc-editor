@@ -1,8 +1,7 @@
-import React, { ChangeEvent, useContext } from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import {
-  toggleBegingsWithTitle,
   addHeading,
   addParagraph,
   addSeparator,
@@ -16,37 +15,35 @@ import { CgFormatSeparator } from "react-icons/cg"
 import { CurrentThemeContext, MenuState } from "../Editor"
 
 const AddComponentsMenu = () => {
-  const { beginsWithTitle, disableElementsAdding } = useAppSelector(
-    (state) => state.documents,
-  )
+  const { disableElementsAdding } = useAppSelector((state) => state.documents)
   const { activeTheme } = useAppSelector((state) => state.styling)
 
   const { setPopUpFor } = useContext(MenuState)
   const dispatch = useAppDispatch()
 
-  const handleShowTitleChange = (e: ChangeEvent) => {
-    e.preventDefault()
-    dispatch(toggleBegingsWithTitle())
-  }
-
-  const addHeadingEl = () => {
+  const addHeadingEl = (e: React.MouseEvent) => {
     dispatch(addHeading({ level: 2, column: null }))
+    e.stopPropagation()
   }
 
-  const addParagraphEl = () => {
+  const addParagraphEl = (e: React.MouseEvent) => {
     dispatch(addParagraph({ column: null }))
+    e.stopPropagation()
   }
 
-  const addSeparatorEl = () => {
+  const addSeparatorEl = (e: React.MouseEvent) => {
     dispatch(addSeparator({ currentTheme: activeTheme }))
+    e.stopPropagation()
   }
 
-  const addImageEl = () => {
+  const addImageEl = (e: React.MouseEvent) => {
     setPopUpFor("new_image")
+    e.stopPropagation()
   }
 
-  const addTableEl = () => {
+  const addTableEl = (e: React.MouseEvent) => {
     dispatch(addTable({ rows: 2, columns: 3, column: null }))
+    e.stopPropagation()
   }
 
   //Styling
@@ -120,26 +117,6 @@ const AddComponentsMenu = () => {
           </ul>
         </section>
       </IconContext.Provider>
-      <section>
-        <h4>Other elements</h4>
-        <ul>
-          <li>
-            <form>
-              <label>
-                <input
-                  type="checkbox"
-                  name="Document title"
-                  checked={beginsWithTitle}
-                  onChange={(e) => handleShowTitleChange(e)}
-                />
-                Document title
-              </label>
-            </form>
-          </li>
-          <li></li>
-          <li></li>
-        </ul>
-      </section>
     </StyledAddMenu>
   )
 }

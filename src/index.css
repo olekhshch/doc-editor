@@ -24,6 +24,8 @@
   --editor-menu-li-height: 24px;
 
   --editor-left-mg: 72px;
+  --editor-right-mg: 72px;
+  --editor-canvas-width: 1320px;
   --font-1: 'Roboto Condensed', sans-serif;
   --font-2: 'Carlito', sans-serif;
 }

@@ -3,26 +3,25 @@ import { DocumentsState } from "../initialState"
 import {
   ColumnsElement,
   DocContentComponent,
-  TableCell,
   TableElement,
   columnParam,
 } from "../../../types"
 import findElementFromState from "../../../functions/findElementFromState"
-import { initialCellContent } from "./generateEmptyTableContent"
+import { RemirrorJSON } from "remirror"
 import replaceElementInArray from "../../../functions/replaceElementInArray"
 
-const addRowAction = (
+const setCellContentAction = (
   state: DocumentsState,
   {
     payload,
   }: PayloadAction<{
     tableId: number
     column: columnParam
-    rowIndexBefore: number
+    row: number
+    col: number
+    newContent: RemirrorJSON[]
   }>,
 ) => {
-  state.disableElementsAdding = true
-
   const [targetTableEl, targetTableIdx] = findElementFromState(
     state.activeContent!.components,
     payload.tableId,
@@ -31,38 +30,19 @@ const addRowAction = (
   ) as [TableElement | undefined, number]
 
   if (targetTableEl) {
-    let idx = targetTableEl.lastCellId
-    const contentArray = [...targetTableEl.content]
-    const numOfColumns = contentArray[0].length
-
-    //new row creation
-    const newEmptyRow: TableCell[] = []
-    for (let i = 0; i < numOfColumns; i++) {
-      const _id = idx
-      idx += 1
-      const cellContent: TableCell = {
-        _id,
-        content: initialCellContent,
-      }
-      newEmptyRow.push(cellContent)
+    const targetCell = targetTableEl.content[payload.row][payload.col]
+    targetTableEl.content[payload.row][payload.col] = {
+      ...targetCell,
+      content: payload.newContent,
     }
 
-    contentArray.splice(payload.rowIndexBefore + 1, 0, newEmptyRow)
-
-    const updatedTable: TableElement = {
-      ...targetTableEl,
-      content: contentArray,
-      lastCellId: idx,
-    }
     state.activeContent!.components = replaceElementInArray(
-      updatedTable,
+      targetTableEl,
       state.activeContent!.components,
       payload.column,
       targetTableIdx,
     ) as (DocContentComponent | ColumnsElement)[]
   }
-
-  state.disableElementsAdding = false
 }
 
-export default addRowAction
+export default setCellContentAction

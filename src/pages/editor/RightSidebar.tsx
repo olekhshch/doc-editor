@@ -23,12 +23,6 @@ const RightSidebar = () => {
   }, [])
 
   const [activeIdx, setActiveIdx] = useState<0 | 1>(0)
-
-  // if (isCollapsed) {
-  //   return <aside>TOP RIGHT SB</aside>
-  // }
-
-  //#TODO: Get rid of the "Other elements" on right sb
   //#TODO: add shortcuts
 
   return (

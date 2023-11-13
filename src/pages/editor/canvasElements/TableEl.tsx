@@ -4,6 +4,9 @@ import styled from "styled-components"
 import TableCellEl from "./TableCell"
 import { useAppDispatch } from "../../../app/hooks"
 import { setActiveElementId } from "../../../features/documents/documentsSlice"
+import { MdOutlineDragIndicator } from "react-icons/md"
+import { DnDTypes } from "../../../DnDtypes"
+import { useDrag } from "react-dnd"
 type props = {
   tableElObj: TableElement
   column: columnParam
@@ -13,9 +16,7 @@ const TableEl = ({ tableElObj, column }: props) => {
   const { content, _id } = tableElObj
   const dispatch = useAppDispatch()
 
-  const Btns = () => {
-    return <div className="cell-btns-wrapper">btns</div>
-  }
+  //#TODO: DnD handle when part of a column
 
   const makeActive = () => {
     if (column === null) {
@@ -24,8 +25,25 @@ const TableEl = ({ tableElObj, column }: props) => {
       dispatch(setActiveElementId([_id, ...column]))
     }
   }
+
+  //DnD handle when part of a column
+  const [{ isDragging }, dragHandle, dragPreview] = useDrag({
+    type: DnDTypes.ELEMENT,
+    collect: (monitor: any) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    item: { _id, columnSource: column },
+  })
+
   return (
     <StyledTable className="table-el" onClick={makeActive}>
+      {column !== null && (
+        <div className="toolbar-section">
+          <button className="dnd-handle" ref={dragHandle}>
+            <MdOutlineDragIndicator />
+          </button>
+        </div>
+      )}
       {content.map((row, idx) => {
         return (
           <div className="table-row" key={idx}>
@@ -56,6 +74,10 @@ const StyledTable = styled.section`
     display: flex;
   }
 
+  .table-row:hover .left-cell-btns {
+    opacity: 1;
+  }
+
   .table-btn {
     margin: auto;
     background-color: transparent;
@@ -64,5 +86,19 @@ const StyledTable = styled.section`
 
   .dnd-handle {
     cursor: grab;
+  }
+
+  .toolbar-section {
+    position: absolute;
+    top: -18px;
+    left: -6px;
+    background-color: white;
+    height: fit-content;
+    border-radius: 4px;
+    opacity: 0;
+  }
+
+  &&:hover .toolbar-section {
+    opacity: 1;
   }
 `

@@ -39,6 +39,7 @@ import addRowAction from "./table/addRow"
 import addColumnAction from "./table/addColumn"
 import deleteRowAction from "./table/deleteRow"
 import deleteColumnAction from "./table/deleteColumn"
+import setCellContentAction from "./table/setCellContent"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -506,6 +507,7 @@ const documentsSlice = createSlice({
     insertColumnToTable: addColumnAction,
     deleteTableRow: deleteRowAction,
     deleteTableColumn: deleteColumnAction,
+    setTableCellContent: setCellContentAction,
 
     duplicateElement: (
       state,
@@ -608,4 +610,5 @@ export const {
   createNewDoc,
   deleteTableRow,
   deleteTableColumn,
+  setTableCellContent,
 } = documentsSlice.actions

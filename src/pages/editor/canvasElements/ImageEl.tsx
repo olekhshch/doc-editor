@@ -14,7 +14,7 @@ import { CurrentThemeContext, MenuState } from "../Editor"
 import { HiDuplicate } from "react-icons/hi"
 import { FaTrash } from "react-icons/fa"
 import { PiPencilSimpleLineFill } from "react-icons/pi"
-import useDebaunce from "../../../app/useDebaunce"
+import useDebaunce from "../../../app/useDebounce"
 
 type props = {
   imageElObj: ImageElement

@@ -12,7 +12,10 @@ export default styled.article<styledProps>`
   border-radius: 8px;
   height: fit-content;
   width: ${(props) => (props.$max_width ? "100%" : "auto")};
-  max-width: ${(props) => (props.$max_width ? "100%" : "auto")};
+  /* max-width: ${(props) => (props.$max_width ? "100%" : "auto")}; */
+  max-width: calc(
+    var(--editor-canvas-width) - var(--editor-left-mg) - var(--editor-right-mg)
+  );
 
   .doc-element-toolbar {
     top: -20px;

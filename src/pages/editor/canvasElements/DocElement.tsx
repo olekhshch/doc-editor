@@ -17,7 +17,6 @@ import { IconContext } from "react-icons"
 import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
 import ElementMenu from "./ElementMenu"
-import { setActiveElementId } from "../../../features/documents/documentsSlice"
 import { CurrentThemeContext, MenuState } from "../Editor"
 import ColumnsDocElement from "./ColumnsDocElement"
 import TextBlockEl from "./TextBlockEl"
@@ -131,7 +130,6 @@ type styledProps = {
 
 const StyledElementWrapper = styled.li<styledProps>`
   display: flex;
-  /* border-bottom: 1px solid black; */
 
   .element-left-margin {
     min-width: var(--editor-left-mg);

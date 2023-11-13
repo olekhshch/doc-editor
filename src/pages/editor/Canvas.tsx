@@ -36,10 +36,11 @@ export default ContentCanvas
 const StyledContentContainer = styled.main`
   /* margin: auto; */
   /* flex-basis: 297mm; */
-  min-width: 210mm;
-  width: 297mm;
+  /* min-width: 297mm; */
+  width: 1320px;
   min-height: 100vh;
   font-family: var(--font-2);
+  overflow: hidden;
 
   .show-title-btn {
     opacity: 0;

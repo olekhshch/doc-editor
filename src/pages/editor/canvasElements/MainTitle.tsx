@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from "react"
+import React, { useState, useCallback, useContext, useEffect } from "react"
 import styled from "styled-components"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import { renameDoc } from "../../../features/documents/documentsSlice"
@@ -12,6 +12,7 @@ import {
 import { CurrentDocContext, CurrentThemeContext } from "../Editor"
 import { rgbColour } from "../../../types"
 import { rgbObjToString } from "../../../functions/rgbObjToString"
+import useDebounce from "../../../app/useDebounce"
 
 type props = {
   docTitle: string
@@ -43,14 +44,27 @@ const hooks = [
 ]
 
 const MainTitle = ({ docTitle }: props) => {
-  console.log("MAIN TITLE RENDERED")
+  const dispatch = useAppDispatch()
   const { main } = useContext(CurrentThemeContext)
   const {
     main_title: { text_colour, underlined },
   } = useAppSelector((state) => state.styling)
 
+  const [title, setTitle] = useState(docTitle)
+
+  const debouncedTitle = useDebounce(title, 300)
+
+  //#TODO: Multiline title support
+  //#TODO: Main title font size (styling)
+
+  useEffect(() => {
+    if (debouncedTitle.trim() !== "") {
+      dispatch(renameDoc({ newTitle: debouncedTitle }))
+    }
+  }, [debouncedTitle, dispatch])
+
   const { manager, state } = useRemirror({
-    content: docTitle,
+    content: title,
     stringHandler: "text",
   })
 
@@ -60,7 +74,16 @@ const MainTitle = ({ docTitle }: props) => {
       $underlined={underlined}
       $text_colour={text_colour}
     >
-      <Remirror manager={manager} initialContent={state} hooks={hooks} />
+      <Remirror
+        manager={manager}
+        initialContent={state}
+        hooks={hooks}
+        onChange={(props) => {
+          const { getText } = props.helpers
+          const newTitle = getText(props.state)
+          setTitle(newTitle)
+        }}
+      />
     </StyledDocTitle>
   )
 }

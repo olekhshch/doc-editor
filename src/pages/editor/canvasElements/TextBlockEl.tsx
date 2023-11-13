@@ -35,7 +35,7 @@ import styled from "styled-components"
 import "remirror/styles/theme.css"
 import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
-import useDebaunce from "../../../app/useDebaunce"
+import useDebaunce from "../../../app/useDebounce"
 import Swatches from "../Swatches"
 // import "remirror/styles/all.css"
 
@@ -274,7 +274,10 @@ const StyledTextContent = styled.div`
     min-height: auto;
     max-height: fit-content;
     min-width: 48px;
-    max-width: 100%;
+    max-width: calc(
+      var(--editor-canvas-width) - var(--editor-left-mg) -
+        var(--editor-right-mg)
+    );
     border: none;
     outline: none;
     text-align: justify;

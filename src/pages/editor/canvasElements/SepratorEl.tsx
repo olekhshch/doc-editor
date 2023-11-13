@@ -15,16 +15,18 @@ import {
 import Swatches from "../Swatches"
 import { ThemeName, themes } from "../../../features/styling/initialState"
 import { rgbObjToString } from "../../../functions/rgbObjToString"
-import useDebaunce from "../../../app/useDebaunce"
+import useDebaunce from "../../../app/useDebounce"
+import { MdOutlineDragIndicator } from "react-icons/md"
+import { useDrag } from "react-dnd"
+import { DnDTypes } from "../../../DnDtypes"
 
-//#TODO: Seprator edit bug fix
 type props = {
   separatorObj: SeparatorElement
   column: null | [number, "left" | "right"]
 }
 const SepratorEl = ({ separatorObj, column }: props) => {
   const dispatch = useAppDispatch()
-  const { _id, colour, line, width } = separatorObj
+  const { _id, colour, width } = separatorObj
 
   const [currentWidth, setCurrentWidth] = useState(width)
 
@@ -44,6 +46,15 @@ const SepratorEl = ({ separatorObj, column }: props) => {
     )
   }, [colour])
 
+  //DnD setup
+  const [{ isDragging }, dragHandle, dragPreview] = useDrag({
+    type: DnDTypes.ELEMENT,
+    collect: (monitor: any) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    item: { _id, columnSource: column },
+  })
+
   const Toolbar = useMemo(() => {
     const handleDuplicate = () => {
       dispatch(duplicateElement({ elementId: _id, column }))
@@ -62,15 +73,19 @@ const SepratorEl = ({ separatorObj, column }: props) => {
     const handleWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const { value } = e.target
       const valueNum = parseInt(value, 10)
-      // dispatch(
-      //   setSeparatorWidth({ separatorId: _id, column, newWidth: valueNum }),
-      // )
       setCurrentWidth(valueNum)
     }
 
     return (
       <StyledElementToolbar>
         <>
+          {column !== null && (
+            <div className="toolbar-section">
+              <button className="dnd-handle" ref={dragHandle}>
+                <MdOutlineDragIndicator />
+              </button>
+            </div>
+          )}
           <div className="toolbar-section">
             <Swatches handleChange={setColour} activeThemeName={colour} />
           </div>
@@ -105,7 +120,7 @@ const SepratorEl = ({ separatorObj, column }: props) => {
         </>
       </StyledElementToolbar>
     )
-  }, [colour, currentWidth, dispatch, _id, column])
+  }, [colour, currentWidth, dispatch, _id, dragHandle])
 
   const handleClick = (e: React.MouseEvent) => {
     dispatch(setActiveElementId(column === null ? _id : [_id, ...column]))

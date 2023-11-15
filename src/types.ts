@@ -86,7 +86,8 @@ export interface ImageElement extends BasicComponent {
   description: string
   description_position: "top" | "bottom" | "left" | "right"
   showDescription: boolean
-  width: undefined | number
+  width: number
+  naturalWidth: number
   left_margin: number
 }
 

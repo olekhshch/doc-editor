@@ -40,6 +40,7 @@ import addColumnAction from "./table/addColumn"
 import deleteRowAction from "./table/deleteRow"
 import deleteColumnAction from "./table/deleteColumn"
 import setCellContentAction from "./table/setCellContent"
+import findElementFromState from "../../functions/findElementFromState"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -518,58 +519,79 @@ const documentsSlice = createSlice({
         column: columnParam
       }>,
     ) => {
-      if (payload.column === null) {
-        //element is not a part of a column
-        const targetElement = state.activeContent!.components.find(
-          (el) => el._id === payload.elementId,
-        )
+      const { elementId, column } = payload
+      const [targetEl, targetIdx] = findElementFromState(
+        state.activeContent!.components,
+        elementId,
+        column,
+      )
 
-        if (targetElement) {
-          const duplicate: DocContentComponent | ColumnsElement = {
-            ...targetElement,
-            _id: new Date().getTime(),
-          }
-          //inserting duplicate after the original
-          state.activeContent!.components = addElementsToState(
-            state.activeContent!.components,
-            payload.elementId,
-            payload.column,
-            duplicate,
-          ) as (DocContentComponent | ColumnsElement)[]
+      if (targetEl) {
+        const _id = new Date().getTime()
+        const duplicate: BasicComponent = {
+          ...targetEl,
+          _id,
         }
-      } else {
-        //element is a part of a column
-        const [columnId, side] = payload.column
-        const targetColumn = state.activeContent!.components.find(
-          (el) => el._id === columnId && el.type === "columns",
-        ) as ColumnsElement | undefined
 
-        if (targetColumn) {
-          const targetColumnIdx = state.activeContent!.components.findIndex(
-            (el) => el._id === columnId && el.type === "columns",
-          )
-          const targetElement = targetColumn[side].find(
-            (el) => el._id === payload.elementId,
-          ) as DocContentComponent | undefined
-
-          if (targetElement) {
-            const duplicate: DocContentComponent = {
-              ...targetElement,
-              _id: new Date().getTime(),
-            }
-            const newSide = addElementsToState(
-              targetColumn[side],
-              payload.elementId,
-              null,
-              duplicate,
-            )
-            const newColumn = { ...targetColumn, [side]: newSide }
-
-            //replacing old columns with columns element with a duplicate
-            state.activeContent!.components[targetColumnIdx] = newColumn
-          }
-        }
+        state.activeContent!.components = addElementsToState(
+          state.activeContent!.components,
+          targetEl._id,
+          column,
+          duplicate,
+        ) as (DocContentComponent | ColumnsElement)[]
       }
+      // if (payload.column === null) {
+      //   //element is not a part of a column
+      //   const targetElement = state.activeContent!.components.find(
+      //     (el) => el._id === payload.elementId,
+      //   )
+
+      //   if (targetElement) {
+      //     const duplicate: DocContentComponent | ColumnsElement = {
+      //       ...targetElement,
+      //       _id: new Date().getTime(),
+      //     }
+      //     //inserting duplicate after the original
+      //     state.activeContent!.components = addElementsToState(
+      //       state.activeContent!.components,
+      //       payload.elementId,
+      //       payload.column,
+      //       duplicate,
+      //     ) as (DocContentComponent | ColumnsElement)[]
+      //   }
+      // } else {
+      //   //element is a part of a column
+      //   const [columnId, side] = payload.column
+      //   const targetColumn = state.activeContent!.components.find(
+      //     (el) => el._id === columnId && el.type === "columns",
+      //   ) as ColumnsElement | undefined
+
+      //   if (targetColumn) {
+      //     const targetColumnIdx = state.activeContent!.components.findIndex(
+      //       (el) => el._id === columnId && el.type === "columns",
+      //     )
+      //     const targetElement = targetColumn[side].find(
+      //       (el) => el._id === payload.elementId,
+      //     ) as DocContentComponent | undefined
+
+      //     if (targetElement) {
+      //       const duplicate: DocContentComponent = {
+      //         ...targetElement,
+      //         _id: new Date().getTime(),
+      //       }
+      //       const newSide = addElementsToState(
+      //         targetColumn[side],
+      //         payload.elementId,
+      //         null,
+      //         duplicate,
+      //       )
+      //       const newColumn = { ...targetColumn, [side]: newSide }
+
+      //       //replacing old columns with columns element with a duplicate
+      //       state.activeContent!.components[targetColumnIdx] = newColumn
+      //     }
+      //   }
+      // }
     },
   },
 })

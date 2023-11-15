@@ -1,156 +1,76 @@
-import React, { useEffect, useState, useRef, useContext, useMemo } from "react"
-import { ImageElement } from "../../../types"
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useContext,
+  ChangeEvent,
+  FormEvent,
+} from "react"
 import styled from "styled-components"
-import StyledElementToolbar from "./StyledElementToolbar"
+import { ImageElement, columnParam } from "../../../types"
 import { useAppDispatch } from "../../../app/hooks"
+import useDebounce from "../../../app/useDebounce"
 import {
   deleteElement,
   duplicateElement,
-  setActiveElementId,
   setImageDescription,
   setImageWidth,
 } from "../../../features/documents/documentsSlice"
 import { CurrentThemeContext, MenuState } from "../Editor"
+import StyledElementToolbar from "./StyledElementToolbar"
+import { PiPencilSimpleLineFill } from "react-icons/pi"
 import { HiDuplicate } from "react-icons/hi"
 import { FaTrash } from "react-icons/fa"
-import { PiPencilSimpleLineFill } from "react-icons/pi"
-import useDebaunce from "../../../app/useDebounce"
 
 type props = {
   imageElObj: ImageElement
-  column: null | [number, "left" | "right"]
+  column: columnParam
 }
 
 const ImageEl = ({ imageElObj, column }: props) => {
   const dispatch = useAppDispatch()
+  const isColumn = column !== null
+  const maxWidth = useMemo(() => (isColumn ? 448 : 897), [isColumn])
+
   const {
     width,
     _id,
     description,
     left_margin,
+    naturalWidth,
     description_position,
     showDescription,
+    src,
   } = imageElObj
 
-  //#TODO: Fix autowidth: no width specified => natural width <= max width
+  const [imgWidth, setImgWidth] = useState(Math.min(width, maxWidth))
+  const [margin, setMargin] = useState(
+    Math.min(left_margin, maxWidth - imgWidth),
+  )
 
-  const fitWidth = column === null ? 860 - left_margin : 400 - left_margin
-  const [imgWidth, setImgWidth] = useState<number>(width ?? fitWidth)
-  const [margin, setMargin] = useState(left_margin)
-
-  const debouncedWidth = useDebaunce(imgWidth, 500)
-  const debauncedMargin = useDebaunce(margin, 500)
-
-  const imgRef = useRef<HTMLImageElement>(null)
+  const debouncedWidth = useDebounce(imgWidth, 200)
+  const debouncedMargin = useDebounce(margin, 200)
 
   useEffect(() => {
-    if (!width) {
-      const { naturalWidth } = imgRef.current!
-      if (naturalWidth > imgWidth) {
-        setImgWidth(Math.min(fitWidth, naturalWidth))
-      }
-    } else {
-      setImgWidth(Math.min(width, fitWidth))
-    }
-  }, [imgWidth, width, fitWidth])
-
-  // set new values after delay (debounce)
-  // useEffect(() => {
-  //   dispatch(
-  //     setImageWidth({
-  //       imageElId: _id,
-  //       column,
-  //       newLeftMargin: debauncedMargin,
-  //       newWidth: debouncedWidth,
-  //     }),
-  //   )
-  // }, [_id, debauncedMargin, debouncedWidth, dispatch])
-
-  const handleCutomeWidthMode = () => {
-    dispatch(setImageWidth({ imageElId: _id, column, newWidth: fitWidth }))
-  }
-
-  const setWidthToFit = () => {
     dispatch(
       setImageWidth({
         imageElId: _id,
-        column,
-        newWidth: undefined,
-        newLeftMargin: 0,
+        newLeftMargin: debouncedMargin,
+        newWidth: debouncedWidth,
+        column: isColumn ? [column[0], column[1]] : null,
       }),
     )
-  }
-
-  //resize handlers
-  const handleRightResize = (e: React.MouseEvent) => {
-    //right handle set new image width only
-    const x0 = e.clientX
-
-    const handleMouseMove = (ev: MouseEvent) => {
-      const x = ev.clientX
-      const difference = x - x0
-      dispatch(
-        setImageWidth({
-          newWidth: Math.min(fitWidth, debouncedWidth + difference),
-          imageElId: _id,
-          column,
-        }),
-      )
-    }
-
-    const handleMouseUp = () => {
-      window.removeEventListener("mousemove", handleMouseMove)
-    }
-
-    window.addEventListener("mousemove", handleMouseMove)
-    window.addEventListener("mouseup", handleMouseUp)
-    e.stopPropagation()
-  }
-
-  const handleLeftResize = (e: React.MouseEvent) => {
-    //sets new width AND left margin
-    const x0 = e.clientX
-    e.stopPropagation()
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = e.clientX
-      const difference = x - x0
-      const new_left_mrg = left_margin + difference
-      const new_width = width! - difference
-      dispatch(
-        setImageWidth({
-          imageElId: _id,
-          column,
-          newLeftMargin: new_left_mrg,
-          newWidth: Math.min(fitWidth, new_width),
-        }),
-      )
-    }
-
-    const handleMouseUp = () => {
-      window.removeEventListener("mousemove", handleMouseMove)
-    }
-
-    window.addEventListener("mousemove", handleMouseMove)
-    window.addEventListener("mouseup", handleMouseUp)
-  }
+  }, [_id, isColumn, debouncedMargin, dispatch, debouncedWidth])
 
   const handleSlide = (e: React.MouseEvent) => {
-    if (width) {
+    if (imgWidth < maxWidth) {
       const x0 = e.clientX
 
       const handleMouseMove = (ev: MouseEvent) => {
         const x = ev.clientX
         const difference = x - x0
-        const new_mrg = left_margin + difference
-        dispatch(
-          setImageWidth({
-            imageElId: _id,
-            column,
-            newLeftMargin: Math.max(new_mrg, 0),
-            newWidth: imgWidth,
-          }),
-        )
+        const new_mrg = Math.max(left_margin + difference, 0)
+        setMargin(Math.min(new_mrg, maxWidth - imgWidth))
       }
 
       const handleMouseUp = () => {
@@ -160,49 +80,170 @@ const ImageEl = ({ imageElObj, column }: props) => {
       window.addEventListener("mousemove", handleMouseMove)
       window.addEventListener("mouseup", handleMouseUp)
     }
+  }
 
+  const handleLeftResize = (e: React.MouseEvent) => {
+    //sets new width AND left margin
+    const x0 = e.clientX
+    e.stopPropagation()
+
+    const handleMouseMove = (ev: MouseEvent) => {
+      const x = ev.clientX
+      const difference = x - x0
+      const new_left_mrg = Math.max(left_margin + difference, 0)
+      const new_width = Math.max(imgWidth - difference, 10)
+      const maxAllowedWidth = maxWidth - new_left_mrg
+      setImgWidth(Math.min(new_width, maxAllowedWidth))
+      setMargin(Math.min(new_left_mrg, maxWidth - 10))
+    }
+
+    const handleMouseUp = () => {
+      window.removeEventListener("mousemove", handleMouseMove)
+    }
+
+    window.addEventListener("mousemove", handleMouseMove)
+    window.addEventListener("mouseup", handleMouseUp)
+  }
+
+  const handleRightResize = (e: React.MouseEvent) => {
+    //right handle set new image width only
+    const x0 = e.clientX
+
+    const handleMouseMove = (ev: MouseEvent) => {
+      const x = ev.clientX
+      const difference = x - x0
+      const maxAllowedWidth = maxWidth - margin
+      const newWidth = Math.max(10, imgWidth + difference)
+      setImgWidth(Math.min(maxAllowedWidth, newWidth))
+    }
+
+    const handleMouseUp = () => {
+      window.removeEventListener("mousemove", handleMouseMove)
+    }
+
+    window.addEventListener("mousemove", handleMouseMove)
+    window.addEventListener("mouseup", handleMouseUp)
     e.stopPropagation()
   }
 
-  //styling options
-  const { main, gray, lighter } = useContext(CurrentThemeContext)
+  //DESCRIPTION
+  const [showDescriptionSettings, setShowDescriptionSettings] = useState(false)
 
-  //popUpWindow context
-  const { setImageViewObj, setPopUpFor } = useContext(MenuState)
+  const Description = () => {
+    return <p className="image-description">{description}</p>
+  }
 
-  //#TODO: Round corners
-  //#TODO: Box shadow
+  const DescriptionMenu = () => {
+    const [descriptionDraft, setDescriptionDraft] = useState(description)
+    const [descrPosition, setDescrPosition] = useState<
+      "top" | "bottom" | "left" | "right"
+    >(description_position)
+
+    const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+      const { value } = e.target
+      if (value.length <= 160) {
+        setDescriptionDraft(value)
+      }
+    }
+
+    const handleSubmit = (e: FormEvent) => {
+      e.preventDefault()
+      dispatch(
+        setImageDescription({
+          elementId: _id,
+          column,
+          newDescription: descriptionDraft,
+          newPosition: descrPosition,
+          showDescription: true,
+        }),
+      )
+
+      setShowDescriptionSettings(false)
+    }
+
+    const saveAndHide = () => {
+      dispatch(
+        setImageDescription({
+          elementId: _id,
+          column,
+          newDescription: descriptionDraft,
+          newPosition: descrPosition,
+          showDescription: false,
+        }),
+      )
+      setShowDescriptionSettings(false)
+    }
+
+    const handlePositionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const { value } = e.target!
+      setDescrPosition(value as "top" | "bottom")
+    }
+
+    return (
+      <div className="description-settings">
+        <p>Description: </p>
+        <form onSubmit={handleSubmit}>
+          <textarea value={descriptionDraft} onChange={handleChange} />
+          <div>
+            <span>Position:</span>
+            <select
+              name="position"
+              value={descrPosition}
+              onChange={handlePositionChange}
+            >
+              <option value="top">top</option>
+              <option value="bottom">bottom</option>
+              {/* <option value="left">left</option>
+              <option value="right">right</option> */}
+            </select>
+          </div>
+          <div className="btn-container">
+            <button type="submit">Save & show</button>
+            <button onClick={saveAndHide}>Save & hide</button>
+            <button onClick={() => setShowDescriptionSettings(false)}>
+              Cancel
+            </button>
+          </div>
+        </form>
+        <p>{descriptionDraft.length}/160</p>
+      </div>
+    )
+  }
+
+  //TOOLBAR
   const ImgToolbar = () => {
-    const handleDelete = () => {
-      dispatch(deleteElement({ column, elementId: _id }))
-    }
-
-    const handleDuplicate = () => {
-      dispatch(duplicateElement({ elementId: _id, column }))
-    }
+    const { setImageViewObj, setPopUpFor } = useContext(MenuState)
 
     const handleZoom = () => {
       setImageViewObj(imageElObj)
       setPopUpFor("image_view")
     }
 
+    const handleDuplicate = () => {
+      dispatch(duplicateElement({ elementId: _id, column }))
+    }
+
+    const handleDelete = () => {
+      dispatch(deleteElement({ column, elementId: _id }))
+    }
+
+    const resetWidth = () => {
+      if (margin + naturalWidth > maxWidth) {
+        setMargin(0)
+      }
+      setImgWidth(naturalWidth)
+    }
+
     return (
       <StyledElementToolbar>
         <>
-          <div className="toolbar-section">
-            {!width ? (
-              <button
-                className="element-toolbar-btn"
-                onClick={handleCutomeWidthMode}
-              >
-                Resize
+          {naturalWidth !== width && (
+            <div className="toolbar-section">
+              <button className="element-toolbar-btn" onClick={resetWidth}>
+                Reset width
               </button>
-            ) : (
-              <button className="element-toolbar-btn" onClick={setWidthToFit}>
-                Auto width
-              </button>
-            )}
-          </div>
+            </div>
+          )}
           <div className="toolbar-section">
             <button className="element-toolbar-btn" onClick={handleZoom}>
               Zoom
@@ -212,7 +253,9 @@ const ImageEl = ({ imageElObj, column }: props) => {
             <button
               className="element-toolbar-btn"
               title="Edit description"
-              onClick={() => setShowDescriptionWindow(!showDescriptionWindow)}
+              onClick={() => {
+                setShowDescriptionSettings(!showDescriptionSettings)
+              }}
             >
               <PiPencilSimpleLineFill />
             </button>
@@ -238,152 +281,35 @@ const ImageEl = ({ imageElObj, column }: props) => {
     )
   }
 
-  const [showDescriptionWindow, setShowDescriptionWindow] = useState(false)
-
-  const DescriptionWindow = () => {
-    const [descr, setDescr] = useState(description)
-    const [position, setPosition] = useState(description_position)
-
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      if (e.target.value.length <= 160) {
-        setDescr(e.target.value)
-      }
-    }
-
-    const handleSubmit = (e: React.FormEvent) => {
-      e.preventDefault()
-
-      if (descr.trim() !== "" && descr.length < 160) {
-        dispatch(
-          setImageDescription({
-            elementId: _id,
-            column,
-            newDescription: descr,
-            newPosition: position,
-            showDescription: true,
-          }),
-        )
-      } else {
-        dispatch(
-          setImageDescription({
-            elementId: _id,
-            column,
-            newDescription: descr,
-            newPosition: position,
-            showDescription: false,
-          }),
-        )
-      }
-
-      setShowDescriptionWindow(false)
-    }
-
-    const handlePositionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setPosition(e.target.value as "top" | "bottom" | "left" | "right")
-    }
-
-    const submitBtnText =
-      descr.trim() !== "" || !showDescription ? "Show" : "Hide"
-
-    return (
-      <div
-        className="description-window"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        <form onSubmit={handleSubmit} className="flex-col">
-          <label>
-            <p>Image description:</p>
-            <textarea value={descr} onChange={handleChange} />
-          </label>
-          <p>{descr.length}/160</p>
-          <label className="flex">
-            <span>Position:</span>
-            <select
-              name="position"
-              value={position}
-              onChange={handlePositionChange}
-            >
-              <option value="top">top</option>
-              <option value="bottom">bottom</option>
-              <option value="left">left</option>
-              <option value="right">right</option>
-            </select>
-          </label>
-          <div className="flex">
-            <button type="submit">{submitBtnText}</button>
-            <button>Save changes</button>
-            <button onClick={() => setShowDescriptionWindow(false)}>
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    )
-  }
-
-  //#TODO: Make left_margin, width and dimension position (left/right) cooperate
-  const Description = useMemo(() => {
-    return (
-      <div
-        title={description}
-        className={`description descr-${description_position}`}
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        {description}
-      </div>
-    )
-  }, [description_position, description])
-
-  const setActiveOnClick = () => {
-    if (column === null) {
-      dispatch(setActiveElementId(_id))
-    } else {
-      dispatch(setActiveElementId([_id, ...column]))
-    }
-  }
-
-  let wrapperClass = ["right", "left"].includes(description_position)
-    ? "flex"
-    : "flex-col"
-
-  if (description_position === "right") {
-    wrapperClass += " row-reverse"
-  }
-
-  if (description_position === "bottom") {
-    wrapperClass += " column-reverse"
-  }
+  //STYLING
+  const { main, gray } = useContext(CurrentThemeContext)
 
   return (
     <>
       <ImgToolbar />
       <StyledImgWrapper
+        $left_margin={margin}
         $main={main}
-        $left_margin={left_margin}
         $gray={gray}
-        $lighter={lighter}
-        $img_width={imgWidth}
-        onClick={setActiveOnClick}
-        onMouseDown={handleSlide}
+        //   onMouseDown={handleSlide}
       >
-        <div className={wrapperClass}>
-          {showDescription && Description}
-          <div className="handlers-wrapper">
+        {showDescriptionSettings && <DescriptionMenu />}
+        <div className="flex-col">
+          <Description />
+          <div className="handlers-wrapper" onMouseDown={handleSlide}>
             <img
-              src={imageElObj.src}
-              width={imgWidth}
-              ref={imgRef}
+              src={src}
               alt={description}
+              width={imgWidth}
+              className="image-element"
+              draggable={false}
             />
-            {width && (
-              <div className="resize-handles">
-                <div className="handle left" onMouseDown={handleLeftResize} />
-                <div className="handle right" onMouseDown={handleRightResize} />
-              </div>
-            )}
+            <div className="resize-handles">
+              <div className="handle left" onMouseDown={handleLeftResize} />
+              <div className="handle right" onMouseDown={handleRightResize} />
+            </div>
           </div>
         </div>
-        {showDescriptionWindow && <DescriptionWindow />}
       </StyledImgWrapper>
     </>
   )
@@ -392,15 +318,13 @@ const ImageEl = ({ imageElObj, column }: props) => {
 export default ImageEl
 
 type styledProps = {
-  $main: string
   $left_margin: number
+  $main: string
   $gray: string
-  $lighter: string
-  $img_width: number
 }
 
 const StyledImgWrapper = styled.div<styledProps>`
-  margin-left: ${(props) => props.$left_margin}px;
+  margin-left: ${(pr) => pr.$left_margin}px;
   position: relative;
 
   .handlers-wrapper {
@@ -428,71 +352,46 @@ const StyledImgWrapper = styled.div<styledProps>`
 
   .handle {
     background-color: ${(props) => props.$main};
-    width: 4px;
+    width: 6px;
     height: 30%;
     min-height: 30px;
     cursor: e-resize;
   }
 
-  .left {
-    border-radius: 0 4px 4px 0;
-  }
-  .right {
-    border-radius: 4px 0 0 4px;
-  }
-
-  .description-window {
-    padding: 8px;
+  .description-settings {
+    padding: 4px 8px;
     position: absolute;
-    top: 4px;
+    z-index: 200;
     background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 8px ${(pr) => pr.$gray};
     font-size: var(--small-size);
-    border-radius: 4px;
-    box-shadow: 0 0 12px ${(props) => props.$gray};
   }
 
-  .description-window select {
-    margin-left: 4px;
+  .description-settings form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
   }
 
-  .description-window textarea {
+  .btn-container {
+    display: flex;
+    gap: 8px;
+  }
+
+  .description-settings textarea {
     resize: none;
-    width: 100%;
     height: 140px;
   }
 
-  .description-window button {
-    margin: 2px;
-    padding: 4px;
-    border: 2px solid ${(props) => props.$lighter};
-    border-radius: 4px;
-    background-color: white;
-  }
-
-  .description-window button[type="submit"] {
-    background-color: ${(props) => props.$main};
-    border: 2px solid ${(props) => props.$main};
-    color: ${(props) => props.$lighter};
-  }
-
-  .description {
+  .image-description,
+  .description-settings textarea {
+    width: 240px;
     font-size: var(--small-size);
-    color: ${(props) => props.$gray};
+  }
+
+  .image-description {
     font-style: italic;
-    white-space: pre-wrap;
-  }
-
-  /* .descr-top,
-  .descr-bottom {
-    max-width: ${(props) => props.$img_width}px;
-    text-overflow: ellipsis;
-  } */
-
-  .row-reverse {
-    flex-direction: row-reverse;
-  }
-
-  .column-reverse {
-    flex-direction: column-reverse;
+    color: ${(props) => props.$main};
   }
 `

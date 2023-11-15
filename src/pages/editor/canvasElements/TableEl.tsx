@@ -16,8 +16,6 @@ const TableEl = ({ tableElObj, column }: props) => {
   const { content, _id } = tableElObj
   const dispatch = useAppDispatch()
 
-  //#TODO: DnD handle when part of a column
-
   const makeActive = () => {
     if (column === null) {
       dispatch(setActiveElementId(_id))

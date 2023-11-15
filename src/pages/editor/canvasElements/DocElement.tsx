@@ -64,7 +64,7 @@ const DocElement = ({ docElementObj, column }: props) => {
   }, [docElementObj, type, column])
 
   //DnD set up
-  const [{ isDragging }, dragHandle, dragPreview] = useDrag({
+  const [, dragHandle, dragPreview] = useDrag({
     type: DnDTypes.ELEMENT,
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
@@ -107,17 +107,17 @@ const DocElement = ({ docElementObj, column }: props) => {
           <StyledContent
             onClick={() => setElementMenuId(null)}
             ref={dragPreview}
-            $max_width={["separator", "table"].includes(type)}
+            $max_width={["separator", "table", "image"].includes(type)}
             $gray={gray}
           >
             {ContentMemo}
           </StyledContent>
-          <div className="right-margin" />
         </>
       )}
       {type === "columns" && (
         <ColumnsDocElement columnsElement={docElementObj} />
       )}
+      {column === null && <div className="right-margin" />}
     </StyledElementWrapper>
   )
 }

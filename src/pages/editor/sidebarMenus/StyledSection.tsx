@@ -56,4 +56,9 @@ export const StyledSection = styled.section<styledProps>`
     border: none;
     border-radius: 50%;
   }
+
+  #tb-size-presets option {
+    font-size: var(--small-size);
+    padding: 0;
+  }
 `

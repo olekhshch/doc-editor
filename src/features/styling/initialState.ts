@@ -9,6 +9,9 @@ export interface StylingState {
     text_colour?: rgbColour
     underlined: boolean
   }
+  text_blocks: {
+    font_size: number
+  }
 }
 
 const stylingOptionsState0: stylingOrderState = [
@@ -59,6 +62,9 @@ export const initialState: StylingState = {
   },
   main_title: {
     underlined: true,
+  },
+  text_blocks: {
+    font_size: 20,
   },
 }
 

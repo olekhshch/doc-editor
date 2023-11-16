@@ -20,7 +20,7 @@ import {
 } from "remirror/extensions"
 import StyledElementToolbar from "./StyledElementToolbar"
 import { MenuState } from "../Editor"
-import { useAppDispatch } from "../../../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import {
   deleteElement,
   duplicateElement,
@@ -218,6 +218,11 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
     setElementMenuId(null)
   }
 
+  //STYLING
+  const {
+    text_blocks: { font_size },
+  } = useAppSelector((state) => state.styling)
+
   return (
     <ThemeProvider
       className="text-block"
@@ -239,6 +244,7 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
     >
       <StyledTextContent
         ref={dragPreview}
+        $font_size={font_size}
         onClick={(e) => handleClick(e)}
         // className="remirror-theme"
       >
@@ -266,7 +272,11 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
 
 export default React.memo(TextBlockEl)
 
-const StyledTextContent = styled.div`
+type styledProps = {
+  $font_size: number
+}
+
+const StyledTextContent = styled.div<styledProps>`
   height: fit-content;
 
   .text-block {
@@ -282,6 +292,7 @@ const StyledTextContent = styled.div`
     outline: none;
     text-align: justify;
     font-family: var(--font-2);
+    font-size: ${(props) => props.$font_size}px;
   }
 
   .text-block > .toolbar-section {

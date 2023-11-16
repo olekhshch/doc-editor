@@ -32,7 +32,11 @@ const ColumnsDocElement = ({ columnsElement }: props) => {
         {left.map((element, idx) => (
           <div key={element._id}>
             <DnDPlaceholder indexBefore={idx} columnTarget={[_id, "left"]} />
-            <DocElement docElementObj={element} column={[_id, "left"]} />
+            <DocElement
+              docElementObj={element}
+              column={[_id, "left"]}
+              orderIdx={idx}
+            />
           </div>
         ))}
       </section>
@@ -40,7 +44,11 @@ const ColumnsDocElement = ({ columnsElement }: props) => {
         {right.map((element, idx) => (
           <div key={element._id}>
             <DnDPlaceholder indexBefore={idx} columnTarget={[_id, "right"]} />
-            <DocElement docElementObj={element} column={[_id, "right"]} />
+            <DocElement
+              docElementObj={element}
+              column={[_id, "right"]}
+              orderIdx={idx}
+            />
           </div>
         ))}
       </section>
@@ -52,10 +60,10 @@ export default ColumnsDocElement
 
 const StyledColumnsElement = styled.div`
   display: flex;
+  gap: 2px;
   width: 100%;
 
   .column {
-    margin-left: 4px;
     display: flex;
     flex-direction: column;
 

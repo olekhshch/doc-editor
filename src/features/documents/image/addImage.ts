@@ -6,7 +6,6 @@ import {
   ImageElement,
   columnParam,
 } from "../../../types"
-import { insertElementIntoArray } from "../../../functions/insertElementIntoArray"
 import addElementsToState from "../../../functions/addElementsToState"
 
 const addImageAction = (
@@ -22,6 +21,7 @@ const addImageAction = (
 ) => {
   const oldContent = state.activeContent
   const [maxLineWidth, maxColumnWidth] = [896, 448]
+  console.log("tried")
   try {
     const imageId = new Date().getTime()
     const newImageEl: ImageElement = {
@@ -46,6 +46,8 @@ const addImageAction = (
           null,
           newImageEl,
         ) as (DocContentComponent | ColumnsElement)[]
+
+        state.activeElementId = imageId
       } else {
         newImageEl.width = Math.min(payload.width, maxColumnWidth)
         const colPar: columnParam = [
@@ -59,6 +61,8 @@ const addImageAction = (
           colPar,
           newImageEl,
         ) as (DocContentComponent | ColumnsElement)[]
+
+        state.activeElementId = [imageId, ...colPar]
       }
     } else if (payload.afterElementId) {
       newImageEl.width = Math.min(
@@ -72,6 +76,17 @@ const addImageAction = (
         payload.column,
         newImageEl,
       ) as (DocContentComponent | ColumnsElement)[]
+
+      state.activeElementId =
+        payload.column === null ? imageId : [imageId, ...payload.column]
+    } else if (!payload.afterElementId && state.activeElementId === null) {
+      //no active element and no specific element id is given => image is inserted at the end of document
+      state.activeContent!.components = [
+        ...state.activeContent!.components,
+        newImageEl,
+      ]
+
+      state.activeElementId = imageId
     }
 
     // const insertAfterId = payload.afterElementId

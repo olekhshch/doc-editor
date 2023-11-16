@@ -13,6 +13,7 @@ import { ImTable } from "react-icons/im"
 import { IconContext } from "react-icons"
 import { CgFormatSeparator } from "react-icons/cg"
 import { CurrentThemeContext, MenuState } from "../Editor"
+import useDocElements from "../../../app/useDocElements"
 
 const AddComponentsMenu = () => {
   const { disableElementsAdding } = useAppSelector((state) => state.documents)
@@ -21,28 +22,15 @@ const AddComponentsMenu = () => {
   const { setPopUpFor } = useContext(MenuState)
   const dispatch = useAppDispatch()
 
-  const addHeadingEl = (e: React.MouseEvent) => {
-    dispatch(addHeading({ level: 2, column: null }))
-    e.stopPropagation()
-  }
-
-  const addParagraphEl = (e: React.MouseEvent) => {
-    dispatch(addParagraph({ column: null }))
-    e.stopPropagation()
-  }
-
-  const addSeparatorEl = (e: React.MouseEvent) => {
-    dispatch(addSeparator({ currentTheme: activeTheme }))
-    e.stopPropagation()
-  }
+  const {
+    addHeadingElement,
+    addParagraphElement,
+    addSeparatorElement,
+    addTableElement,
+  } = useDocElements()
 
   const addImageEl = (e: React.MouseEvent) => {
     setPopUpFor("new_image")
-    e.stopPropagation()
-  }
-
-  const addTableEl = (e: React.MouseEvent) => {
-    dispatch(addTable({ rows: 2, columns: 3, column: null }))
     e.stopPropagation()
   }
 
@@ -57,7 +45,7 @@ const AddComponentsMenu = () => {
             <li>
               <button
                 className="constructor-btn"
-                onClick={addHeadingEl}
+                onClick={addHeadingElement}
                 disabled={disableElementsAdding}
               >
                 <span className="icon">
@@ -69,7 +57,7 @@ const AddComponentsMenu = () => {
             <li>
               <button
                 className="constructor-btn"
-                onClick={addParagraphEl}
+                onClick={addParagraphElement}
                 disabled={disableElementsAdding}
               >
                 <span className="icon">
@@ -94,7 +82,7 @@ const AddComponentsMenu = () => {
               <button
                 className="constructor-btn"
                 disabled={disableElementsAdding}
-                onClick={addTableEl}
+                onClick={addTableElement}
               >
                 <span className="icon">
                   <ImTable />
@@ -105,7 +93,7 @@ const AddComponentsMenu = () => {
             <li>
               <button
                 className="constructor-btn"
-                onClick={addSeparatorEl}
+                onClick={addSeparatorElement}
                 disabled={disableElementsAdding}
               >
                 <span className="icon">

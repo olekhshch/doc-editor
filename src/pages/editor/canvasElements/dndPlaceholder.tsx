@@ -15,6 +15,7 @@ type props = {
 type DragElementItem = {
   _id: number
   columnSource: columnParam
+  idx: number
 }
 
 type DropCollected = {
@@ -36,14 +37,15 @@ const DnDPlaceholder = ({ indexBefore, columnTarget }: props) => {
       isStart: monitor.canDrop(),
     }),
     drop: (item) => {
-      dispatch(
-        moveElement({
-          elementId: item._id,
-          newPlacementIdx: indexBefore,
-          columnSource: item.columnSource,
-          columnTarget,
-        }),
-      )
+      if (item.idx !== indexBefore)
+        dispatch(
+          moveElement({
+            elementId: item._id,
+            newPlacementIdx: indexBefore,
+            columnSource: item.columnSource,
+            columnTarget,
+          }),
+        )
     },
   })
 

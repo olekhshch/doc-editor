@@ -1,15 +1,18 @@
-import React, { useContext, useState, useRef, useEffect, useMemo } from "react"
+import React, { useContext, useState, useRef, useEffect } from "react"
 import styled from "styled-components"
 import { CurrentThemeContext, MenuState } from "./Editor"
 import { useAppDispatch } from "../../app/hooks"
 import { addImage } from "../../features/documents/documentsSlice"
 import ImageViewer from "./ImageViewer"
+import useDocElements from "../../app/useDocElements"
 
 const PopUpWindow = () => {
   const dispatch = useAppDispatch()
   const { popUpFor, setPopUpFor } = useContext(MenuState)
 
   const { main } = useContext(CurrentThemeContext)
+
+  const { addImageElement } = useDocElements()
 
   //new image functionality
   const [imgURL, setImgURL] = useState("")
@@ -18,16 +21,10 @@ const PopUpWindow = () => {
 
   const handleNewImageSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (imgURL.trim() !== "" && imgWidth !== 0) {
-      dispatch(
-        addImage({
-          src: imgURL,
-          column: null,
-          width: imgWidth,
-        }),
-      )
-      setPopUpFor(null)
+    if (imgWidth !== 0) {
+      addImageElement(imgURL, imgWidth)
     }
+    setPopUpFor(null)
   }
 
   useEffect(() => {

@@ -31,7 +31,7 @@ const addHeadingAction = (
       break
   }
 
-  const _id = Math.round(Math.random() * 10000)
+  const _id = new Date().getTime()
   const newHeadingEl: HeadingElement = {
     _id,
     type: "heading",
@@ -65,6 +65,8 @@ const addHeadingAction = (
       column,
       newHeadingEl,
     ) as (DocContentComponent | ColumnsElement)[]
+
+    state.activeElementId = column === null ? _id : [_id, ...column]
   } catch (err) {
     console.log("ERROR while adding new heading")
   }

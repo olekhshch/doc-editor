@@ -39,17 +39,8 @@ const addSeparator = (
             null,
             newSeparator,
           ) as (DocContentComponent | ColumnsElement)[]
-          // const afterElement = state.activeContent.components.find(
-          //   (el) => el._id === state.activeElementId,
-          // )
 
-          // if (afterElement) {
-          //   state.activeContent.components = insertElementIntoArray(
-          //     newSeparator,
-          //     state.activeContent.components,
-          //     afterElement.orderIndex,
-          //   )
-          // }
+          state.activeElementId = separatorId
         } else {
           //insert after the active element which is part of a column
           const [activeElId, columnId, side] = state.activeElementId
@@ -60,25 +51,8 @@ const addSeparator = (
             [columnId, side],
             newSeparator,
           ) as (DocContentComponent | ColumnsElement)[]
-          // const targetColumn = state.activeContent.components.find(
-          //   (el) => el._id === columnId && el.type === "columns",
-          // ) as ColumnsElement
-          // const { orderIndex } = targetColumn[side].find(
-          //   (el) => el._id === activeElId,
-          // )!
-          // const newSide = insertElementIntoArray(
-          //   newSeparator,
-          //   targetColumn[side],
-          //   orderIndex,
-          // )
-          // state.activeContent.components = state.activeContent.components.map(
-          //   (el) => {
-          //     if (el._id === columnId && el.type === "columns") {
-          //       return { ...el, [side]: newSide }
-          //     }
-          //     return el
-          //   },
-          // )
+
+          state.activeElementId = [separatorId, columnId, side]
         }
       } else if (!payload.afterElementId && state.activeElementId === null) {
         //pushes new separator at the end of the canvas
@@ -86,6 +60,8 @@ const addSeparator = (
           ...state.activeContent.components,
           newSeparator,
         ]
+
+        state.activeElementId = separatorId
       } else {
       }
     }

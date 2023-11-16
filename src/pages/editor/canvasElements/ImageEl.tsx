@@ -13,6 +13,7 @@ import useDebounce from "../../../app/useDebounce"
 import {
   deleteElement,
   duplicateElement,
+  setActiveElementId,
   setImageDescription,
   setImageWidth,
 } from "../../../features/documents/documentsSlice"
@@ -30,7 +31,7 @@ type props = {
 const ImageEl = ({ imageElObj, column }: props) => {
   const dispatch = useAppDispatch()
   const isColumn = column !== null
-  const maxWidth = useMemo(() => (isColumn ? 448 : 897), [isColumn])
+  const maxWidth = useMemo(() => (isColumn ? 442 : 897), [isColumn])
 
   const {
     width,
@@ -63,6 +64,8 @@ const ImageEl = ({ imageElObj, column }: props) => {
   }, [_id, isColumn, debouncedMargin, dispatch, debouncedWidth])
 
   const handleSlide = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    makeActive()
     if (imgWidth < maxWidth) {
       const x0 = e.clientX
 
@@ -83,6 +86,7 @@ const ImageEl = ({ imageElObj, column }: props) => {
   }
 
   const handleLeftResize = (e: React.MouseEvent) => {
+    makeActive()
     //sets new width AND left margin
     const x0 = e.clientX
     e.stopPropagation()
@@ -106,6 +110,7 @@ const ImageEl = ({ imageElObj, column }: props) => {
   }
 
   const handleRightResize = (e: React.MouseEvent) => {
+    makeActive()
     //right handle set new image width only
     const x0 = e.clientX
 
@@ -281,6 +286,10 @@ const ImageEl = ({ imageElObj, column }: props) => {
     )
   }
 
+  const makeActive = () => {
+    dispatch(setActiveElementId(column === null ? _id : [_id, ...column]))
+  }
+
   //STYLING
   const { main, gray } = useContext(CurrentThemeContext)
 
@@ -291,7 +300,7 @@ const ImageEl = ({ imageElObj, column }: props) => {
         $left_margin={margin}
         $main={main}
         $gray={gray}
-        //   onMouseDown={handleSlide}
+        onClick={makeActive}
       >
         {showDescriptionSettings && <DescriptionMenu />}
         <div className="flex-col">
@@ -382,15 +391,13 @@ const StyledImgWrapper = styled.div<styledProps>`
   .description-settings textarea {
     resize: none;
     height: 140px;
-  }
-
-  .image-description,
-  .description-settings textarea {
     width: 240px;
-    font-size: var(--small-size);
   }
 
   .image-description {
+    max-width: 240px;
+    width: max-content;
+    font-size: var(--small-size);
     font-style: italic;
     color: ${(props) => props.$main};
   }

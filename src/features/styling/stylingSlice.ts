@@ -24,6 +24,9 @@ const stylingSlice = createSlice({
     ) => {
       state.main_title.text_colour = payload
     },
+    setTextBlocksFontSize: (state, { payload }: PayloadAction<number>) => {
+      state.text_blocks.font_size = payload
+    },
   },
 })
 
@@ -35,4 +38,5 @@ export const {
   setTheme,
   toggleTitleUnderline,
   setMainTitleTextColour,
+  setTextBlocksFontSize,
 } = stylingSlice.actions

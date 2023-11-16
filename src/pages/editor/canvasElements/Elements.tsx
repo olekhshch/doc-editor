@@ -27,7 +27,7 @@ const Elements = () => {
         return (
           <div key={_id} draggable>
             <DnDPlaceholder indexBefore={idx} columnTarget={null} />
-            <Element docElementObj={element} column={null} />
+            <Element docElementObj={element} column={null} orderIdx={idx} />
           </div>
         )
       })}

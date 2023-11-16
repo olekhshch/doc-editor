@@ -23,13 +23,15 @@ import TextBlockEl from "./TextBlockEl"
 import SepratorEl from "./SepratorEl"
 import ImageEl from "./ImageEl"
 import TableEl from "./TableEl"
+import { useAppSelector } from "../../../app/hooks"
 
 type props = {
   docElementObj: DocContentComponent | ColumnsElement
   column: columnParam
+  orderIdx: number
 }
 
-const DocElement = ({ docElementObj, column }: props) => {
+const DocElement = ({ docElementObj, column, orderIdx }: props) => {
   const { type, _id } = docElementObj
 
   const { elementMenuId, setElementMenuId } = useContext(MenuState)
@@ -69,7 +71,7 @@ const DocElement = ({ docElementObj, column }: props) => {
     collect: (monitor: any) => ({
       isDragging: monitor.isDragging(),
     }),
-    item: { _id, columnSource: column },
+    item: { _id, columnSource: column, idx: orderIdx },
   })
 
   const handleDnDHandleClick = (e: React.MouseEvent) => {
@@ -83,6 +85,8 @@ const DocElement = ({ docElementObj, column }: props) => {
 
   //Styling
   const { gray, main } = useContext(CurrentThemeContext)
+
+  const { text_blocks } = useAppSelector((state) => state.styling)
 
   return (
     <StyledElementWrapper draggable $gray={gray}>
@@ -109,6 +113,7 @@ const DocElement = ({ docElementObj, column }: props) => {
             ref={dragPreview}
             $max_width={["separator", "table", "image"].includes(type)}
             $gray={gray}
+            $font_size={text_blocks.font_size}
           >
             {ContentMemo}
           </StyledContent>
@@ -161,6 +166,7 @@ const StyledElementWrapper = styled.li<styledProps>`
   .right-margin {
     width: 84px;
     max-width: 84px;
+    min-width: 84px;
   }
 
   .table-row {

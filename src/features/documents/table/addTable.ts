@@ -58,6 +58,8 @@ const addTableAction = (
       column,
       newTableEl,
     ) as (DocContentComponent | ColumnsElement)[]
+
+    state.activeElementId = column === null ? _id : [_id, ...column]
   } catch (err) {
     console.log("ERROR while adding new table element")
   }

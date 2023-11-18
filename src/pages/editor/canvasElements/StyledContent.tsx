@@ -4,6 +4,7 @@ type styledProps = {
   $font_size?: number
   $max_width: boolean
   $gray: string
+  $readonly?: boolean
 }
 
 export default styled.article<styledProps>`
@@ -16,22 +17,23 @@ export default styled.article<styledProps>`
   width: ${(props) => {
     const maxwidth =
       "calc(var(--editor-canvas-width) - var(--editor-left-mg) - var(--editor-right-mg))"
-    return props.$max_width ? "100%" : "auto"
+    return props.$max_width ? maxwidth : "auto"
   }};
   max-width: calc(
     var(--editor-canvas-width) - var(--editor-left-mg) - var(--editor-right-mg)
   );
 
-  .doc-element-toolbar {
+  /* .doc-element-toolbar {
     top: -20px;
     left: 8px;
-  }
+  } */
 
   &:hover {
-    border: 1px solid ${(props) => props.$gray};
+    border: 1px solid
+      ${(props) => (props.$readonly ? "transparent" : props.$gray)};
   }
 
   &:hover .doc-element-toolbar {
-    display: flex;
+    display: ${(props) => (props.$readonly ? "none" : "flex")};
   }
 `

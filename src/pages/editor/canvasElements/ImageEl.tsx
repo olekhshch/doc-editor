@@ -215,6 +215,9 @@ const ImageEl = ({ imageElObj, column }: props) => {
     )
   }
 
+  //#TODO: top and bottom margins as parametrs of a toolbar
+  //#TODO: Resize listener - img width adjustment
+
   //TOOLBAR
   const ImgToolbar = () => {
     const { setImageViewObj, setPopUpFor } = useContext(MenuState)
@@ -304,7 +307,7 @@ const ImageEl = ({ imageElObj, column }: props) => {
       >
         {showDescriptionSettings && <DescriptionMenu />}
         <div className="flex-col">
-          <Description />
+          {showDescription && <Description />}
           <div className="handlers-wrapper" onMouseDown={handleSlide}>
             <img
               src={src}

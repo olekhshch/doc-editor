@@ -3,10 +3,15 @@ import styled from "styled-components"
 import LeftSidebar from "./LeftSidebar"
 import Canvas from "./Canvas"
 import RightSidebar from "./RightSidebar"
-import { useLocation, useNavigate } from "react-router-dom"
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import {
-  cacheContent,
+  disableAddingElements,
   enableAddingElements,
   setActiveElementId,
   setDocAsCurrent,
@@ -18,9 +23,13 @@ import { rgbObjToString } from "../../functions/rgbObjToString"
 import { ColourTheme } from "../../features/styling/initialState"
 import PopUpWindow from "./PopUpWindow"
 
-export const CurrentDocContext = createContext<
-  DocumentPreviewInterface | undefined
->(undefined)
+interface DocInfoContenxt extends DocumentPreviewInterface {
+  readonly?: boolean
+}
+
+export const CurrentDocContext = createContext<DocInfoContenxt | undefined>(
+  undefined,
+)
 
 export const CurrentThemeContext = createContext({
   main: rgbObjToString({ r: 100, g: 120, b: 130 }),
@@ -89,18 +98,18 @@ const Editor = () => {
     setThemeObj(themeToRgb(currentTheme))
   }, [activeTheme, themes])
 
-  const themeContextValue = useMemo(() => {
-    const activeThemeObj = themes.find((theme) => theme.name === activeTheme)!
-    return {
-      main: `rgb(${rgbObjToString(activeThemeObj.main)})`,
-      gray: `rgb(${rgbObjToString(activeThemeObj.gray)})`,
-      lighter: `rgb(${rgbObjToString(activeThemeObj.lighter)})`,
-      name: activeThemeObj.name,
-    }
-  }, [activeTheme, themes])
+  // const themeContextValue = useMemo(() => {
+  //   const activeThemeObj = themes.find((theme) => theme.name === activeTheme)!
+  //   return {
+  //     main: `rgb(${rgbObjToString(activeThemeObj.main)})`,
+  //     gray: `rgb(${rgbObjToString(activeThemeObj.gray)})`,
+  //     lighter: `rgb(${rgbObjToString(activeThemeObj.lighter)})`,
+  //     name: activeThemeObj.name,
+  //   }
+  // }, [activeTheme, themes])
 
   const [currentDocDetails, setCurrentDocDetails] = useState<
-    DocumentPreviewInterface | undefined
+    DocInfoContenxt | undefined
   >(undefined)
 
   //Editor additional windows and menus
@@ -122,30 +131,67 @@ const Editor = () => {
   }
   const dispatch = useAppDispatch()
 
-  const { documents, activeDocumentId } = useAppSelector(
+  const { activeContent, activeDocumentInfo } = useAppSelector(
     (state) => state.documents,
   )
+  const [searchParams, setSearchParams] = useSearchParams()
+  const URLParams = useParams()
 
   const location = useLocation()
   const navigate = useNavigate()
 
   useEffect(() => {
-    //preparing doc content data based on URL id
-    const docId0 = location.pathname.replace("/docs/", "")
-    const docId = parseInt(docId0, 10)
-    if (docId !== activeDocumentId) {
-      // dispatch(cacheContent())
-      dispatch(setDocAsCurrent(docId))
-    }
-    const currentDoc = documents.find((doc) => doc._id === docId)
-    if (!currentDoc) {
-      navigate("/not-found")
-    } else {
-      setCurrentDocDetails(currentDoc)
-    }
+    const { docId } = URLParams
+    if (docId) {
+      const docIdNum = parseInt(docId, 10)
+      //Cheking if current active Content and info is related to this doc
+      if (
+        docIdNum === activeContent?.docId &&
+        activeDocumentInfo?._id === docIdNum
+      ) {
+        //Cheking if readonly param is defined
+        const readonly = searchParams.get("readonly") ? true : false
+        setCurrentDocDetails({ ...activeDocumentInfo, readonly })
 
-    dispatch(enableAddingElements())
-  }, [dispatch, documents, location.pathname, activeDocumentId])
+        dispatch(readonly ? disableAddingElements() : enableAddingElements())
+      } else {
+        throw new Error("ERROR: Wasn't able to find full doc info")
+      }
+    }
+  }, [URLParams, activeContent?.docId, activeDocumentInfo, searchParams])
+
+  // useEffect(() => {
+  //   //preparing doc content data based on URL id
+  //   const docId0 = location.pathname.replace("/docs/", "")
+  //   const docId = parseInt(docId0, 10)
+  //   if (docId !== activeDocumentId) {
+  //     // dispatch(cacheContent())
+  //     dispatch(setDocAsCurrent(docId))
+  //   }
+  //   const currentDoc = documents.find((doc) => doc._id === docId)
+  //   if (!currentDoc) {
+  //     navigate("/not-found")
+  //   } else {
+  //     const readonly = searchParams.get("readonly")
+
+  //     setCurrentDocDetails({
+  //       ...currentDoc,
+  //       readonly: readonly ? true : false,
+  //     })
+
+  //     console.log(currentDocDetails)
+  //   }
+
+  //   dispatch(enableAddingElements())
+  // }, [
+  //   dispatch,
+  //   documents,
+  //   location.pathname,
+  //   activeDocumentId,
+  //   navigate,
+  //   searchParams,
+  //   currentDocDetails,
+  // ])
 
   const handleEditorClicks = () => {
     dispatch(setActiveElementId(null))

@@ -60,7 +60,7 @@ export default ColumnsDocElement
 
 const StyledColumnsElement = styled.div`
   display: flex;
-  gap: 2px;
+  gap: 6px;
   width: 100%;
 
   .column {

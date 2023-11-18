@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import styled from "styled-components"
 import { TableCell, columnParam } from "../../../types"
 import { MdOutlineDragIndicator } from "react-icons/md"
@@ -9,14 +9,13 @@ import {
   insertColumnToTable,
   insertRowToTable,
   setTableCellContent,
+  setTableColumnWidth,
 } from "../../../features/documents/documentsSlice"
 import { RemirrorJSON } from "remirror"
 import {
   EditorComponent,
-  FloatingToolbar,
   FloatingWrapper,
   Remirror,
-  useActive,
   useRemirror,
 } from "@remirror/react"
 import {
@@ -28,6 +27,7 @@ import {
 } from "remirror/extensions"
 import { TiDelete } from "react-icons/ti"
 import useDebounce from "../../../app/useDebounce"
+import useDocElements from "../../../app/useDocElements"
 
 type props = {
   cellObj: TableCell
@@ -35,12 +35,17 @@ type props = {
   row: number
   col: number
   column: columnParam
+  width: number | null
 }
-const TableCellEl = ({ cellObj, col, row, column, tableId }: props) => {
+const TableCellEl = ({ cellObj, col, row, column, tableId, width }: props) => {
   const { disableElementsAdding } = useAppSelector((state) => state.documents)
   const { content, _id } = cellObj
 
   const dispatch = useAppDispatch()
+
+  const { getDimensions, elementRef } = useDocElements()
+
+  const [cellWidth, setCellWidth] = useState(width)
 
   //#TODO: DnD row replacement
   //#TODO: DnD column replacement
@@ -55,6 +60,14 @@ const TableCellEl = ({ cellObj, col, row, column, tableId }: props) => {
   const [cellContent, setCellContent] = useState<RemirrorJSON[]>(content)
 
   const debouncedContent = useDebounce(cellContent, 500)
+
+  //setting widths after the render if not defined
+  useEffect(() => {
+    if (elementRef.current && width === null) {
+      const { width } = getDimensions()
+      dispatch(setTableColumnWidth({ tableId, column, columnIdx: col, width }))
+    }
+  }, [col, dispatch, elementRef, getDimensions, tableId, width])
 
   useEffect(() => {
     dispatch(
@@ -120,7 +133,7 @@ const TableCellEl = ({ cellObj, col, row, column, tableId }: props) => {
 
   return (
     <>
-      <StyledCell className="table-cell">
+      <StyledCell className="table-cell" ref={elementRef} $width={cellWidth}>
         {row === 0 && (
           <div className="top-cell-btns cell-btns">
             <button className="table-btn cell-dnd-handle">
@@ -191,14 +204,22 @@ const TableCellEl = ({ cellObj, col, row, column, tableId }: props) => {
 
 export default TableCellEl
 
-const StyledCell = styled.div`
-  flex-basis: 120px;
+type styledProps = {
+  $width: number | null
+}
+
+const StyledCell = styled.div<styledProps>`
+  flex-basis: ${(pr) => (pr.$width === null ? 120 : pr.$width)}px;
+  min-width: ${(pr) => (pr.$width === null ? 120 : pr.$width)}px;
+  max-width: ${(pr) => (pr.$width === null ? "auto" : pr.$width)}px;
   flex-grow: 1;
+  flex-shrink: 0;
   position: relative;
 
   .cell-btns {
     padding: 4px 6px 2px;
     position: absolute;
+    z-index: 100;
     display: flex;
     gap: 2px;
     background-color: white;

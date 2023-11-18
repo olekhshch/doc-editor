@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react"
 import styled from "styled-components"
 import SbTabs, { sbTabOption } from "./SbTabs"
 import { useAppSelector } from "../../app/hooks"
-import { Link } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
 import { CurrentDocContext, CurrentThemeContext } from "./Editor"
 import Loading from "../../Loading"
 import DocNavigation from "./sidebarMenus/DocNavigation"
@@ -14,6 +14,20 @@ const LeftSidebar = () => {
     "Project",
   ])
 
+  //READONLY MODE
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { readonly } = useContext(CurrentDocContext)!
+
+  const setReadOnly = () => setSearchParams({ readonly: "true" })
+  const setEditMode = () => setSearchParams({})
+
+  const toggleMode = () => {
+    if (readonly) {
+      setEditMode()
+    } else {
+      setReadOnly()
+    }
+  }
   const [docTitle, setDocTitle] = useState("")
   const [activeIdx, setActiveIdx] = useState<0 | 1>(0)
 
@@ -40,6 +54,9 @@ const LeftSidebar = () => {
           <p className="doc-title" style={{ color: main }}>
             {docTitle}
           </p>
+          <button onClick={toggleMode}>
+            {readonly ? "Edit mode" : "Read only"}
+          </button>
           <Link
             to="../.."
             className="back-btn"

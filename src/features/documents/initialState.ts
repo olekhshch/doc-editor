@@ -7,30 +7,30 @@ import {
 export type activeElementInColumn = [number, number, "left" | "right"] //element id, column id, column side
 
 export interface DocumentsState {
-  documents: DocumentPreviewInterface[]
+  documents: DocumentFull[]
   activeDocumentId: number | null
+  activeDocumentInfo: DocumentPreviewInterface | null
   activeContent: DocumentContent | undefined
-  cachedContents: DocumentContent[]
   beginsWithTitle: boolean
   activeElementId: number | null | activeElementInColumn
   disableElementsAdding: boolean
 }
 
+export interface DocumentFull {
+  documentInfo: DocumentPreviewInterface
+  content: DocumentContent
+  styling?: any
+}
+
 export const initialState: DocumentsState = {
-  documents: [
-    {
-      _id: 123,
-      createdOn: 1234232222,
-      title: "Test first doc",
-    },
-  ],
-  activeDocumentId: 123,
+  documents: [],
+  activeDocumentId: null,
+  activeDocumentInfo: null,
   activeContent: {
     _id: 987,
     docId: 123,
     components: [],
   },
-  cachedContents: [],
   beginsWithTitle: true,
   activeElementId: null,
   disableElementsAdding: true,
@@ -39,5 +39,5 @@ export const initialState: DocumentsState = {
 export const initialParagraph: ParagraphElement = {
   _id: 0,
   type: "paragraph",
-  content: [{ type: "paragraph", content: [{ type: "text", text: " init" }] }],
+  content: [{ type: "paragraph", content: [{ type: "text", text: " " }] }],
 }

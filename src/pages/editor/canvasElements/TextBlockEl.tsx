@@ -1,4 +1,10 @@
-import React, { useContext, useCallback, useState, useEffect } from "react"
+import React, {
+  useContext,
+  useCallback,
+  useState,
+  useEffect,
+  useRef,
+} from "react"
 import { ParagraphElement } from "../../../types"
 import {
   EditorComponent,
@@ -17,9 +23,10 @@ import {
   StrikeExtension,
   BulletListExtension,
   OrderedListExtension,
+  TrailingNodeExtension,
 } from "remirror/extensions"
 import StyledElementToolbar from "./StyledElementToolbar"
-import { MenuState } from "../Editor"
+import { CurrentDocContext, MenuState } from "../Editor"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import {
   deleteElement,
@@ -36,7 +43,7 @@ import "remirror/styles/theme.css"
 import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
 import useDebaunce from "../../../app/useDebounce"
-import Swatches from "../Swatches"
+import useDocElements from "../../../app/useDocElements"
 // import "remirror/styles/all.css"
 
 type props = {
@@ -82,9 +89,14 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
     )
   }, [debouncedContent, dispatch, _id])
 
-  useEffect(() => {
-    setFocused(false)
-  }, [])
+  const { readonly } = useContext(CurrentDocContext)!
+
+  // useEffect(() => {
+  //   setFocused(false)
+  // }, [])
+
+  const { elementRef, getVerticalPosition, getLeftEdgePosition } =
+    useDocElements()
 
   //DnD setup
   const [{ isDragging }, dragHandle, dragPreview] = useDrag({
@@ -105,6 +117,7 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
       new StrikeExtension(),
       new BulletListExtension(),
       new OrderedListExtension(),
+      new TrailingNodeExtension(),
     ],
     [],
   )
@@ -116,6 +129,26 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
       content: currentContent,
     },
   })
+
+  //TOOLBAR
+
+  const [toolbarInVisible, setToolbarIsVisible] = useState(true)
+  const [leftPosition, setLeftPosition] = useState<number | undefined>(
+    undefined,
+  )
+
+  const handleMouseOver = () => {
+    const verticalPosition = getVerticalPosition()
+    setToolbarIsVisible(verticalPosition > 0)
+    setLeftPosition(getLeftEdgePosition())
+
+    // tbRef.current!.addEventListener("mousemove", () => {
+    //   const verticalPosition = getVerticalPosition()
+    //   console.log({ verticalPosition })
+    // })
+
+    // tbRef.current!.addEventListener('mouseleave', () => tbRef.current!.removeEventListener('mousemove'))
+  }
 
   const Toolbar = () => {
     const chain = useChainedCommands()
@@ -153,7 +186,10 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
     }
 
     return (
-      <StyledElementToolbar>
+      <StyledElementToolbar
+        outOfScreen={!toolbarInVisible}
+        left_position={leftPosition}
+      >
         <>
           {column !== null && (
             <div className="toolbar-section">
@@ -220,7 +256,14 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
 
   //STYLING
   const {
-    text_blocks: { font_size },
+    text_blocks: {
+      font_size,
+      spacing_paragraph,
+      indent,
+      spacing_letter,
+      spacing_line,
+      spacing_word,
+    },
   } = useAppSelector((state) => state.styling)
 
   return (
@@ -243,9 +286,16 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
       }}
     >
       <StyledTextContent
-        ref={dragPreview}
+        ref={elementRef}
         $font_size={font_size}
+        $spacing_p={spacing_paragraph}
+        $indent={indent}
+        $spacing_letter={spacing_letter}
+        $spacing_line={spacing_line}
+        $spacing_w={spacing_word}
         onClick={(e) => handleClick(e)}
+        onMouseMove={handleMouseOver}
+
         // className="remirror-theme"
       >
         <Remirror
@@ -254,13 +304,14 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
           placeholder="Text block"
           classNames={["text-block"]}
           // hooks={hooks}
-          autoFocus={focused}
+          autoFocus={true}
           onChange={(props) => {
             const { state } = props
             const docJSON: { doc: any } = state.toJSON()
             const newContent = docJSON.doc.content
             setCurrentContent(newContent)
           }}
+          editable={!readonly}
         >
           <Toolbar />
           <EditorComponent />
@@ -274,13 +325,19 @@ export default React.memo(TextBlockEl)
 
 type styledProps = {
   $font_size: number
+  $spacing_p: number
+  $spacing_line: number
+  $spacing_letter: number
+  $spacing_w: number
+  $indent: [boolean, number]
 }
 
 const StyledTextContent = styled.div<styledProps>`
-  height: fit-content;
+  min-height: 1em;
+  white-space: nowrap;
 
   .text-block {
-    padding: 4px;
+    padding: 0;
     min-height: auto;
     max-height: fit-content;
     min-width: 48px;
@@ -299,7 +356,27 @@ const StyledTextContent = styled.div<styledProps>`
     font-size: var(--small-size);
   }
 
+  .text-block p {
+    min-width: 12px;
+    min-height: 1em;
+    margin-bottom: ${(pr) => pr.$spacing_p}px;
+    text-indent: ${(pr) => (pr.$indent[0] ? pr.$indent[1] : 0)}px;
+    word-spacing: ${(pr) => pr.$spacing_w}px;
+    letter-spacing: ${(pr) => pr.$spacing_letter}px;
+    line-height: ${(pr) => pr.$spacing_line};
+  }
   .text-block li {
-    margin-left: 24px;
+    margin-left: ${(props) => (props.$indent[0] ? props.$indent[1] : 32)}px;
+    line-height: 1;
+  }
+
+  .text-block li p {
+    text-indent: 0px;
+    margin-bottom: 0px;
+  }
+
+  .text-block ul,
+  .text-block ol {
+    margin-bottom: ${(pr) => pr.$spacing_p}px;
   }
 `

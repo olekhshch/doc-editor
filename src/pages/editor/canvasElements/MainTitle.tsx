@@ -47,8 +47,11 @@ const MainTitle = ({ docTitle }: props) => {
   const dispatch = useAppDispatch()
   const { main } = useContext(CurrentThemeContext)
   const {
-    main_title: { text_colour, underlined },
+    main_title: { text_colour, underlined, font_size, margin_bottom },
   } = useAppSelector((state) => state.styling)
+
+  //READ ONLY
+  const { readonly } = useContext(CurrentDocContext)!
 
   const [title, setTitle] = useState(docTitle)
 
@@ -73,6 +76,8 @@ const MainTitle = ({ docTitle }: props) => {
       $main={main}
       $underlined={underlined}
       $text_colour={text_colour}
+      $font_size={font_size}
+      $mrg_btm={margin_bottom}
     >
       <Remirror
         manager={manager}
@@ -83,6 +88,7 @@ const MainTitle = ({ docTitle }: props) => {
           const newTitle = getText(props.state)
           setTitle(newTitle)
         }}
+        editable={!readonly}
       />
     </StyledDocTitle>
   )
@@ -94,14 +100,16 @@ type styledProps = {
   $main: string
   $text_colour?: rgbColour
   $underlined: boolean
+  $font_size: number
+  $mrg_btm: number
 }
 
 const StyledDocTitle = styled.h1<styledProps>`
-  margin: 0 var(--editor-left-mg) 24px;
+  margin: 0 var(--editor-left-mg) ${(pr) => pr.$mrg_btm}px;
   border-bottom: 4px solid
     ${(props) => (props.$underlined ? props.$main : "transparent")};
   font-family: "Roboto Condensed", sans-serif;
-  font-size: var(--h1-size);
+  font-size: ${(pr) => pr.$font_size}px;
   font-weight: normal;
 
   color: ${(props) =>
@@ -114,10 +122,10 @@ const StyledDocTitle = styled.h1<styledProps>`
     outline: none;
   }
 
-  input {
+  /* input {
     width: 100%;
     font-family: "Roboto Condensed", sans-serif;
     font-size: var(--h1-size);
     border: none;
-  }
+  } */
 `

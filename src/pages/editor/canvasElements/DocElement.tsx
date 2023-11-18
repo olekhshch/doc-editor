@@ -17,7 +17,7 @@ import { IconContext } from "react-icons"
 import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
 import ElementMenu from "./ElementMenu"
-import { CurrentThemeContext, MenuState } from "../Editor"
+import { CurrentDocContext, CurrentThemeContext, MenuState } from "../Editor"
 import ColumnsDocElement from "./ColumnsDocElement"
 import TextBlockEl from "./TextBlockEl"
 import SepratorEl from "./SepratorEl"
@@ -36,6 +36,8 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
 
   const { elementMenuId, setElementMenuId } = useContext(MenuState)
   const [showMenu, setShowMenu] = useState(false)
+
+  const { readonly } = useContext(CurrentDocContext)!
 
   const ContentMemo = useMemo(() => {
     if (type === "heading") {
@@ -89,19 +91,21 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
   const { text_blocks } = useAppSelector((state) => state.styling)
 
   return (
-    <StyledElementWrapper draggable $gray={gray}>
+    <StyledElementWrapper $gray={gray}>
       {column === null && (
         <IconContext.Provider value={{ size: "24", color: main }}>
-          <div className="element-left-margin" draggable>
-            <button
-              className={showMenu ? "dnd-handle pressed" : "dnd-handle"}
-              title="Drag and drop to reoder; Click to expand menu"
-              draggable
-              ref={dragHandle}
-              onClick={(e) => handleDnDHandleClick(e)}
-            >
-              <MdOutlineDragIndicator />
-            </button>
+          <div className="element-left-margin">
+            {!readonly && (
+              <button
+                className={showMenu ? "dnd-handle pressed" : "dnd-handle"}
+                title="Drag and drop to reoder; Click to expand menu"
+                draggable={!readonly}
+                ref={dragHandle}
+                onClick={(e) => handleDnDHandleClick(e)}
+              >
+                <MdOutlineDragIndicator />
+              </button>
+            )}
             {showMenu && <ElementMenu elementId={_id} elementType={type} />}
           </div>
         </IconContext.Provider>
@@ -114,6 +118,7 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
             $max_width={["separator", "table", "image"].includes(type)}
             $gray={gray}
             $font_size={text_blocks.font_size}
+            $readonly={readonly}
           >
             {ContentMemo}
           </StyledContent>
@@ -144,7 +149,7 @@ const StyledElementWrapper = styled.li<styledProps>`
 
   .dnd-handle {
     vertical-align: middle;
-    padding: 2px 0 0;
+    padding: 0;
     width: fit-content;
     height: fit-content;
     background-color: transparent;

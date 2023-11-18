@@ -1,6 +1,6 @@
 import React from "react"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import Root from "./pages/root/Root"
+import Root from "./pages/root/root"
 import Editor from "./pages/editor/Editor"
 import NotFoundScreen from "./pages/editor/NotFoundScreen"
 import ActiveDocRedirect from "./pages/editor/ActiveDocRedirect"
@@ -13,6 +13,7 @@ const router = createBrowserRouter([
   {
     path: "docs/:docId",
     element: <Editor />,
+    errorElement: <NotFoundScreen />,
   },
   {
     path: "docs",

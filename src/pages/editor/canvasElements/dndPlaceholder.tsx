@@ -72,7 +72,7 @@ type StyledProps = {
 }
 
 const StyledPlaceholder = styled.div<StyledProps>`
-  height: ${(props) => (props.$canDrop ? "4px" : "2px")};
+  height: ${(props) => (props.$canDrop ? 4 : 0)}px;
   background-color: ${(props) => (props.$isOver ? props.$main : props.$gray)};
   opacity: ${(props) => (props.$canDrop ? 1 : 0)};
 `

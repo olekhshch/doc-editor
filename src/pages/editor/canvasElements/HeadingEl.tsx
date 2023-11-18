@@ -19,7 +19,7 @@ import {
 import StyledElementToolbar from "./StyledElementToolbar"
 import { Remirror, useRemirror, useHelpers, useKeymap } from "@remirror/react"
 import { FaTrash } from "react-icons/fa"
-import { MenuState } from "../Editor"
+import { CurrentDocContext, MenuState } from "../Editor"
 import { MdOutlineDragIndicator } from "react-icons/md"
 import { HiDuplicate } from "react-icons/hi"
 import { useDrag } from "react-dnd"
@@ -165,6 +165,8 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
     stringHandler: "text",
   })
 
+  const { readonly } = useContext(CurrentDocContext)!
+
   const HeadingMemo = useMemo(() => {
     const handleTextChange = (props: any) => {
       const { getText } = props.helpers
@@ -184,6 +186,7 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
             initialContent={state}
             hooks={hooks}
             onChange={handleTextChange}
+            editable={!readonly}
           />
         </h2>
       )
@@ -198,6 +201,7 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
             initialContent={state}
             hooks={hooks}
             onChange={handleTextChange}
+            editable={!readonly}
           />
         </h3>
       )
@@ -211,10 +215,11 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
           initialContent={state}
           hooks={hooks}
           onChange={handleTextChange}
+          editable={!readonly}
         />
       </h4>
     )
-  }, [level, manager, state, _id, dispatch, dragPreview])
+  }, [level, dragPreview, manager, state, readonly])
 
   return (
     <StyledHeading onClick={(e) => handleClick(e)}>
@@ -228,7 +233,7 @@ export default React.memo(HeadingEl)
 
 export const StyledHeading = styled.div`
   .heading-element {
-    padding: 0 4px;
+    padding: 0;
     max-width: calc(
       var(--editor-canvas-width) - var(--editor-left-mg) -
         var(--editor-right-mg)

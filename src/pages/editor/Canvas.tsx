@@ -19,12 +19,14 @@ const ContentCanvas = () => {
     return <></>
   }
 
-  const { title, _id } = docContext
+  const { title, _id, readonly } = docContext
 
   return (
     <StyledContentContainer>
       <MainToolbar />
-      <ShowTitleBtn beginsWithTitle={beginsWithTitle} mainColour={main} />
+      {!readonly && (
+        <ShowTitleBtn beginsWithTitle={beginsWithTitle} mainColour={main} />
+      )}
       {beginsWithTitle && <MainTitle docId={_id} docTitle={title} />}
       <Elements />
     </StyledContentContainer>

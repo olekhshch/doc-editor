@@ -4,14 +4,14 @@ export interface StylingState {
   readonly themes: ColourTheme[]
   activeTheme: ThemeName
   stylingOptions: stylingOrderState
-  general: GeneralStyling
+  general: StylingGeneral
   main_title: {
+    font_size: number
     text_colour?: rgbColour
     underlined: boolean
+    margin_bottom: number
   }
-  text_blocks: {
-    font_size: number
-  }
+  text_blocks: StylingTextBlock
 }
 
 const stylingOptionsState0: stylingOrderState = [
@@ -61,10 +61,17 @@ export const initialState: StylingState = {
     main_colour: { title: "Main colour", colour: { r: 153, g: 0, b: 224 } },
   },
   main_title: {
+    font_size: 48,
     underlined: true,
+    margin_bottom: 16,
   },
   text_blocks: {
     font_size: 20,
+    spacing_paragraph: 0,
+    indent: [false, 36],
+    spacing_letter: 0,
+    spacing_line: 1,
+    spacing_word: 4,
   },
 }
 
@@ -78,7 +85,7 @@ export type stylingOrderState = { option: stylingOption; collapsed: boolean }[]
 
 export type GeneralParam = "doc_bg_colour" | "font_colour" | "main_colour"
 
-export type GeneralStyling = {
+export type StylingGeneral = {
   [key in keyof GeneralParam as `${GeneralParam}`]: {
     title: string
     colour: rgbColour
@@ -92,4 +99,13 @@ export interface ColourTheme {
   main: rgbColour
   gray: rgbColour
   lighter: rgbColour
+}
+
+export type StylingTextBlock = {
+  font_size: number
+  spacing_paragraph: number
+  spacing_line: number
+  spacing_letter: number
+  spacing_word: number
+  indent: [boolean, number]
 }

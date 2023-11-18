@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useContext } from "react"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import HeadingEl from "./HeadingEl"
 import Element from "./DocElement"
@@ -8,10 +8,12 @@ import {
   addParagraph,
   setActiveElementId,
 } from "../../../features/documents/documentsSlice"
+import { CurrentDocContext } from "../Editor"
 
 const Elements = () => {
   const dispatch = useAppDispatch()
   const { activeContent } = useAppSelector((state) => state.documents)
+  const { readonly } = useContext(CurrentDocContext)!
 
   if (!activeContent) {
     return <></>
@@ -26,7 +28,9 @@ const Elements = () => {
 
         return (
           <div key={_id} draggable>
-            <DnDPlaceholder indexBefore={idx} columnTarget={null} />
+            {!readonly && (
+              <DnDPlaceholder indexBefore={idx} columnTarget={null} />
+            )}
             <Element docElementObj={element} column={null} orderIdx={idx} />
           </div>
         )

@@ -1,15 +1,30 @@
 import styled from "styled-components"
 import { useContext } from "react"
-import { CurrentThemeContext } from "../Editor"
+import { CurrentDocContext, CurrentThemeContext } from "../Editor"
 
 type props = {
   children?: JSX.Element | string
+  outOfScreen?: boolean
+  left_position?: number
 }
 
-const StyledElementToolbar = ({ children }: props) => {
+const StyledElementToolbar = ({
+  children,
+  outOfScreen,
+  left_position,
+}: props) => {
   const { main, gray } = useContext(CurrentThemeContext)
+  const { readonly } = useContext(CurrentDocContext)!
+
   return (
-    <StyledToolbar className="doc-element-toolbar" $main={main} $gray={gray}>
+    <StyledToolbar
+      className="doc-element-toolbar"
+      $main={main}
+      $gray={gray}
+      $fixed={outOfScreen}
+      $left={left_position}
+      $hidden={readonly}
+    >
       {children}
     </StyledToolbar>
   )
@@ -20,12 +35,16 @@ export default StyledElementToolbar
 type styledProps = {
   $main: string
   $gray: string
+  $fixed?: boolean
+  $left?: number
+  $hidden?: boolean
 }
 
 const StyledToolbar = styled.div<styledProps>`
-  position: absolute;
+  position: ${(pr) => (pr.$fixed ? "fixed" : "absolute")};
+  top: ${(pr) => (pr.$fixed ? "20px" : "-20px")};
+  left: ${(pr) => (pr.$fixed ? (pr.$left ? pr.$left + 8 : 8) : 8)}px;
   z-index: 100;
-  display: flex;
   justify-content: left;
   gap: 12px;
   align-items: center;

@@ -4,6 +4,7 @@ import {
   initialState,
   initialParagraph,
   DocumentsState,
+  DocumentFull,
 } from "./initialState"
 import {
   BasicComponent,
@@ -41,6 +42,7 @@ import deleteRowAction from "./table/deleteRow"
 import deleteColumnAction from "./table/deleteColumn"
 import setCellContentAction from "./table/setCellContent"
 import findElementFromState from "../../functions/findElementFromState"
+import setTableColumnWidthAction from "./table/setColumnWidth"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -55,8 +57,26 @@ const documentsSlice = createSlice({
     },
 
     createNewDoc: (state) => {
+      state.disableElementsAdding = true
+
+      if (state.activeContent && state.activeDocumentInfo) {
+        const docContentState = { ...state.activeContent }
+        const idx = state.documents.findIndex(
+          (document) => document.documentInfo._id === docContentState.docId,
+        )
+
+        const fullDoc: DocumentFull = {
+          content: docContentState,
+          documentInfo: state.activeDocumentInfo,
+        }
+        if (idx >= 0) {
+          state.documents[idx] = fullDoc
+        } else {
+          state.documents = [...state.documents, fullDoc]
+        }
+      }
       const _id = Math.round(Math.random() * 1000000)
-      const newDocument: DocumentPreviewInterface = {
+      const newDocumentInfo: DocumentPreviewInterface = {
         _id,
         title: "New doc",
         createdOn: new Date().getTime(),
@@ -69,9 +89,11 @@ const documentsSlice = createSlice({
       }
 
       state.activeContent = newDocContent
+      state.activeDocumentInfo = newDocumentInfo
 
-      state.documents = [...state.documents, newDocument]
       state.activeDocumentId = _id
+
+      state.disableElementsAdding = false
     },
 
     // createDoc: (
@@ -90,7 +112,8 @@ const documentsSlice = createSlice({
     // },
 
     deleteDoc: (state, { payload }: PayloadAction<number>) => {
-      state.documents = state.documents.filter((doc) => doc._id !== payload)
+      //#TODO: Document deletion
+      // state.documents = state.documents.filter((doc) => doc._id !== payload)
     },
 
     renameDoc: (
@@ -99,50 +122,38 @@ const documentsSlice = createSlice({
         payload: { newTitle, docId },
       }: PayloadAction<{ docId?: number | undefined; newTitle: string }>,
     ) => {
-      const targetDocId = docId ?? state.activeDocumentId
-      state.documents = state.documents.map((doc) => {
-        if (doc._id === targetDocId) {
-          return { ...doc, title: newTitle }
-        }
-        return doc
-      })
+      //#TODO: Rename Doc functionality
+      // const targetDocId = docId ?? state.activeDocumentId
+      // state.documents = state.documents.map((doc) => {
+      //   if (doc._id === targetDocId) {
+      //     return { ...doc, title: newTitle }
+      //   }
+      //   return doc
+      // })
     },
 
     setDocAsCurrent: (state, { payload }: PayloadAction<number>) => {
-      state.activeDocumentId = payload
-      //check if content was cached
-      const cachedDoc = state.cachedContents.find(
-        (content) => content.docId === payload,
-      )
-      if (cachedDoc) {
-        console.log("CONTENT FOUND IN THE CACHE")
-        state.activeContent = cachedDoc
-      } else {
-        //Untill persist functionality is created
-        const _id = new Date().getMilliseconds()
-        const initialP: ParagraphElement = {
-          ...initialParagraph,
-          _id,
-        }
-
-        state.activeContent = {
-          _id: 100000000,
-          docId: payload,
-          components: [initialP],
-        }
-      }
-    },
-
-    cacheContent: (state) => {
-      const alreadyCached = state.cachedContents.find(
-        (content) => content.docId === state.activeDocumentId,
-      )
-      if (state.activeContent && !alreadyCached) {
-        state.cachedContents = [
-          ...state.cachedContents,
-          { ...state.activeContent },
-        ]
-      }
+      // state.activeDocumentId = payload
+      // //check if content was cached
+      // const cachedDoc = state.cachedContents.find(
+      //   (content) => content.docId === payload,
+      // )
+      // if (cachedDoc) {
+      //   console.log("CONTENT FOUND IN THE CACHE")
+      //   state.activeContent = cachedDoc
+      // } else {
+      //   //Untill persist functionality is created
+      //   const _id = new Date().getMilliseconds()
+      //   const initialP: ParagraphElement = {
+      //     ...initialParagraph,
+      //     _id,
+      //   }
+      //   state.activeContent = {
+      //     _id: 100000000,
+      //     docId: payload,
+      //     components: [initialP],
+      //   }
+      // }
     },
 
     toggleBegingsWithTitle: (state) => {
@@ -509,6 +520,7 @@ const documentsSlice = createSlice({
     deleteTableRow: deleteRowAction,
     deleteTableColumn: deleteColumnAction,
     setTableCellContent: setCellContentAction,
+    setTableColumnWidth: setTableColumnWidthAction,
 
     duplicateElement: (
       state,
@@ -605,7 +617,6 @@ export const {
   deleteDoc,
   renameDoc,
   setDocAsCurrent,
-  cacheContent,
   toggleBegingsWithTitle,
   setActiveElementId,
   addHeading,
@@ -633,4 +644,5 @@ export const {
   deleteTableRow,
   deleteTableColumn,
   setTableCellContent,
+  setTableColumnWidth,
 } = documentsSlice.actions

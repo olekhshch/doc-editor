@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react"
+import React, { useMemo, useState, useEffect, useContext } from "react"
 import styled from "styled-components"
 import StyledElementToolbar from "./StyledElementToolbar"
 import { SeparatorElement } from "../../../types"
@@ -19,6 +19,7 @@ import useDebaunce from "../../../app/useDebounce"
 import { MdOutlineDragIndicator } from "react-icons/md"
 import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
+import { CurrentDocContext } from "../Editor"
 
 type props = {
   separatorObj: SeparatorElement

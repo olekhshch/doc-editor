@@ -102,4 +102,5 @@ export interface TableElement extends BasicComponent {
   type: "table"
   lastCellId: number
   content: TableCell[][]
+  column_widths: (number | null)[]
 }

@@ -27,11 +27,18 @@ const addTableAction = (
     payload.columns,
   )
 
+  const column_widths = []
+
+  for (let i = 0; i < payload.columns; i++) {
+    column_widths.push(null)
+  }
+
   const newTableEl: TableElement = {
     _id,
     type: "table",
     content: generatedContent.content,
     lastCellId: generatedContent.lastCellId,
+    column_widths,
   }
 
   try {

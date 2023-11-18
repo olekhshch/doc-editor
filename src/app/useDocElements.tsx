@@ -1,3 +1,4 @@
+import { useRef } from "react"
 import {
   addHeading,
   addImage,
@@ -51,12 +52,35 @@ const useDocElements = () => {
     )
   }
 
+  const elementRef = useRef<HTMLDivElement>(null)!
+
+  const getVerticalPosition = () => {
+    const { top } = elementRef.current!.getBoundingClientRect()
+    return top
+  }
+
+  const getLeftEdgePosition = () => {
+    const { left } = elementRef.current!.getBoundingClientRect()
+
+    return left
+  }
+
+  const getDimensions = () => {
+    const { width, height } = elementRef.current!.getBoundingClientRect()
+
+    return { width, height }
+  }
+
   return {
     addHeadingElement,
     addParagraphElement,
     addSeparatorElement,
     addTableElement,
     addImageElement,
+    getVerticalPosition,
+    getLeftEdgePosition,
+    elementRef,
+    getDimensions,
   }
 }
 

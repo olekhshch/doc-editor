@@ -9,6 +9,7 @@ import {
 import {
   BasicComponent,
   ColumnsElement,
+  ContentComponentType,
   DocContentComponent,
   DocumentContent,
   DocumentInterface,
@@ -167,11 +168,17 @@ const documentsSlice = createSlice({
     addParagraph: addTextBlockAction,
     setParagraphContent: setTextBlockContentAction,
 
-    setActiveElementId: (
+    setActiveElementData: (
       state,
-      { payload }: PayloadAction<number | null | activeElementInColumn>,
+      {
+        payload,
+      }: PayloadAction<{
+        id: number | null | activeElementInColumn
+        type: ContentComponentType | null
+      }>,
     ) => {
-      state.activeElementId = payload
+      state.activeElementId = payload.id
+      state.activeElementType = payload.type
     },
 
     moveElement: (
@@ -618,7 +625,7 @@ export const {
   renameDoc,
   setDocAsCurrent,
   toggleBegingsWithTitle,
-  setActiveElementId,
+  setActiveElementData,
   addHeading,
   setHeadingLevel,
   setHeadingContent,

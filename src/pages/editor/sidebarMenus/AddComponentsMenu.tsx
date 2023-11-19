@@ -14,6 +14,7 @@ import { IconContext } from "react-icons"
 import { CgFormatSeparator } from "react-icons/cg"
 import { CurrentThemeContext, MenuState } from "../Editor"
 import useDocElements from "../../../app/useDocElements"
+import ShortCutsList from "./ShortCutsList"
 
 const AddComponentsMenu = () => {
   const { disableElementsAdding } = useAppSelector((state) => state.documents)
@@ -104,6 +105,7 @@ const AddComponentsMenu = () => {
             </li>
           </ul>
         </section>
+        <ShortCutsList />
       </IconContext.Provider>
     </StyledAddMenu>
   )
@@ -117,6 +119,11 @@ type styledProps = {
 }
 const StyledAddMenu = styled.section<styledProps>`
   color: var(--black);
+  display: flex;
+  height: 80vh;
+  flex-direction: column;
+  justify-content: space-between;
+
   h4 {
     color: ${(props) => props.$main};
   }

@@ -70,6 +70,7 @@ const addTextBlockAction = (
         state.activeElementId = [_id, ...column]
       }
     }
+    state.activeElementType = "paragraph"
   } catch (err) {
     console.log("ERROR while adding new text block")
   }

@@ -16,40 +16,53 @@ const useDocElements = () => {
   const { disableElementsAdding } = useAppSelector((state) => state.documents)
   const { activeTheme } = useAppSelector((state) => state.styling)
 
-  const addHeadingElement = (e: React.MouseEvent, level?: 1 | 2 | 3) => {
+  const addHeadingElement = (
+    e: React.MouseEvent | KeyboardEvent,
+    level?: 1 | 2 | 3,
+  ) => {
     if (!disableElementsAdding) {
       dispatch(addHeading({ level: level ?? 2, column: null }))
     }
     e.stopPropagation()
   }
 
-  const addParagraphElement = (e: React.MouseEvent) => {
-    dispatch(addParagraph({ column: null }))
+  const addParagraphElement = (e: React.MouseEvent | KeyboardEvent) => {
+    if (!disableElementsAdding) {
+      dispatch(addParagraph({ column: null }))
+    }
     e.stopPropagation()
   }
 
-  const addSeparatorElement = (e: React.MouseEvent) => {
-    dispatch(addSeparator({ currentTheme: activeTheme }))
+  const addSeparatorElement = (e: React.MouseEvent | KeyboardEvent) => {
+    if (!disableElementsAdding) {
+      dispatch(addSeparator({ currentTheme: activeTheme }))
+    }
     e.stopPropagation()
   }
 
   const addTableElement = (
-    e: React.MouseEvent,
+    e: React.MouseEvent | KeyboardEvent,
     rows?: number,
     columns?: number,
   ) => {
-    dispatch(addTable({ rows: rows ?? 2, columns: columns ?? 3, column: null }))
+    if (!disableElementsAdding) {
+      dispatch(
+        addTable({ rows: rows ?? 2, columns: columns ?? 3, column: null }),
+      )
+    }
     e.stopPropagation()
   }
 
   const addImageElement = (src: string, width: number) => {
-    dispatch(
-      addImage({
-        src,
-        column: null,
-        width,
-      }),
-    )
+    if (!disableElementsAdding) {
+      dispatch(
+        addImage({
+          src,
+          column: null,
+          width,
+        }),
+      )
+    }
   }
 
   const elementRef = useRef<HTMLDivElement>(null)!

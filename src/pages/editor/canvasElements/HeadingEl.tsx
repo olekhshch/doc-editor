@@ -12,7 +12,7 @@ import {
   deleteActiveElement,
   deleteElement,
   duplicateElement,
-  setActiveElementId,
+  setActiveElementData,
   setHeadingContent,
   setHeadingLevel,
 } from "../../../features/documents/documentsSlice"
@@ -153,9 +153,9 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (column === null) {
-      dispatch(setActiveElementId(_id))
+      dispatch(setActiveElementData({ id: _id, type: "heading" }))
     } else {
-      dispatch(setActiveElementId([_id, ...column]))
+      dispatch(setActiveElementData({ id: [_id, ...column], type: "heading" }))
     }
     setElementMenuId(null)
   }
@@ -187,6 +187,7 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
             hooks={hooks}
             onChange={handleTextChange}
             editable={!readonly}
+            autoFocus={true}
           />
         </h2>
       )
@@ -202,6 +203,7 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
             hooks={hooks}
             onChange={handleTextChange}
             editable={!readonly}
+            autoFocus={true}
           />
         </h3>
       )
@@ -216,13 +218,14 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
           hooks={hooks}
           onChange={handleTextChange}
           editable={!readonly}
+          autoFocus={true}
         />
       </h4>
     )
   }, [level, dragPreview, manager, state, readonly])
 
   return (
-    <StyledHeading onClick={(e) => handleClick(e)}>
+    <StyledHeading onClick={handleClick}>
       {!isDragging && <Toolbar />}
       {HeadingMemo}
     </StyledHeading>

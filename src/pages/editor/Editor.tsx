@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState, useMemo } from "react"
+import React, { createContext, useEffect, useState } from "react"
 import styled from "styled-components"
 import LeftSidebar from "./LeftSidebar"
 import Canvas from "./Canvas"
@@ -13,8 +13,7 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import {
   disableAddingElements,
   enableAddingElements,
-  setActiveElementId,
-  setDocAsCurrent,
+  setActiveElementData,
 } from "../../features/documents/documentsSlice"
 import { DocumentPreviewInterface, ImageElement } from "../../types"
 import Loading from "../../Loading"
@@ -22,6 +21,7 @@ import { screenwidth_editor } from "../../screenwidth_treshholds"
 import { rgbObjToString } from "../../functions/rgbObjToString"
 import { ColourTheme } from "../../features/styling/initialState"
 import PopUpWindow from "./PopUpWindow"
+import useDocElements from "../../app/useDocElements"
 
 interface DocInfoContenxt extends DocumentPreviewInterface {
   readonly?: boolean
@@ -63,6 +63,49 @@ export const MenuState = createContext<EditorMenuState>({
 })
 
 const Editor = () => {
+  const dispatch = useAppDispatch()
+
+  //INFO ABOUT THE ACTIVE DOC (readonly, metadata etc)
+  const [currentDocDetails, setCurrentDocDetails] = useState<
+    DocInfoContenxt | undefined
+  >(undefined)
+
+  const { activeContent, activeDocumentInfo, activeElementType } =
+    useAppSelector((state) => state.documents)
+
+  const [searchParams, setSearchParams] = useSearchParams()
+  const URLParams = useParams()
+
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const { docId } = URLParams
+    if (docId) {
+      const docIdNum = parseInt(docId, 10)
+      //Cheking if current active Content and info is related to this doc
+      if (
+        docIdNum === activeContent?.docId &&
+        activeDocumentInfo?._id === docIdNum
+      ) {
+        //Cheking if readonly param is defined
+        const readonly = searchParams.get("readonly") ? true : false
+        setCurrentDocDetails({ ...activeDocumentInfo, readonly })
+
+        dispatch(readonly ? disableAddingElements() : enableAddingElements())
+      } else {
+        throw new Error("ERROR: Wasn't able to find full doc info")
+      }
+    }
+  }, [
+    URLParams,
+    activeContent?.docId,
+    activeDocumentInfo,
+    dispatch,
+    searchParams,
+  ])
+
+  //SB DISPLAY
   const { innerWidth } = window
 
   const [showLeftSb, setShowLeftSb] = useState(
@@ -72,7 +115,7 @@ const Editor = () => {
     innerWidth > screenwidth_editor.only_one_sb,
   )
 
-  //general styling state
+  //STYLING THEME
   const {
     general: { doc_bg_colour, font_colour },
     themes,
@@ -98,20 +141,6 @@ const Editor = () => {
     setThemeObj(themeToRgb(currentTheme))
   }, [activeTheme, themes])
 
-  // const themeContextValue = useMemo(() => {
-  //   const activeThemeObj = themes.find((theme) => theme.name === activeTheme)!
-  //   return {
-  //     main: `rgb(${rgbObjToString(activeThemeObj.main)})`,
-  //     gray: `rgb(${rgbObjToString(activeThemeObj.gray)})`,
-  //     lighter: `rgb(${rgbObjToString(activeThemeObj.lighter)})`,
-  //     name: activeThemeObj.name,
-  //   }
-  // }, [activeTheme, themes])
-
-  const [currentDocDetails, setCurrentDocDetails] = useState<
-    DocInfoContenxt | undefined
-  >(undefined)
-
   //Editor additional windows and menus
 
   const [elementMenuId, setElementMenuId] = useState<number | null>(null)
@@ -129,72 +158,9 @@ const Editor = () => {
     imageViewObj,
     setImageViewObj,
   }
-  const dispatch = useAppDispatch()
-
-  const { activeContent, activeDocumentInfo } = useAppSelector(
-    (state) => state.documents,
-  )
-  const [searchParams, setSearchParams] = useSearchParams()
-  const URLParams = useParams()
-
-  const location = useLocation()
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    const { docId } = URLParams
-    if (docId) {
-      const docIdNum = parseInt(docId, 10)
-      //Cheking if current active Content and info is related to this doc
-      if (
-        docIdNum === activeContent?.docId &&
-        activeDocumentInfo?._id === docIdNum
-      ) {
-        //Cheking if readonly param is defined
-        const readonly = searchParams.get("readonly") ? true : false
-        setCurrentDocDetails({ ...activeDocumentInfo, readonly })
-
-        dispatch(readonly ? disableAddingElements() : enableAddingElements())
-      } else {
-        throw new Error("ERROR: Wasn't able to find full doc info")
-      }
-    }
-  }, [URLParams, activeContent?.docId, activeDocumentInfo, searchParams])
-
-  // useEffect(() => {
-  //   //preparing doc content data based on URL id
-  //   const docId0 = location.pathname.replace("/docs/", "")
-  //   const docId = parseInt(docId0, 10)
-  //   if (docId !== activeDocumentId) {
-  //     // dispatch(cacheContent())
-  //     dispatch(setDocAsCurrent(docId))
-  //   }
-  //   const currentDoc = documents.find((doc) => doc._id === docId)
-  //   if (!currentDoc) {
-  //     navigate("/not-found")
-  //   } else {
-  //     const readonly = searchParams.get("readonly")
-
-  //     setCurrentDocDetails({
-  //       ...currentDoc,
-  //       readonly: readonly ? true : false,
-  //     })
-
-  //     console.log(currentDocDetails)
-  //   }
-
-  //   dispatch(enableAddingElements())
-  // }, [
-  //   dispatch,
-  //   documents,
-  //   location.pathname,
-  //   activeDocumentId,
-  //   navigate,
-  //   searchParams,
-  //   currentDocDetails,
-  // ])
 
   const handleEditorClicks = () => {
-    dispatch(setActiveElementId(null))
+    dispatch(setActiveElementData({ id: null, type: null }))
     setElementMenuId(null)
   }
 
@@ -221,15 +187,47 @@ const Editor = () => {
     document.body.style.overflow = !popUpFor ? "auto" : "hidden"
   }, [popUpFor])
 
+  //ELEMENTS ACTIONS HOOK
+  const { addParagraphElement, addHeadingElement, addSeparatorElement } =
+    useDocElements()
+
+  useEffect(() => {
+    const handleShortcuts = (e: KeyboardEvent) => {
+      if (e.altKey) {
+        switch (e.key.toLowerCase()) {
+          case "p":
+            addParagraphElement(e)
+            break
+          case "h":
+            addHeadingElement(e)
+            break
+          case "s":
+            addSeparatorElement(e)
+            break
+        }
+      } else if (e.shiftKey) {
+        if (e.key === "Enter" && activeElementType === "paragraph") {
+          addParagraphElement(e)
+        }
+      }
+    }
+
+    document.addEventListener("keydown", handleShortcuts)
+
+    return () => document.removeEventListener("keydown", handleShortcuts)
+  }, [addHeadingElement, addParagraphElement])
+
   if (!currentDocDetails) {
     return <Loading />
   }
+
   return (
     <CurrentDocContext.Provider value={currentDocDetails}>
       <MenuState.Provider value={menuContextValue}>
         <CurrentThemeContext.Provider value={themeObj}>
           <StyledEditorPage
             onClick={handleEditorClicks}
+            // onKeyDown={handleShortcuts}
             style={{
               backgroundColor: `rgb(${rgbObjToString(doc_bg_colour.colour)})`,
               color: `rgb(${rgbObjToString(font_colour.colour)})`,

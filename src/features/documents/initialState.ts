@@ -1,4 +1,5 @@
 import {
+  ContentComponentType,
   DocumentContent,
   DocumentPreviewInterface,
   ParagraphElement,
@@ -13,6 +14,7 @@ export interface DocumentsState {
   activeContent: DocumentContent | undefined
   beginsWithTitle: boolean
   activeElementId: number | null | activeElementInColumn
+  activeElementType: ContentComponentType | null
   disableElementsAdding: boolean
 }
 
@@ -33,6 +35,7 @@ export const initialState: DocumentsState = {
   },
   beginsWithTitle: true,
   activeElementId: null,
+  activeElementType: null,
   disableElementsAdding: true,
 }
 

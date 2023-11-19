@@ -67,6 +67,7 @@ const addHeadingAction = (
     ) as (DocContentComponent | ColumnsElement)[]
 
     state.activeElementId = column === null ? _id : [_id, ...column]
+    state.activeElementType = "heading"
   } catch (err) {
     console.log("ERROR while adding new heading")
   }

@@ -12,8 +12,6 @@ import {
   ThemeProvider,
   useChainedCommands,
   useRemirror,
-  useHelpers,
-  useKeymap,
 } from "@remirror/react"
 import {
   BoldExtension,
@@ -31,7 +29,7 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import {
   deleteElement,
   duplicateElement,
-  setActiveElementId,
+  setActiveElementData,
   setParagraphContent,
 } from "../../../features/documents/documentsSlice"
 import { FaTrash } from "react-icons/fa"
@@ -44,6 +42,7 @@ import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
 import useDebaunce from "../../../app/useDebounce"
 import useDocElements from "../../../app/useDocElements"
+import { ExtensionPriority } from "remirror"
 // import "remirror/styles/all.css"
 
 type props = {
@@ -71,9 +70,10 @@ type props = {
 
 const TextBlockEl = ({ textBlockObj, column }: props) => {
   const dispatch = useAppDispatch()
+  const { activeElementId } = useAppSelector((state) => state.documents)
   const { _id, content } = textBlockObj
   const { setElementMenuId } = useContext(MenuState)
-  const [focused, setFocused] = useState(true)
+  // const [focused, setFocused] = useState(true)
 
   const [currentContent, setCurrentContent] = useState(content)
 
@@ -110,7 +110,10 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
   //Remirror setup
   const extensions = useCallback(
     () => [
-      new PlaceholderExtension({ placeholder: "Text block" }),
+      new PlaceholderExtension({
+        placeholder: "Text block",
+        priority: ExtensionPriority.High,
+      }),
       new BoldExtension(),
       new ItalicExtension(),
       new UnderlineExtension(),
@@ -245,12 +248,12 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (column === null) {
-      dispatch(setActiveElementId(_id))
+      dispatch(setActiveElementData({ id: _id, type: "paragraph" }))
     } else {
-      dispatch(setActiveElementId([_id, ...column]))
+      dispatch(
+        setActiveElementData({ id: [_id, ...column], type: "paragraph" }),
+      )
     }
-
-    setFocused(true)
     setElementMenuId(null)
   }
 
@@ -334,7 +337,8 @@ type styledProps = {
 
 const StyledTextContent = styled.div<styledProps>`
   min-height: 1em;
-  white-space: nowrap;
+  /* white-space: nowrap; */
+  white-space: pre-wrap;
 
   .text-block {
     padding: 0;

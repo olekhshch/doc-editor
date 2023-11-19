@@ -1,12 +1,15 @@
 import React from "react"
 import styled from "styled-components"
-import { useAppDispatch } from "../../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { useNavigate } from "react-router-dom"
 import { createNewDoc } from "../../features/documents/documentsSlice"
+import DocumentsList from "./DocumentsList"
 
 const Root = () => {
   const dispatch = useAppDispatch()
   const navigation = useNavigate()
+
+  const { documents } = useAppSelector((state) => state.documents)
 
   const handleNewDocCreation = () => {
     dispatch(createNewDoc())
@@ -27,6 +30,10 @@ const Root = () => {
             </button>
             <span> or </span>
             <button className="main-btn"> Load from file</button>
+          </div>
+          <div>
+            <p>Recent documents:</p>
+            <DocumentsList docs={documents} />
           </div>
         </article>
       </section>
@@ -63,6 +70,10 @@ const StyledRoot = styled.main`
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  #panel-content div {
+    left: 24px;
   }
 
   #canvas-bg {

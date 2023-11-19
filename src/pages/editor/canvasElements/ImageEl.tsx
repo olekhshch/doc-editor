@@ -13,7 +13,7 @@ import useDebounce from "../../../app/useDebounce"
 import {
   deleteElement,
   duplicateElement,
-  setActiveElementId,
+  setActiveElementData,
   setImageDescription,
   setImageWidth,
 } from "../../../features/documents/documentsSlice"
@@ -290,7 +290,12 @@ const ImageEl = ({ imageElObj, column }: props) => {
   }
 
   const makeActive = () => {
-    dispatch(setActiveElementId(column === null ? _id : [_id, ...column]))
+    dispatch(
+      setActiveElementData({
+        id: column === null ? _id : [_id, ...column],
+        type: "image",
+      }),
+    )
   }
 
   //STYLING

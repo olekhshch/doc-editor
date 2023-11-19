@@ -8,7 +8,7 @@ import { useAppDispatch } from "../../../app/hooks"
 import {
   deleteElement,
   duplicateElement,
-  setActiveElementId,
+  setActiveElementData,
   setColourForSeprator,
   setSeparatorWidth,
 } from "../../../features/documents/documentsSlice"
@@ -124,7 +124,12 @@ const SepratorEl = ({ separatorObj, column }: props) => {
   }, [colour, currentWidth, dispatch, _id, dragHandle])
 
   const handleClick = (e: React.MouseEvent) => {
-    dispatch(setActiveElementId(column === null ? _id : [_id, ...column]))
+    dispatch(
+      setActiveElementData({
+        id: column === null ? _id : [_id, ...column],
+        type: "separator",
+      }),
+    )
     e.stopPropagation()
   }
 

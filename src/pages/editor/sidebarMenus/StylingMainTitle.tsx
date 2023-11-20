@@ -25,7 +25,7 @@ const StylingMainTitle = ({ collapsed }: props) => {
   const { main, gray } = useContext(CurrentThemeContext)
   const {
     main_title: { underlined, text_colour, font_size, margin_bottom },
-  } = useAppSelector((state) => state.styling)
+  } = useAppSelector((state) => state.styling.parameters)
 
   const [fontSize, setFontSize] = useState<string | number>(font_size)
   const [marginBtm, setMarginBtm] = useState<number>(margin_bottom)

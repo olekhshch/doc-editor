@@ -4,12 +4,15 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { useNavigate } from "react-router-dom"
 import { createNewDoc } from "../../features/documents/documentsSlice"
 import DocumentsList from "./DocumentsList"
+import StylingManager from "../editor/sidebarMenus/StylingManager"
+import StylingTemplatesList from "./StylingTemplatesList"
 
 const Root = () => {
   const dispatch = useAppDispatch()
   const navigation = useNavigate()
 
   const { documents } = useAppSelector((state) => state.documents)
+  const { templates } = useAppSelector((state) => state.styling)
 
   const handleNewDocCreation = () => {
     dispatch(createNewDoc())
@@ -31,9 +34,15 @@ const Root = () => {
             <span> or </span>
             <button className="main-btn"> Load from file</button>
           </div>
-          <div>
+          {/* <div>
             <p>Recent documents:</p>
             <DocumentsList docs={documents} />
+          </div> */}
+          <div>
+            <p>Manage styling templates: </p>
+            {templates.length > 0 && (
+              <StylingTemplatesList templates={templates} />
+            )}
           </div>
         </article>
       </section>

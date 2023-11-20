@@ -27,13 +27,11 @@ const RightSidebar = () => {
 
   return (
     <StyledRightSb className="editor-sb">
-      <div className="sb-inner">
-        <SbTabs
-          options={sbOptions}
-          activeIdx={activeIdx}
-          setActiveIdx={setActiveIdx}
-        />
-      </div>
+      <SbTabs
+        options={sbOptions}
+        activeIdx={activeIdx}
+        setActiveIdx={setActiveIdx}
+      />
     </StyledRightSb>
   )
 }
@@ -44,6 +42,8 @@ const StyledRightSb = styled.aside`
   top: 0;
   right: 0;
   bottom: 0;
+  position: fixed;
+  max-width: 240px;
   /* width: 100%; */
   /* min-width: 154px; */
   flex-grow: 1;

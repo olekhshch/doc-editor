@@ -12,6 +12,7 @@ import {
 } from "../../../features/styling/initialState"
 import { IconContext } from "react-icons"
 import { CurrentThemeContext } from "../Editor"
+import StylingManager from "./StylingManager"
 
 interface stylingContext {
   active_styling_section: stylingOption | null
@@ -32,7 +33,7 @@ export const StylingParamsContext = createContext<stylingContext>({
 })
 
 const StylingMenu = () => {
-  const { main } = useContext(CurrentThemeContext)
+  const { main, gray } = useContext(CurrentThemeContext)
   const [active_styling_section, set_active_styling_section] =
     useState<stylingOption | null>("general")
   const [generalParamIdx, setGeneralParamIdx] = useState<number>(0)
@@ -45,9 +46,11 @@ const StylingMenu = () => {
     set_general_active_param: setGeneralParamIdx,
   }
 
+  //THEME
+
   return (
     <IconContext.Provider value={{ color: main, size: "20" }}>
-      <StyledList>
+      <StyledList $main={main} $gray={gray}>
         <StylingParamsContext.Provider value={defaultContextValue}>
           <StylingGeneral collapsed={active_styling_section !== "general"} />
           <StylingMainTitle
@@ -57,20 +60,35 @@ const StylingMenu = () => {
           <StylingTextBlocks
             collapsed={active_styling_section !== "text_blocks"}
           />
+          <StylingManager />
         </StylingParamsContext.Provider>
       </StyledList>
     </IconContext.Provider>
   )
 }
 
-const DnDStylingPlaceholder = () => {
-  return <div className="dnd-placeholder"></div>
-}
-
 export default StylingMenu
 
-const StyledList = styled.ul`
+type styledProps = {
+  $gray: string
+  $main: string
+}
+
+const StyledList = styled.ul<styledProps>`
   list-style: none;
+
+  .btn {
+    margin: 4px;
+    padding: 2px 6px;
+    background-color: transparent;
+    border: 1px solid ${(pr) => pr.$gray};
+    border-radius: 4px;
+  }
+
+  .btn:hover {
+    color: white;
+    background-color: ${(pr) => pr.$main};
+  }
 
   /* .dnd-placeholder {
     height: 2px;

@@ -12,7 +12,10 @@ type props = {
 
 //default behaviour - to change doc's theme, but can be reused to set colour for other components using handleChange cb
 const ThemeSwatches = ({ handleChange, activeThemeName }: props) => {
-  const { themes, activeTheme } = useAppSelector((state) => state.styling)
+  const {
+    themes,
+    parameters: { activeTheme },
+  } = useAppSelector((state) => state.styling)
   const dispatch = useAppDispatch()
 
   const refTheme = activeThemeName ?? activeTheme

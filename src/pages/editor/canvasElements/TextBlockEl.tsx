@@ -259,13 +259,15 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
 
   //STYLING
   const {
-    text_blocks: {
-      font_size,
-      spacing_paragraph,
-      indent,
-      spacing_letter,
-      spacing_line,
-      spacing_word,
+    parameters: {
+      text_blocks: {
+        font_size,
+        spacing_paragraph,
+        indent,
+        spacing_letter,
+        spacing_line,
+        spacing_word,
+      },
     },
   } = useAppSelector((state) => state.styling)
 
@@ -345,15 +347,17 @@ const StyledTextContent = styled.div<styledProps>`
     min-height: auto;
     max-height: fit-content;
     min-width: 48px;
-    max-width: calc(
+    /* max-width: calc(
       var(--editor-canvas-width) - var(--editor-left-mg) -
         var(--editor-right-mg)
-    );
+    ); */
     border: none;
     outline: none;
     text-align: justify;
     font-family: var(--font-2);
     font-size: ${(props) => props.$font_size}px;
+    overflow: hidden;
+    text-overflow: clip;
   }
 
   .text-block > .toolbar-section {

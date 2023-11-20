@@ -2,8 +2,28 @@ import { rgbColour } from "../../types"
 
 export interface StylingState {
   readonly themes: ColourTheme[]
+  readonly stylingOptions: stylingOrderState
+  parameters: StylingParameters
+  // activeTheme: ThemeName
+  // general: StylingGeneral
+  // main_title: {
+  //   font_size: number
+  //   text_colour?: rgbColour
+  //   underlined: boolean
+  //   margin_bottom: number
+  // }
+  // text_blocks: StylingTextBlock
+  templates: StylingTemplate[]
+}
+
+export interface StylingTemplate {
+  _id: number
+  name: string
+  state: StylingParameters
+}
+
+interface StylingParameters {
   activeTheme: ThemeName
-  stylingOptions: stylingOrderState
   general: StylingGeneral
   main_title: {
     font_size: number
@@ -49,29 +69,36 @@ export const themes: ColourTheme[] = [
 ]
 
 export const initialState: StylingState = {
+  templates: [],
   themes,
-  activeTheme: "violet",
+
   stylingOptions: stylingOptionsState0,
-  general: {
-    doc_bg_colour: {
-      title: "Background colour",
-      colour: { r: 243, g: 237, b: 243 },
+  parameters: {
+    activeTheme: "violet",
+    general: {
+      doc_bg_colour: {
+        title: "Background colour",
+        colour: { r: 243, g: 237, b: 243 },
+      },
+      font_colour: {
+        title: "General font colour",
+        colour: { r: 3, g: 7, b: 3 },
+      },
+      main_colour: { title: "Main colour", colour: { r: 153, g: 0, b: 224 } },
     },
-    font_colour: { title: "General font colour", colour: { r: 3, g: 7, b: 3 } },
-    main_colour: { title: "Main colour", colour: { r: 153, g: 0, b: 224 } },
-  },
-  main_title: {
-    font_size: 48,
-    underlined: true,
-    margin_bottom: 16,
-  },
-  text_blocks: {
-    font_size: 20,
-    spacing_paragraph: 0,
-    indent: [false, 36],
-    spacing_letter: 0,
-    spacing_line: 1,
-    spacing_word: 4,
+    main_title: {
+      font_size: 48,
+      underlined: true,
+      margin_bottom: 16,
+    },
+    text_blocks: {
+      font_size: 20,
+      spacing_paragraph: 0,
+      indent: [false, 36],
+      spacing_letter: 0,
+      spacing_line: 1,
+      spacing_word: 4,
+    },
   },
 }
 

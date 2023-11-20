@@ -23,7 +23,7 @@ const MainToolbar = () => {
   const dispatch = useAppDispatch()
 
   const { setPopUpFor } = useContext(MenuState)
-  const { activeTheme } = useAppSelector((state) => state.styling)
+  const { activeTheme } = useAppSelector((state) => state.styling.parameters)
   //#TODO: Nav btn
   //#TODO: Add component btns
   //#TODO: Style btns
@@ -114,10 +114,12 @@ type styledProps = {
 }
 
 const StyledMainToolbar = styled.aside<styledProps>`
+  margin-top: 12px;
   padding: 12px;
   width: 100%;
   height: 32px;
   box-shadow: 0 0 12px ${(props) => props.$gray};
+  border-radius: 8px;
   display: flex;
   gap: 12px;
   align-items: center;

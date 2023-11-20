@@ -29,7 +29,7 @@ const StylingTextBlocks = ({ collapsed }: props) => {
       spacing_line,
       spacing_word,
     },
-  } = useAppSelector((state) => state.styling)
+  } = useAppSelector((state) => state.styling.parameters)
 
   const [fontSize, setFontSize] = useState<string | number>(font_size)
   const [spacingP, setSpacingP] = useState(spacing_paragraph)

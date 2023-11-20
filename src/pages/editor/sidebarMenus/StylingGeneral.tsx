@@ -38,9 +38,10 @@ const StylingGeneral = ({ collapsed }: props) => {
   //Styling
   const { main, gray } = useContext(CurrentThemeContext)
 
-  const { general, themes, activeTheme } = useAppSelector(
-    (state) => state.styling,
-  )
+  const {
+    parameters: { general, activeTheme },
+    themes,
+  } = useAppSelector((state) => state.styling)
   const { doc_bg_colour, font_colour } = general
 
   const {

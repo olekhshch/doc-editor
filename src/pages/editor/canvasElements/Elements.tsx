@@ -4,10 +4,6 @@ import HeadingEl from "./HeadingEl"
 import Element from "./DocElement"
 import styled from "styled-components"
 import DnDPlaceholder from "./dndPlaceholder"
-import {
-  addParagraph,
-  setActiveElementId,
-} from "../../../features/documents/documentsSlice"
 import { CurrentDocContext } from "../Editor"
 
 const Elements = () => {

@@ -241,5 +241,6 @@ export const StyledHeading = styled.div`
       var(--editor-canvas-width) - var(--editor-left-mg) -
         var(--editor-right-mg)
     );
+    margin: 0 var(--editor-left-mg) 0 0;
   }
 `

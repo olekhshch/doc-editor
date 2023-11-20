@@ -23,12 +23,14 @@ const ContentCanvas = () => {
 
   return (
     <StyledContentContainer>
-      <MainToolbar />
-      {!readonly && (
-        <ShowTitleBtn beginsWithTitle={beginsWithTitle} mainColour={main} />
-      )}
-      {beginsWithTitle && <MainTitle docId={_id} docTitle={title} />}
-      <Elements />
+      <div id="main_wrapper">
+        <MainToolbar />
+        {!readonly && (
+          <ShowTitleBtn beginsWithTitle={beginsWithTitle} mainColour={main} />
+        )}
+        {beginsWithTitle && <MainTitle docId={_id} docTitle={title} />}
+        <Elements />
+      </div>
     </StyledContentContainer>
   )
 }
@@ -36,13 +38,23 @@ const ContentCanvas = () => {
 export default ContentCanvas
 
 const StyledContentContainer = styled.main`
-  /* margin: auto; */
+  position: relative;
+  left: 0;
+  right: 0;
   /* flex-basis: 297mm; */
   /* min-width: 297mm; */
-  width: 1320px;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
   min-height: 100vh;
   font-family: var(--font-2);
-  overflow: hidden;
+  /* overflow: hidden; */
+
+  #main_wrapper {
+    min-width: 760px;
+    max-width: 74vw;
+    flex-grow: 1;
+  }
 
   .show-title-btn {
     opacity: 0;

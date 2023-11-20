@@ -81,8 +81,10 @@ const LeftSidebar = () => {
 export default LeftSidebar
 
 const StyledLeftSb = styled.aside`
+  position: absolute;
   top: 0;
   bottom: 0;
+  left: 0;
   flex-grow: 1;
   flex-basis: 300px;
   min-width: 154px;

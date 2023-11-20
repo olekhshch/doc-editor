@@ -117,9 +117,12 @@ const Editor = () => {
 
   //STYLING THEME
   const {
-    general: { doc_bg_colour, font_colour },
+    parameters: {
+      general: { doc_bg_colour, font_colour },
+      activeTheme,
+    },
+    templates,
     themes,
-    activeTheme,
   } = useAppSelector((state) => state.styling)
 
   const currentTheme = themes.find((theme) => theme.name === activeTheme)!
@@ -217,6 +220,21 @@ const Editor = () => {
     return () => document.removeEventListener("keydown", handleShortcuts)
   }, [addHeadingElement, addParagraphElement])
 
+  //PERSIST OF OTHER DOCS / STYLING FROM LS
+
+  // const appPersist = usePersist()
+
+  // useEffect(() => {
+  //   //checking if any styling templates were saved
+  //   try {
+  //     const styling_templates = appPersist.getStylingTemplates_LS()
+  //     console.log({ styling_templates, templates })
+  //     dispatch(setStylingTemplates(styling_templates))
+  //   } catch (err) {
+  //     console.log("error while checking styling templates in LS")
+  //   }
+  // }, [])
+
   if (!currentDocDetails) {
     return <Loading />
   }
@@ -233,8 +251,8 @@ const Editor = () => {
               color: `rgb(${rgbObjToString(font_colour.colour)})`,
             }}
           >
-            {showLeftSb && <LeftSidebar />}
             <Canvas />
+            {showLeftSb && <LeftSidebar />}
             {showRightSb && <RightSidebar />}
           </StyledEditorPage>
           {popUpFor !== null && <PopUpWindow />}

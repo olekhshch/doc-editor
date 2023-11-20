@@ -88,7 +88,7 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
   //Styling
   const { gray, main } = useContext(CurrentThemeContext)
 
-  const { text_blocks } = useAppSelector((state) => state.styling)
+  const { text_blocks } = useAppSelector((state) => state.styling.parameters)
 
   return (
     <StyledElementWrapper $gray={gray}>
@@ -139,7 +139,9 @@ type styledProps = {
 }
 
 const StyledElementWrapper = styled.li<styledProps>`
+  /* margin-right: 84px; */
   display: flex;
+  /* max-width: 800px; */
 
   .element-left-margin {
     min-width: var(--editor-left-mg);

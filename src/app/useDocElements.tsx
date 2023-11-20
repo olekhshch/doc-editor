@@ -14,7 +14,9 @@ import { useAppDispatch, useAppSelector } from "./hooks"
 const useDocElements = () => {
   const dispatch = useAppDispatch()
   const { disableElementsAdding } = useAppSelector((state) => state.documents)
-  const { activeTheme } = useAppSelector((state) => state.styling)
+  const {
+    parameters: { activeTheme },
+  } = useAppSelector((state) => state.styling)
 
   const addHeadingElement = (
     e: React.MouseEvent | KeyboardEvent,

@@ -47,7 +47,9 @@ const MainTitle = ({ docTitle }: props) => {
   const dispatch = useAppDispatch()
   const { main } = useContext(CurrentThemeContext)
   const {
-    main_title: { text_colour, underlined, font_size, margin_bottom },
+    parameters: {
+      main_title: { text_colour, underlined, font_size, margin_bottom },
+    },
   } = useAppSelector((state) => state.styling)
 
   //READ ONLY
@@ -117,7 +119,7 @@ const StyledDocTitle = styled.h1<styledProps>`
 
   //remirror
   white-space: pre-wrap;
-  height: 1.2em;
+  min-height: 1.2em;
   &:focus {
     outline: none;
   }

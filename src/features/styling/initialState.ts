@@ -32,6 +32,10 @@ interface StylingParameters {
     margin_bottom: number
   }
   text_blocks: StylingTextBlock
+  columns: {
+    gap: number
+  }
+  canvas_width: number
 }
 
 const stylingOptionsState0: stylingOrderState = [
@@ -99,6 +103,10 @@ export const initialState: StylingState = {
       spacing_line: 1,
       spacing_word: 4,
     },
+    columns: {
+      gap: 4,
+    },
+    canvas_width: 996,
   },
 }
 

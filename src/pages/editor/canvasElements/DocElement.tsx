@@ -88,10 +88,12 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
   //Styling
   const { gray, main } = useContext(CurrentThemeContext)
 
-  const { text_blocks } = useAppSelector((state) => state.styling.parameters)
+  const { text_blocks, canvas_width } = useAppSelector(
+    (state) => state.styling.parameters,
+  )
 
   return (
-    <StyledElementWrapper $gray={gray}>
+    <StyledElementWrapper $gray={gray} $main={main}>
       {column === null && (
         <IconContext.Provider value={{ size: "24", color: main }}>
           <div className="element-left-margin">
@@ -111,23 +113,27 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
         </IconContext.Provider>
       )}
       {type !== "columns" && (
-        <>
+        <div
+          className="doc-element-wrapper"
+          style={{ maxWidth: `${canvas_width}px` }}
+        >
           <StyledContent
             onClick={() => setElementMenuId(null)}
             ref={dragPreview}
-            $max_width={["separator", "table", "image"].includes(type)}
+            $canvas_width={canvas_width}
+            $max_width={["separator", "table"].includes(type)}
             $gray={gray}
             $font_size={text_blocks.font_size}
             $readonly={readonly}
           >
             {ContentMemo}
           </StyledContent>
-        </>
+        </div>
       )}
       {type === "columns" && (
         <ColumnsDocElement columnsElement={docElementObj} />
       )}
-      {column === null && <div className="right-margin" />}
+      {/* {column === null && <div className="right-margin" />} */}
     </StyledElementWrapper>
   )
 }
@@ -136,12 +142,16 @@ export default DocElement
 
 type styledProps = {
   $gray: string
+  $main: string
 }
 
 const StyledElementWrapper = styled.li<styledProps>`
   /* margin-right: 84px; */
   display: flex;
   /* max-width: 800px; */
+  .doc-element-wrapper {
+    max-width: 100%;
+  }
 
   .element-left-margin {
     min-width: var(--editor-left-mg);
@@ -194,5 +204,13 @@ const StyledElementWrapper = styled.li<styledProps>`
 
   .cell-toolbar {
     box-shadow: 0 0 6px ${(props) => props.$gray};
+  }
+
+  .columns-gap:hover .columns-divider {
+    background-color: ${(props) => props.$gray};
+  }
+
+  .columns-divider:hover {
+    background-color: ${(props) => props.$main};
   }
 `

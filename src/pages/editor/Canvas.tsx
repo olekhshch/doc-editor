@@ -11,6 +11,7 @@ import { IconContext } from "react-icons"
 
 const ContentCanvas = () => {
   const { beginsWithTitle } = useAppSelector((state) => state.documents)
+  const { canvas_width } = useAppSelector((state) => state.styling.parameters)
 
   const docContext = useContext(CurrentDocContext)
   const { main } = useContext(CurrentThemeContext)

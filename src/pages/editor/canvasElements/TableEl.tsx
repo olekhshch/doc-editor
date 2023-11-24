@@ -1,6 +1,11 @@
-import React from "react"
+import React, { useContext, useRef } from "react"
 import { TableElement, columnParam } from "../../../types"
 import styled from "styled-components"
+import TableCellEl from "./TableCell"
+import { CurrentThemeContext } from "../Editor"
+import useTable from "../../../app/useTable"
+import useDocElements from "../../../app/useDocElements"
+import { useAppSelector } from "../../../app/hooks"
 
 type props = {
   tableElObj: TableElement
@@ -8,13 +13,40 @@ type props = {
 }
 
 const TableEl = ({ tableElObj, column }: props) => {
-  const { _id, content } = tableElObj
+  const { _id, content, column_widths } = tableElObj
+  const { canvas_width } = useAppSelector((state) => state.styling.parameters)
+
+  const { maxWidth } = useDocElements()
+
+  const { tableRef, handleWidthChange, widths, colNumber, resizeMode } =
+    useTable(_id, column_widths, column)
+
+  //STYLING
+  const { gray } = useContext(CurrentThemeContext)
+
   return (
-    <StyledTable>
+    <StyledTable
+      ref={tableRef}
+      $gray={gray}
+      style={{ maxWidth: `${canvas_width}` }}
+    >
       {content.map((row, idx) => {
         return (
           <div key={idx} className="table-row">
-            row
+            {row.map((cell, i) => (
+              <TableCellEl
+                key={cell._id}
+                cellObj={cell}
+                row={idx}
+                col={i}
+                column={column}
+                tableId={_id}
+                width={widths[i]}
+                widthChangeHandler={handleWidthChange}
+                isLast={i === colNumber - 1}
+                resizeMode={resizeMode}
+              />
+            ))}
           </div>
         )
       })}
@@ -24,11 +56,15 @@ const TableEl = ({ tableElObj, column }: props) => {
 
 export default TableEl
 
-const StyledTable = styled.section`
-  background-color: beige;
-  max-width: 1200px;
-  overflow: scroll;
+type styledProps = {
+  $gray: string
+}
+
+const StyledTable = styled.section<styledProps>`
+  border-top: 1px solid ${(pr) => pr.$gray};
+  border-left: 1px solid ${(pr) => pr.$gray};
+
   .table-row {
-    width: 2000px;
+    display: flex;
   }
 `

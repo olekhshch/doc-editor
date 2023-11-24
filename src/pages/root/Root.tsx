@@ -38,12 +38,12 @@ const Root = () => {
             <p>Recent documents:</p>
             <DocumentsList docs={documents} />
           </div> */}
-          <div>
-            <p>Manage styling templates: </p>
-            {templates.length > 0 && (
+          {templates.length > 0 && (
+            <div>
+              <p>Manage styling templates: </p>
               <StylingTemplatesList templates={templates} />
-            )}
-          </div>
+            </div>
+          )}
         </article>
       </section>
     </StyledRoot>

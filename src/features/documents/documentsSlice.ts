@@ -44,6 +44,8 @@ import deleteColumnAction from "./table/deleteColumn"
 import setCellContentAction from "./table/setCellContent"
 import findElementFromState from "../../functions/findElementFromState"
 import setTableColumnWidthAction from "./table/setColumnWidth"
+import setColumnsElDevisationAction from "./columns/setColumnsElDeviation"
+import setTableWidthsArrayAction from "./table/setTableWidthsArray"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -520,6 +522,7 @@ const documentsSlice = createSlice({
     insertColumn: insertColumnAction,
     deleteSideOfColumn: deleteColumnSideAction,
     addTextBlockToEmptyColumn: addTextBlockToEmptyColumnAction,
+    setColumnsElDeviation: setColumnsElDevisationAction,
 
     addTable: addTableAction,
     insertRowToTable: addRowAction,
@@ -528,6 +531,7 @@ const documentsSlice = createSlice({
     deleteTableColumn: deleteColumnAction,
     setTableCellContent: setCellContentAction,
     setTableColumnWidth: setTableColumnWidthAction,
+    setTableColumnsWidths: setTableWidthsArrayAction,
 
     duplicateElement: (
       state,
@@ -652,4 +656,6 @@ export const {
   deleteTableColumn,
   setTableCellContent,
   setTableColumnWidth,
+  setColumnsElDeviation,
+  setTableColumnsWidths,
 } = documentsSlice.actions

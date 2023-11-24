@@ -30,5 +30,6 @@ build
 *.local
 
 #Drafts
-./src/pages/editor0/
+src/pages/editor0/
 src/pages/root0/
+src/pages/editor/canvasElements/TableCell0.tsx

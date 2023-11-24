@@ -23,6 +23,7 @@ const insertColumnAction = (
           type: "columns",
           left: [targetEl],
           right: [{ ...initialParagraph, _id: new Date().getTime() + 10 }],
+          deviation: 0,
         }
         state.activeContent!.components[targetIdx] = newColumnsEl
       } else if (payload.side === "right") {
@@ -31,6 +32,7 @@ const insertColumnAction = (
           type: "columns",
           right: [targetEl],
           left: [{ ...initialParagraph, _id: new Date().getTime() - 10 }],
+          deviation: 0,
         }
         state.activeContent!.components[targetIdx] = newColumnsEl
       }

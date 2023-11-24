@@ -15,8 +15,10 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import { rgbColour } from "../../../types"
 import { ChromePicker, ColorChangeHandler } from "react-color"
 import {
+  setColumnsElementsGap,
   setGeneralBg,
   setGeneralFontColour,
+  setMaxCanvasWidth,
   setTheme,
 } from "../../../features/styling/stylingSlice"
 import ColourPicker from "./ColourPicker"
@@ -39,7 +41,7 @@ const StylingGeneral = ({ collapsed }: props) => {
   const { main, gray } = useContext(CurrentThemeContext)
 
   const {
-    parameters: { general, activeTheme },
+    parameters: { general, activeTheme, columns, canvas_width },
     themes,
   } = useAppSelector((state) => state.styling)
   const { doc_bg_colour, font_colour } = general
@@ -132,6 +134,39 @@ const StylingGeneral = ({ collapsed }: props) => {
     }
   }, [handleColourChange, getActiveColour, activeParam])
 
+  //COLUMNS GAP
+
+  const [columnsGap, setColumnsGap] = useState(columns.gap)
+
+  const debouncedGap = useDebounce(columnsGap, 40)
+
+  useEffect(() => {
+    dispatch(setColumnsElementsGap(debouncedGap))
+  }, [debouncedGap, dispatch])
+
+  const handleColumnsGapChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target!
+    const numValue = parseInt(value)
+
+    setColumnsGap(numValue)
+  }
+
+  //MAX CANVAS WIDTH
+  const [canvasWidth, setCanvasWidth] = useState(canvas_width)
+
+  const debouncedCanvasWidth = useDebounce(canvasWidth, 40)
+
+  useEffect(() => {
+    dispatch(setMaxCanvasWidth(debouncedCanvasWidth))
+  }, [debouncedCanvasWidth, dispatch])
+
+  const handleCanvasWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target!
+    const numValue = parseInt(value)
+
+    setCanvasWidth(numValue)
+  }
+
   return (
     <StyledSection $gray={gray} $main={main}>
       <div
@@ -142,11 +177,33 @@ const StylingGeneral = ({ collapsed }: props) => {
       </div>
       {!collapsed && (
         <section className="styling-params">
+          <label className="param-selector">
+            <span>Max canvas width ({canvasWidth}):</span>
+            <input
+              className="range-input"
+              type="range"
+              value={canvasWidth}
+              min={760}
+              max={990}
+              onChange={handleCanvasWidthChange}
+            />
+          </label>
           {ParamSelector}
           {memoPicker}
           <label className="param-selector">
             <span>Main colour:</span>
             <Swatches />
+          </label>
+          <label className="param-selector">
+            <span>Columns gap ({columnsGap}):</span>
+            <input
+              className="range-input"
+              type="range"
+              value={columnsGap}
+              min={2}
+              max={12}
+              onChange={handleColumnsGapChange}
+            />
           </label>
         </section>
       )}

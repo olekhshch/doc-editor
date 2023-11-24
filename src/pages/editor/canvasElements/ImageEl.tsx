@@ -8,7 +8,7 @@ import React, {
 } from "react"
 import styled from "styled-components"
 import { ImageElement, columnParam } from "../../../types"
-import { useAppDispatch } from "../../../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import useDebounce from "../../../app/useDebounce"
 import {
   deleteElement,
@@ -22,6 +22,10 @@ import StyledElementToolbar from "./StyledElementToolbar"
 import { PiPencilSimpleLineFill } from "react-icons/pi"
 import { HiDuplicate } from "react-icons/hi"
 import { FaTrash } from "react-icons/fa"
+import { ColumnsElementContext } from "./ColumnsDocElement"
+import { MdOutlineDragIndicator } from "react-icons/md"
+import { useDrag } from "react-dnd"
+import { DnDTypes } from "../../../DnDtypes"
 
 type props = {
   imageElObj: ImageElement
@@ -30,8 +34,14 @@ type props = {
 
 const ImageEl = ({ imageElObj, column }: props) => {
   const dispatch = useAppDispatch()
+  const { canvas_width } = useAppSelector((state) => state.styling.parameters)
   const isColumn = column !== null
-  const maxWidth = useMemo(() => (isColumn ? 442 : 897), [isColumn])
+
+  const columnContext = useContext(ColumnsElementContext)
+  const maxWidth = useMemo(
+    () => (isColumn ? columnContext[column[1]] : canvas_width),
+    [isColumn, columnContext, canvas_width],
+  )!
 
   const {
     width,
@@ -218,6 +228,15 @@ const ImageEl = ({ imageElObj, column }: props) => {
   //#TODO: top and bottom margins as parametrs of a toolbar
   //#TODO: Resize listener - img width adjustment
 
+  //DnD setup
+  const [{ isDragging }, dragHandle, dragPreview] = useDrag({
+    type: DnDTypes.ELEMENT,
+    collect: (monitor: any) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    item: { _id, columnSource: column },
+  })
+
   //TOOLBAR
   const ImgToolbar = () => {
     const { setImageViewObj, setPopUpFor } = useContext(MenuState)
@@ -245,6 +264,13 @@ const ImageEl = ({ imageElObj, column }: props) => {
     return (
       <StyledElementToolbar>
         <>
+          {column !== null && (
+            <div className="toolbar-section">
+              <button className="dnd-handle" ref={dragHandle}>
+                <MdOutlineDragIndicator />
+              </button>
+            </div>
+          )}
           {naturalWidth !== width && (
             <div className="toolbar-section">
               <button className="element-toolbar-btn" onClick={resetWidth}>

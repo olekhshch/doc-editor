@@ -19,9 +19,11 @@ const addImageAction = (
     width: number
   }>,
 ) => {
+  state.disableElementsAdding = true
+
   const oldContent = state.activeContent
-  const [maxLineWidth, maxColumnWidth] = [896, 448]
-  console.log("tried")
+  const [maxLineWidth, maxColumnWidth] = [1000, 500]
+
   try {
     const imageId = new Date().getTime()
     const newImageEl: ImageElement = {
@@ -35,79 +37,44 @@ const addImageAction = (
       naturalWidth: payload.width,
       left_margin: 0,
     }
-
-    if (!payload.afterElementId && state.activeElementId !== null) {
+    let afterId = payload.afterElementId
+    let column: columnParam = payload.column
+    if (!afterId) {
       if (!Array.isArray(state.activeElementId)) {
-        newImageEl.width = Math.min(payload.width, maxLineWidth)
-
-        state.activeContent!.components = addElementsToState(
-          state.activeContent!.components,
-          state.activeElementId,
-          null,
-          newImageEl,
-        ) as (DocContentComponent | ColumnsElement)[]
-
-        state.activeElementId = imageId
+        //if activeElementId is a number => inserting new heading as an ordinary element
+        afterId = state.activeElementId!
+        column = null
       } else {
-        newImageEl.width = Math.min(payload.width, maxColumnWidth)
-        const colPar: columnParam = [
-          state.activeElementId[1],
-          state.activeElementId[2],
-        ]
-
-        state.activeContent!.components = addElementsToState(
-          state.activeContent!.components,
-          state.activeElementId[0],
-          colPar,
-          newImageEl,
-        ) as (DocContentComponent | ColumnsElement)[]
-
-        state.activeElementId = [imageId, ...colPar]
+        // if activeElementId is array => new heading will be a part of a column
+        afterId = state.activeElementId[0]
+        const colPar0 = state.activeElementId[1]
+        const colPar1 = state.activeElementId[2]
+        column = [colPar0, colPar1]
       }
-    } else if (payload.afterElementId) {
-      newImageEl.width = Math.min(
-        payload.width,
-        payload.column === null ? maxLineWidth : maxColumnWidth,
-      )
+    }
 
+    if (afterId) {
       state.activeContent!.components = addElementsToState(
         state.activeContent!.components,
-        payload.afterElementId,
-        payload.column,
+        afterId!,
+        column,
         newImageEl,
       ) as (DocContentComponent | ColumnsElement)[]
-
-      state.activeElementId =
-        payload.column === null ? imageId : [imageId, ...payload.column]
-    } else if (!payload.afterElementId && state.activeElementId === null) {
-      //no active element and no specific element id is given => image is inserted at the end of document
+    } else {
       state.activeContent!.components = [
         ...state.activeContent!.components,
         newImageEl,
       ]
-
-      state.activeElementId = imageId
     }
 
-    // const insertAfterId = payload.afterElementId
-    //   ? payload.afterElementId
-    //   : state.activeElementId ?? 0
-
-    // if (!Array.isArray(insertAfterId)) {
-    //   const afterElement = state.activeContent!.components.find(
-    //     (el) => el._id === insertAfterId,
-    //   )
-
-    //   state.activeContent!.components = insertElementIntoArray(
-    //     newImageEl,
-    //     state.activeContent!.components,
-    //     afterElement?.orderIndex ?? 0,
-    //   )
-    // }
+    state.activeElementId = column === null ? imageId : [imageId, ...column]
+    state.activeElementType = "image"
   } catch (err) {
     console.log({ err, text: "ERROR WHILE ADDING AN IMAGE" })
     state.activeContent = oldContent
   }
+
+  state.disableElementsAdding = false
 }
 
 export default addImageAction

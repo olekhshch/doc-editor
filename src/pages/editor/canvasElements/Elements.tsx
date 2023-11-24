@@ -9,6 +9,7 @@ import { CurrentDocContext } from "../Editor"
 const Elements = () => {
   const dispatch = useAppDispatch()
   const { activeContent } = useAppSelector((state) => state.documents)
+  const { canvas_width } = useAppSelector((state) => state.styling.parameters)
   const { readonly } = useContext(CurrentDocContext)!
 
   if (!activeContent) {
@@ -31,6 +32,7 @@ const Elements = () => {
           </div>
         )
       })}
+      <div id="max-width-ref" style={{ maxWidth: `${canvas_width}px` }} />
     </StyledElementsList>
   )
 }
@@ -42,4 +44,10 @@ const StyledElementsList = styled.ul`
   flex-direction: column;
   list-style: none;
   font-size: var(--p-size);
+
+  #max-width-ref {
+    margin-left: var(--editor-left-mg);
+    background-color: black;
+    height: 2px;
+  }
 `

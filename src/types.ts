@@ -58,6 +58,7 @@ export interface ColumnsElement extends BasicComponent {
   type: "columns"
   left: DocContentComponent[]
   right: DocContentComponent[]
+  deviation: number
 }
 
 export interface SeparatorElement extends BasicComponent {

@@ -6,7 +6,7 @@ import React, {
   useEffect,
 } from "react"
 import { HeadingElement, columnParam } from "../../../types"
-import { useAppDispatch } from "../../../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import {
   addParagraph,
   deleteActiveElement,
@@ -26,6 +26,7 @@ import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
 import styled from "styled-components"
 import useDebounce from "../../../app/useDebounce"
+import { ColumnsElementContext } from "./ColumnsDocElement"
 
 const hooks = [
   () => {
@@ -224,8 +225,10 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
     )
   }, [level, dragPreview, manager, state, readonly])
 
+  const { canvas_width } = useAppSelector((state) => state.styling.parameters)
+
   return (
-    <StyledHeading onClick={handleClick}>
+    <StyledHeading onClick={handleClick} $canvas_width={canvas_width}>
       {!isDragging && <Toolbar />}
       {HeadingMemo}
     </StyledHeading>
@@ -234,13 +237,18 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
 
 export default React.memo(HeadingEl)
 
-export const StyledHeading = styled.div`
+type styledProps = {
+  $canvas_width: number
+}
+
+export const StyledHeading = styled.div<styledProps>`
   .heading-element {
     padding: 0;
-    max-width: calc(
+    /* max-width: calc(
       var(--editor-canvas-width) - var(--editor-left-mg) -
         var(--editor-right-mg)
-    );
-    margin: 0 var(--editor-left-mg) 0 0;
+    ); */
+    max-width: ${(pr) => pr.$canvas_width}px;
+    /* margin: 0 var(--editor-left-mg) 0 0; */
   }
 `

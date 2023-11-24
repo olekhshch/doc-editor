@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import {
   addHeading,
   addImage,
@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "./hooks"
 const useDocElements = () => {
   const dispatch = useAppDispatch()
   const { disableElementsAdding } = useAppSelector((state) => state.documents)
+  const { canvas_width } = useAppSelector((state) => state.styling.parameters)
   const {
     parameters: { activeTheme },
   } = useAppSelector((state) => state.styling)
@@ -49,7 +50,7 @@ const useDocElements = () => {
   ) => {
     if (!disableElementsAdding) {
       dispatch(
-        addTable({ rows: rows ?? 2, columns: columns ?? 3, column: null }),
+        addTable({ rows: rows ?? 2, columns: columns ?? 4, column: null }),
       )
     }
     e.stopPropagation()
@@ -86,6 +87,14 @@ const useDocElements = () => {
     return { width, height }
   }
 
+  //GLOBAL MAX WIDTH
+
+  const widthRef = document.querySelector("#max-width-ref")
+
+  const [maxWidth, setMaxWidth] = useState(
+    widthRef?.clientWidth ?? canvas_width,
+  )
+
   return {
     addHeadingElement,
     addParagraphElement,
@@ -96,6 +105,7 @@ const useDocElements = () => {
     getLeftEdgePosition,
     elementRef,
     getDimensions,
+    maxWidth,
   }
 }
 

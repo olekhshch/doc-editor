@@ -114,6 +114,14 @@ const stylingSlice = createSlice({
         return template
       })
     },
+
+    setColumnsElementsGap: (state, { payload }: PayloadAction<number>) => {
+      state.parameters.columns.gap = payload
+    },
+
+    setMaxCanvasWidth: (state, { payload }: PayloadAction<number>) => {
+      state.parameters.canvas_width = payload
+    },
   },
 })
 
@@ -134,4 +142,7 @@ export const {
   setStylingFromTemplate,
   deleteStylingTemplate,
   saveActiveStylingAsTemplate,
+  renameStylingTemplate,
+  setColumnsElementsGap,
+  setMaxCanvasWidth,
 } = stylingSlice.actions

@@ -147,7 +147,7 @@ const StylingTextBlocks = ({ collapsed }: props) => {
                 value={indentValue}
                 disabled={!indent[0]}
                 min={0}
-                max={52}
+                max={76}
                 onChange={(e) => handleRangeChange(e, "indent")}
               />
             </label>
@@ -170,7 +170,7 @@ const StylingTextBlocks = ({ collapsed }: props) => {
                 type="range"
                 value={spacingLine}
                 min={0.5}
-                step={0.25}
+                step={0.1}
                 max={2}
                 onChange={(e) => handleRangeChange(e, "line")}
               />

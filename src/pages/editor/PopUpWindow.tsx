@@ -23,8 +23,8 @@ const PopUpWindow = () => {
     e.preventDefault()
     if (imgWidth !== 0) {
       addImageElement(imgURL, imgWidth)
+      setPopUpFor(null)
     }
-    setPopUpFor(null)
   }
 
   useEffect(() => {

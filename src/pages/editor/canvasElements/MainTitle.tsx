@@ -49,6 +49,7 @@ const MainTitle = ({ docTitle }: props) => {
   const {
     parameters: {
       main_title: { text_colour, underlined, font_size, margin_bottom },
+      canvas_width,
     },
   } = useAppSelector((state) => state.styling)
 
@@ -80,6 +81,7 @@ const MainTitle = ({ docTitle }: props) => {
       $text_colour={text_colour}
       $font_size={font_size}
       $mrg_btm={margin_bottom}
+      $canvas_width={canvas_width}
     >
       <Remirror
         manager={manager}
@@ -104,15 +106,17 @@ type styledProps = {
   $underlined: boolean
   $font_size: number
   $mrg_btm: number
+  $canvas_width: number
 }
 
 const StyledDocTitle = styled.h1<styledProps>`
-  margin: 0 var(--editor-left-mg) ${(pr) => pr.$mrg_btm}px;
+  margin: 0 0 ${(pr) => pr.$mrg_btm}px var(--editor-left-mg);
   border-bottom: 4px solid
     ${(props) => (props.$underlined ? props.$main : "transparent")};
   font-family: "Roboto Condensed", sans-serif;
   font-size: ${(pr) => pr.$font_size}px;
   font-weight: normal;
+  max-width: ${(pr) => pr.$canvas_width}px;
 
   color: ${(props) =>
     props.$text_colour ? `rgb(${rgbObjToString(props.$text_colour)})` : "auto"};

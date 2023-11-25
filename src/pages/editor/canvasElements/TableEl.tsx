@@ -6,6 +6,7 @@ import { CurrentThemeContext } from "../Editor"
 import useTable from "../../../app/useTable"
 import useDocElements from "../../../app/useDocElements"
 import { useAppSelector } from "../../../app/hooks"
+import { ColumnsElementContext } from "./ColumnsDocElement"
 
 type props = {
   tableElObj: TableElement
@@ -17,9 +18,30 @@ const TableEl = ({ tableElObj, column }: props) => {
   const { canvas_width } = useAppSelector((state) => state.styling.parameters)
 
   const { maxWidth } = useDocElements()
+  const columnsContext = useContext(ColumnsElementContext)
 
-  const { tableRef, handleWidthChange, widths, colNumber, resizeMode } =
-    useTable(_id, column_widths, column)
+  const {
+    tableRef,
+    handleWidthChange,
+    widths,
+    colNumber,
+    activeRow,
+    activateRow,
+    disactivateRow,
+    activateColumn,
+    activeColumn,
+    disactivateColumn,
+  } = useTable(_id, column_widths, column)
+
+  const mouseOverHandler = (row: number, col: number) => {
+    activateRow(row)
+    activateColumn(col)
+  }
+
+  const mouseLeaveHandler = () => {
+    disactivateRow()
+    disactivateColumn()
+  }
 
   //STYLING
   const { gray } = useContext(CurrentThemeContext)
@@ -28,7 +50,10 @@ const TableEl = ({ tableElObj, column }: props) => {
     <StyledTable
       ref={tableRef}
       $gray={gray}
-      style={{ maxWidth: `${canvas_width}` }}
+      style={{
+        width:
+          column === null ? `${maxWidth}px` : `${columnsContext[column[1]]}px`,
+      }}
     >
       {content.map((row, idx) => {
         return (
@@ -44,7 +69,9 @@ const TableEl = ({ tableElObj, column }: props) => {
                 width={widths[i]}
                 widthChangeHandler={handleWidthChange}
                 isLast={i === colNumber - 1}
-                resizeMode={resizeMode}
+                mouseOverHandler={mouseOverHandler}
+                isActive={idx === activeRow || i === activeColumn}
+                mouseLeaveHandler={mouseLeaveHandler}
               />
             ))}
           </div>

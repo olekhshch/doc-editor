@@ -99,35 +99,36 @@ const useTable = (
       })
     }
 
-    const cellRef = useRef<HTMLDivElement>(null)
+    //SHOW ROW AND COLUMN WHEN IS OVER CELL
+    const [activeRow, setActiveRow] = useState<null | number>(null)
+    const [activeColumn, setActiveColumn] = useState<null | number>(null)
 
-    // useEffect(() => {
-    //   if (columnWidth === null && cellRef.current) {
-    //     const { clientWidth } = cellRef.current
-    //     setColumnWidth(clientWidth)
-    //   }
-    // }, [columnWidth, cellRef])
+    const activateRow = (row: number) => {
+      setActiveRow(row)
+    }
+    const activateColumn = (col: number) => {
+      setActiveColumn(col)
+    }
 
-    // useEffect(() => {
-    //   if (debouncedWidth !== null && debouncedWidth !== colWidth) {
-    //     dispatch(
-    //       setTableColumnWidth({
-    //         tableId,
-    //         column,
-    //         columnIdx: col,
-    //         width: debouncedWidth,
-    //       }),
-    //     )
-    //   }
-    // }, [col, colWidth, debouncedWidth, dispatch, tableId])
+    const disactivateRow = () => {
+      setActiveRow(null)
+    }
+
+    const disactivateColumn = () => {
+      setActiveColumn(null)
+    }
 
     return {
       tableRef,
-      cellRef,
       handleWidthChange,
       widths,
       colNumber,
-      resizeMode,
+      activeRow,
+      activateRow,
+      disactivateRow,
+      activateColumn,
+      activeColumn,
+      disactivateColumn,
     }
   }
 

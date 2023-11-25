@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import {
   addHeading,
   addImage,
@@ -7,6 +7,7 @@ import {
   addTable,
 } from "../features/documents/documentsSlice"
 import { useAppDispatch, useAppSelector } from "./hooks"
+import { columnParam } from "../types"
 
 /**
  * Hook to add elements depending on current active element position
@@ -94,6 +95,18 @@ const useDocElements = () => {
   const [maxWidth, setMaxWidth] = useState(
     widthRef?.clientWidth ?? canvas_width,
   )
+
+  useEffect(() => {
+    const handleResize = (e: Event) => {
+      if (widthRef) {
+        const { clientWidth } = widthRef
+        setMaxWidth(clientWidth)
+      }
+    }
+    window.addEventListener("resize", handleResize)
+
+    return () => window.removeEventListener("resize", handleResize)
+  }, [widthRef])
 
   return {
     addHeadingElement,

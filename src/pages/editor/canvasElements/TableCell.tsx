@@ -26,8 +26,10 @@ type props = {
   column: columnParam
   width: number | null
   widthChangeHandler: (e: React.MouseEvent, a: number) => void
+  mouseOverHandler: (r: number, c: number) => void
+  mouseLeaveHandler: () => void
   isLast?: boolean
-  resizeMode: boolean
+  isActive: boolean
 }
 const TableCellEl = ({
   cellObj,
@@ -38,7 +40,9 @@ const TableCellEl = ({
   width,
   widthChangeHandler,
   isLast,
-  resizeMode,
+  mouseOverHandler,
+  isActive,
+  mouseLeaveHandler,
 }: props) => {
   const { content } = cellObj
 
@@ -76,7 +80,10 @@ const TableCellEl = ({
       data-col={col}
       $main={main}
       $gray={gray}
+      $isActive={isActive}
       style={{ maxWidth: `${width}px` }}
+      onMouseOver={(e) => mouseOverHandler(row, col)}
+      onMouseLeave={mouseLeaveHandler}
     >
       <span className="table-cell-content">
         cell. {width}
@@ -109,12 +116,14 @@ export default TableCellEl
 type styledProps = {
   $main: string
   $gray: string
+  $isActive: boolean
 }
 
 const StyledCell = styled.div<styledProps>`
   min-width: 110px;
   flex-grow: 1;
   display: flex;
+  background-color: ${(pr) => (pr.$isActive ? pr.$gray : "transparent")};
 
   .table-cell-content {
     flex-grow: 1;

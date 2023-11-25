@@ -121,7 +121,7 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
             onClick={() => setElementMenuId(null)}
             ref={dragPreview}
             $canvas_width={canvas_width}
-            $max_width={["separator", "table"].includes(type)}
+            $max_width={["separator"].includes(type)}
             $gray={gray}
             $font_size={text_blocks.font_size}
             $readonly={readonly}

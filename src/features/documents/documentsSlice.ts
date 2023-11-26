@@ -119,12 +119,7 @@ const documentsSlice = createSlice({
       // state.documents = state.documents.filter((doc) => doc._id !== payload)
     },
 
-    renameDoc: (
-      state,
-      {
-        payload: { newTitle, docId },
-      }: PayloadAction<{ docId?: number | undefined; newTitle: string }>,
-    ) => {
+    renameActiveDoc: (state, { payload }: PayloadAction<string>) => {
       //#TODO: Rename Doc functionality
       // const targetDocId = docId ?? state.activeDocumentId
       // state.documents = state.documents.map((doc) => {
@@ -133,6 +128,9 @@ const documentsSlice = createSlice({
       //   }
       //   return doc
       // })
+      if (state.activeDocumentInfo) {
+        state.activeDocumentInfo.title = payload
+      }
     },
 
     setDocAsCurrent: (state, { payload }: PayloadAction<number>) => {
@@ -626,7 +624,7 @@ export const {
   enableAddingElements,
   // createDoc,
   deleteDoc,
-  renameDoc,
+  renameActiveDoc,
   setDocAsCurrent,
   toggleBegingsWithTitle,
   setActiveElementData,

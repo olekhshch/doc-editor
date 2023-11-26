@@ -51,7 +51,7 @@ const useDocElements = () => {
   ) => {
     if (!disableElementsAdding) {
       dispatch(
-        addTable({ rows: rows ?? 2, columns: columns ?? 4, column: null }),
+        addTable({ rows: rows ?? 3, columns: columns ?? 2, column: null }),
       )
     }
     e.stopPropagation()
@@ -98,15 +98,16 @@ const useDocElements = () => {
 
   useEffect(() => {
     const handleResize = (e: Event) => {
-      if (widthRef) {
-        const { clientWidth } = widthRef
+      const ref = widthRef ?? document.querySelector("#max-width-ref")
+      if (ref) {
+        const { clientWidth } = ref
         setMaxWidth(clientWidth)
       }
     }
     window.addEventListener("resize", handleResize)
 
-    return () => window.removeEventListener("resize", handleResize)
-  }, [widthRef])
+    // return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   return {
     addHeadingElement,

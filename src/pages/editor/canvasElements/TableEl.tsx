@@ -20,6 +20,9 @@ const TableEl = ({ tableElObj, column }: props) => {
   const { maxWidth } = useDocElements()
   const columnsContext = useContext(ColumnsElementContext)
 
+  const tableWidth =
+    column === null ? maxWidth : columnsContext[column[1]] ?? maxWidth
+
   const {
     tableRef,
     handleWidthChange,
@@ -31,7 +34,11 @@ const TableEl = ({ tableElObj, column }: props) => {
     activateColumn,
     activeColumn,
     disactivateColumn,
-  } = useTable(_id, column_widths, column)
+    deleteRow,
+    addRow,
+    addColumn,
+    deleteColumn,
+  } = useTable(_id, column_widths, column, tableWidth)
 
   const mouseOverHandler = (row: number, col: number) => {
     activateRow(row)
@@ -55,6 +62,8 @@ const TableEl = ({ tableElObj, column }: props) => {
           column === null ? `${maxWidth}px` : `${columnsContext[column[1]]}px`,
       }}
     >
+      {JSON.stringify(widths)}
+      {tableWidth}
       {content.map((row, idx) => {
         return (
           <div key={idx} className="table-row">
@@ -68,10 +77,14 @@ const TableEl = ({ tableElObj, column }: props) => {
                 tableId={_id}
                 width={widths[i]}
                 widthChangeHandler={handleWidthChange}
-                isLast={i === colNumber - 1}
+                isLast={i === row.length - 1}
                 mouseOverHandler={mouseOverHandler}
                 isActive={idx === activeRow || i === activeColumn}
                 mouseLeaveHandler={mouseLeaveHandler}
+                deleteRow={deleteRow}
+                addRow={addRow}
+                addColumn={addColumn}
+                deleteColumn={deleteColumn}
               />
             ))}
           </div>
@@ -90,8 +103,18 @@ type styledProps = {
 const StyledTable = styled.section<styledProps>`
   border-top: 1px solid ${(pr) => pr.$gray};
   border-left: 1px solid ${(pr) => pr.$gray};
+  box-sizing: border-box;
 
   .table-row {
     display: flex;
+  }
+
+  .table-row:hover .left-cell-btns {
+    opacity: 1;
+  }
+
+  .table-btn {
+    border: none;
+    background-color: transparent;
   }
 `

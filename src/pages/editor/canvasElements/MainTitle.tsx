@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useContext, useEffect } from "react"
 import styled from "styled-components"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
-import { renameDoc } from "../../../features/documents/documentsSlice"
+import { renameActiveDoc } from "../../../features/documents/documentsSlice"
 import {
   useRemirror,
   Remirror,
@@ -30,7 +30,7 @@ const hooks = [
       ({ state }: { state: any }) => {
         const newTitle = getText(state)
         if (newTitle.trim() !== "") {
-          dispatch(renameDoc({ newTitle }))
+          dispatch(renameActiveDoc(newTitle))
         } else {
           insertText(title)
         }
@@ -65,7 +65,7 @@ const MainTitle = ({ docTitle }: props) => {
 
   useEffect(() => {
     if (debouncedTitle.trim() !== "") {
-      dispatch(renameDoc({ newTitle: debouncedTitle }))
+      dispatch(renameActiveDoc(debouncedTitle))
     }
   }, [debouncedTitle, dispatch])
 

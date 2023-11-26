@@ -29,6 +29,8 @@ const deleteColumnAction = (
       row.filter((cell, colIndex) => colIndex !== payload.colIdx),
     )
 
+    targetTableEl.column_widths.splice(payload.colIdx, 1)
+
     state.activeContent!.components = replaceElementInArray(
       targetTableEl,
       state.activeContent!.components,

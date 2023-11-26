@@ -186,12 +186,10 @@ const StyledElementWrapper = styled.li<styledProps>`
     min-width: 84px;
   }
 
-  .table-row {
-    border-bottom: 1px solid ${(props) => props.$gray};
-  }
-
   .table-cell {
+    border-top: 1px solid ${(props) => props.$gray};
     border-right: 1px solid ${(props) => props.$gray};
+    border-bottom: 1px solid ${(props) => props.$gray};
   }
   .cell-btns {
     box-shadow: 0 0 4px ${(props) => props.$gray};

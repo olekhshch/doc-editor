@@ -8,6 +8,7 @@ import {
 } from "../../../types"
 import generateEmptyTableContent from "./generateEmptyTableContent"
 import addElementsToState from "../../../functions/addElementsToState"
+import { constantValues } from "../../../constants"
 
 const addTableAction = (
   state: DocumentsState,
@@ -30,7 +31,7 @@ const addTableAction = (
   const column_widths = []
 
   for (let i = 0; i < payload.columns; i++) {
-    column_widths.push(null)
+    column_widths.push(constantValues.cell_min_width)
   }
 
   const newTableEl: TableElement = {

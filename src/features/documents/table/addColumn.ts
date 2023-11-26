@@ -10,6 +10,7 @@ import {
 import findElementFromState from "../../../functions/findElementFromState"
 import { initialCellContent } from "./generateEmptyTableContent"
 import replaceElementInArray from "../../../functions/replaceElementInArray"
+import { constantValues } from "../../../constants"
 
 const addColumnAction = (
   state: DocumentsState,
@@ -37,7 +38,12 @@ const addColumnAction = (
     //#TODO: Allow to create more but after a table viewer implementation
     //#TODO: New columns width array
     if (colNum < 8) {
-      targetTableEl.column_widths.splice(payload.colIndexBefore + 1, 0, null)
+      targetTableEl.column_widths.splice(
+        payload.colIndexBefore + 1,
+        0,
+        constantValues.cell_min_width,
+      )
+
       const updatedContent: TableCell[][] = contentArray.map((row) => {
         const _id = idx
         idx += 1

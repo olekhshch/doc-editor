@@ -17,6 +17,9 @@ import {
   UnderlineExtension,
 } from "remirror/extensions"
 import useTable from "../../../app/useTable"
+import { MdOutlineDragIndicator } from "react-icons/md"
+import { useAppSelector } from "../../../app/hooks"
+import { TiDelete } from "react-icons/ti"
 
 type props = {
   cellObj: TableCell
@@ -30,6 +33,10 @@ type props = {
   mouseLeaveHandler: () => void
   isLast?: boolean
   isActive: boolean
+  deleteRow: (r: number) => void
+  addRow: (r: number) => void
+  deleteColumn: (c: number) => void
+  addColumn: (c: number) => void
 }
 const TableCellEl = ({
   cellObj,
@@ -43,8 +50,14 @@ const TableCellEl = ({
   mouseOverHandler,
   isActive,
   mouseLeaveHandler,
+  deleteRow,
+  addRow,
+  deleteColumn,
+  addColumn,
 }: props) => {
   const { content } = cellObj
+
+  const { disableElementsAdding } = useAppSelector((state) => state.documents)
 
   //REMIRROR SET UP
   const [cellContent, setCellContent] = useState<RemirrorJSON[]>(content)
@@ -68,8 +81,6 @@ const TableCellEl = ({
     },
   })
 
-  //WIDTHS
-
   //STYLING
   const { main, gray } = useContext(CurrentThemeContext)
 
@@ -81,13 +92,58 @@ const TableCellEl = ({
       $main={main}
       $gray={gray}
       $isActive={isActive}
-      style={{ maxWidth: `${width}px` }}
+      style={{
+        width: `${width}px`,
+        // flexGrow: isLast ? "1" : "0",
+      }}
       onMouseOver={(e) => mouseOverHandler(row, col)}
       onMouseLeave={mouseLeaveHandler}
     >
+      {col === 0 && (
+        <div className="left-cell-btns cell-btns">
+          <button
+            className="table-btn"
+            title="Insert row below"
+            disabled={disableElementsAdding}
+            onClick={() => addRow(row)}
+          >
+            +
+          </button>
+          <button
+            className="table-btn"
+            title="Delete row"
+            onClick={() => deleteRow(row)}
+          >
+            <TiDelete />
+          </button>
+        </div>
+      )}
+      {row === 0 && (
+        <div className="top-cell-btns cell-btns">
+          <button className="table-btn cell-dnd-handle">
+            <MdOutlineDragIndicator />
+          </button>
+          <button
+            className="table-btn"
+            title="Insert column to the right"
+            disabled={disableElementsAdding}
+            onClick={() => addColumn(col)}
+          >
+            +
+          </button>
+          <button
+            className="table-btn"
+            title="Delete column"
+            onClick={() => deleteColumn(col)}
+          >
+            <TiDelete />
+          </button>
+        </div>
+      )}
       <span className="table-cell-content">
-        cell. {width}
-        {/* <Remirror
+        {width}
+        <Remirror
+          classNames={["table-cell-content"]}
           manager={manager}
           initialContent={state}
           onChange={(props) => {
@@ -101,10 +157,10 @@ const TableCellEl = ({
           <FloatingWrapper positioner={"selection"} placement="left">
             toolbar
           </FloatingWrapper>
-        </Remirror> */}
+        </Remirror>
       </span>
       <div
-        className={isLast ? "table-cell-divider hidden" : "table-cell-divider"}
+        className="table-cell-divider"
         onMouseDown={(e) => widthChangeHandler(e, col)}
       />
     </StyledCell>
@@ -120,22 +176,57 @@ type styledProps = {
 }
 
 const StyledCell = styled.div<styledProps>`
+  position: relative;
   min-width: 110px;
-  flex-grow: 1;
+  box-sizing: border-box;
+  /* flex-grow: 1; */
   display: flex;
   background-color: ${(pr) => (pr.$isActive ? pr.$gray : "transparent")};
 
   .table-cell-content {
     flex-grow: 1;
+    white-space: pre-wrap;
   }
 
   .table-cell-divider {
     width: 4px;
     background-color: ${(pr) => pr.$main};
     cursor: col-resize;
+    opacity: 0;
   }
 
+  &&:hover .table-cell-divider {
+    opacity: 1;
+  }
   .hidden {
     background-color: transparent;
+  }
+
+  .cell-btns {
+    padding: 4px 6px 2px;
+    position: absolute;
+    z-index: 100;
+    display: flex;
+    gap: 2px;
+    background-color: white;
+    border-radius: 8px;
+    font-size: var(--small-size);
+    opacity: 0;
+  }
+
+  &&:hover .cell-btns {
+    opacity: 1;
+  }
+
+  .left-cell-btns {
+    top: calc(50% - 16px);
+    left: -16px;
+    height: 24px;
+  }
+
+  .top-cell-btns {
+    right: calc(50% - 28px);
+    top: -12px;
+    /* width: 48px; */
   }
 `

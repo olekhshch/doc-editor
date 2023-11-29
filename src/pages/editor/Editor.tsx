@@ -76,8 +76,17 @@ const Editor = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const URLParams = useParams()
 
-  const location = useLocation()
-  const navigate = useNavigate()
+  const setReadOnly = () => setSearchParams({ readonly: "true" })
+  const setEditMode = () => setSearchParams({})
+
+  const toggleMode = () => {
+    const readonly = searchParams.get("readonly") ? true : false
+    if (readonly) {
+      setEditMode()
+    } else {
+      setReadOnly()
+    }
+  }
 
   useEffect(() => {
     const { docId } = URLParams
@@ -191,8 +200,12 @@ const Editor = () => {
   }, [popUpFor])
 
   //ELEMENTS ACTIONS HOOK
-  const { addParagraphElement, addHeadingElement, addSeparatorElement } =
-    useDocElements()
+  const {
+    addParagraphElement,
+    addHeadingElement,
+    addSeparatorElement,
+    addTableElement,
+  } = useDocElements()
 
   useEffect(() => {
     const handleShortcuts = (e: KeyboardEvent) => {
@@ -204,6 +217,9 @@ const Editor = () => {
           case "h":
             addHeadingElement(e)
             break
+          case "t":
+            addTableElement(e)
+            break
           case "s":
             addSeparatorElement(e)
             break
@@ -211,6 +227,14 @@ const Editor = () => {
       } else if (e.shiftKey) {
         if (e.key === "Enter" && activeElementType === "paragraph") {
           addParagraphElement(e)
+        } else if (e.ctrlKey) {
+          switch (e.key.toLowerCase()) {
+            case "e":
+            case "r":
+              toggleMode()
+              e.preventDefault()
+              break
+          }
         }
       }
     }

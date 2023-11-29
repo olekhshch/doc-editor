@@ -1,7 +1,7 @@
-import React, { useCallback, useContext, useState } from "react"
+import React, { useCallback, useContext, useEffect, useState } from "react"
 import { TableCell, columnParam } from "../../../types"
 import styled from "styled-components"
-import { CurrentThemeContext } from "../Editor"
+import { CurrentDocContext, CurrentThemeContext } from "../Editor"
 import {
   EditorComponent,
   FloatingWrapper,
@@ -16,10 +16,16 @@ import {
   TrailingNodeExtension,
   UnderlineExtension,
 } from "remirror/extensions"
-import useTable from "../../../app/useTable"
 import { MdOutlineDragIndicator } from "react-icons/md"
-import { useAppSelector } from "../../../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import { TiDelete } from "react-icons/ti"
+import {
+  setActiveElementData,
+  setTableCellContent,
+  toggleTableHeading,
+} from "../../../features/documents/documentsSlice"
+import { constantValues } from "../../../constants"
+import useDebounce from "../../../app/useDebounce"
 
 type props = {
   cellObj: TableCell
@@ -37,6 +43,7 @@ type props = {
   addRow: (r: number) => void
   deleteColumn: (c: number) => void
   addColumn: (c: number) => void
+  heading: boolean
 }
 const TableCellEl = ({
   cellObj,
@@ -54,14 +61,32 @@ const TableCellEl = ({
   addRow,
   deleteColumn,
   addColumn,
+  heading,
 }: props) => {
   const { content } = cellObj
+  const dispatch = useAppDispatch()
+  const { readonly } = useContext(CurrentDocContext)!
 
   const { disableElementsAdding } = useAppSelector((state) => state.documents)
 
   //REMIRROR SET UP
   const [cellContent, setCellContent] = useState<RemirrorJSON[]>(content)
 
+  const debouncedContent = useDebounce(cellContent, 500)
+
+  useEffect(() => {
+    dispatch(
+      setTableCellContent({
+        tableId,
+        column,
+        row,
+        col,
+        newContent: debouncedContent,
+      }),
+    )
+  }, [col, debouncedContent, dispatch, row, tableId])
+
+  //regular cell
   const extensions = useCallback(
     () => [
       new TrailingNodeExtension(),
@@ -81,8 +106,23 @@ const TableCellEl = ({
     },
   })
 
+  //HEADING AND MAIN COLUMN
+  const toggleHeading = () => {
+    dispatch(toggleTableHeading({ tableId, column }))
+  }
+
   //STYLING
   const { main, gray } = useContext(CurrentThemeContext)
+
+  const activateOnClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    dispatch(
+      setActiveElementData({
+        id: column === null ? tableId : [tableId, ...column],
+        type: "table",
+      }),
+    )
+  }
 
   return (
     <StyledCell
@@ -91,59 +131,74 @@ const TableCellEl = ({
       data-col={col}
       $main={main}
       $gray={gray}
-      $isActive={isActive}
+      $isActive={isActive || (heading && row === 0)}
       style={{
         width: `${width}px`,
+        // minWidth: `${constantValues.cell_min_width}px`,
         // flexGrow: isLast ? "1" : "0",
       }}
       onMouseOver={(e) => mouseOverHandler(row, col)}
       onMouseLeave={mouseLeaveHandler}
+      onClick={activateOnClick}
     >
-      {col === 0 && (
-        <div className="left-cell-btns cell-btns">
-          <button
-            className="table-btn"
-            title="Insert row below"
-            disabled={disableElementsAdding}
-            onClick={() => addRow(row)}
-          >
-            +
-          </button>
-          <button
-            className="table-btn"
-            title="Delete row"
-            onClick={() => deleteRow(row)}
-          >
-            <TiDelete />
-          </button>
-        </div>
+      {!readonly && (
+        <>
+          {col === 0 && (
+            <div className="left-cell-btns cell-btns">
+              <button
+                className="table-btn"
+                title="Insert row below"
+                disabled={disableElementsAdding}
+                onClick={() => addRow(row)}
+              >
+                +
+              </button>
+              {row === 0 && (
+                <input
+                  type="checkbox"
+                  checked={heading}
+                  onChange={toggleHeading}
+                />
+              )}
+              <button
+                className="table-btn"
+                title="Delete row"
+                onClick={() => deleteRow(row)}
+              >
+                <TiDelete />
+              </button>
+            </div>
+          )}
+          {row === 0 && (
+            <div className="top-cell-btns cell-btns">
+              <button className="table-btn cell-dnd-handle">
+                <MdOutlineDragIndicator />
+              </button>
+              <button
+                className="table-btn"
+                title="Insert column to the right"
+                disabled={disableElementsAdding}
+                onClick={() => addColumn(col)}
+              >
+                +
+              </button>
+              <button
+                className="table-btn"
+                title="Delete column"
+                onClick={() => deleteColumn(col)}
+              >
+                <TiDelete />
+              </button>
+            </div>
+          )}
+        </>
       )}
-      {row === 0 && (
-        <div className="top-cell-btns cell-btns">
-          <button className="table-btn cell-dnd-handle">
-            <MdOutlineDragIndicator />
-          </button>
-          <button
-            className="table-btn"
-            title="Insert column to the right"
-            disabled={disableElementsAdding}
-            onClick={() => addColumn(col)}
-          >
-            +
-          </button>
-          <button
-            className="table-btn"
-            title="Delete column"
-            onClick={() => deleteColumn(col)}
-          >
-            <TiDelete />
-          </button>
-        </div>
-      )}
-      <span className="table-cell-content">
-        {width}
+      <span
+        className={
+          heading && row === 0 ? "table-heading-wrapper" : "table-cell-wrapper"
+        }
+      >
         <Remirror
-          classNames={["table-cell-content"]}
           manager={manager}
           initialContent={state}
           onChange={(props) => {
@@ -152,6 +207,7 @@ const TableCellEl = ({
             const newContent = docJSON.doc.content
             setCellContent(newContent)
           }}
+          editable={!readonly}
         >
           <EditorComponent />
           <FloatingWrapper positioner={"selection"} placement="left">
@@ -160,8 +216,12 @@ const TableCellEl = ({
         </Remirror>
       </span>
       <div
-        className="table-cell-divider"
-        onMouseDown={(e) => widthChangeHandler(e, col)}
+        className={
+          readonly ? "table-cell-divider hidden" : "table-cell-divider"
+        }
+        onMouseDown={(e) => {
+          !readonly && widthChangeHandler(e, col)
+        }}
       />
     </StyledCell>
   )
@@ -177,19 +237,30 @@ type styledProps = {
 
 const StyledCell = styled.div<styledProps>`
   position: relative;
-  min-width: 110px;
+  min-width: 90px;
   box-sizing: border-box;
   /* flex-grow: 1; */
   display: flex;
   background-color: ${(pr) => (pr.$isActive ? pr.$gray : "transparent")};
+  white-space: pre-wrap;
 
-  .table-cell-content {
+  .table-cell-wrapper,
+  .table-heading-wrapper {
+    margin: 2px 0 2px 4px;
+    /* padding: 2px; */
     flex-grow: 1;
     white-space: pre-wrap;
+    width: 90%;
+    text-align: justify;
+  }
+
+  .table-heading-wrapper {
+    font-weight: bold;
   }
 
   .table-cell-divider {
     width: 4px;
+    height: 100%;
     background-color: ${(pr) => pr.$main};
     cursor: col-resize;
     opacity: 0;
@@ -200,6 +271,7 @@ const StyledCell = styled.div<styledProps>`
   }
   .hidden {
     background-color: transparent;
+    cursor: auto;
   }
 
   .cell-btns {

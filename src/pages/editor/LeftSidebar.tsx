@@ -28,6 +28,7 @@ const LeftSidebar = () => {
       setReadOnly()
     }
   }
+
   const [docTitle, setDocTitle] = useState("")
   const [activeIdx, setActiveIdx] = useState<0 | 1>(0)
 
@@ -51,7 +52,7 @@ const LeftSidebar = () => {
     <StyledLeftSb className="editor-sb">
       <div className="sb-inner">
         <article className="flex-col top-panel">
-          <p className="doc-title" style={{ color: main }}>
+          <p className="doc-title" style={{ color: main }} title={docTitle}>
             {docTitle}
           </p>
           <button onClick={toggleMode}>
@@ -86,12 +87,14 @@ const StyledLeftSb = styled.aside`
   bottom: 0;
   left: 0;
   flex-grow: 1;
-  flex-basis: 300px;
+  flex-basis: 240px;
+  max-width: 240px;
   min-width: 154px;
 
   .sb-inner {
     position: fixed;
     top: 32px;
+    max-width: 210px;
   }
 
   .top-panel {
@@ -103,6 +106,9 @@ const StyledLeftSb = styled.aside`
     font-weight: bold;
     cursor: pointer;
     user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   article {

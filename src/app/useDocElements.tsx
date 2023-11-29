@@ -71,8 +71,8 @@ const useDocElements = () => {
 
   const elementRef = useRef<HTMLDivElement>(null)!
 
-  const getVerticalPosition = () => {
-    const { top } = elementRef.current!.getBoundingClientRect()
+  const getVerticalPosition = (ref?: React.RefObject<HTMLElement>) => {
+    const { top } = (ref ?? elementRef).current!.getBoundingClientRect()
     return top
   }
 
@@ -82,8 +82,10 @@ const useDocElements = () => {
     return left
   }
 
-  const getDimensions = () => {
-    const { width, height } = elementRef.current!.getBoundingClientRect()
+  const getDimensions = (ref?: React.RefObject<HTMLElement>) => {
+    const { width, height } = (
+      ref ?? elementRef
+    ).current!.getBoundingClientRect()
 
     return { width, height }
   }
@@ -95,6 +97,14 @@ const useDocElements = () => {
   const [maxWidth, setMaxWidth] = useState(
     widthRef?.clientWidth ?? canvas_width,
   )
+
+  useEffect(() => {
+    const ref = widthRef ?? document.querySelector("#max-width-ref")
+    if (ref) {
+      const { clientWidth } = ref
+      setMaxWidth(clientWidth)
+    }
+  }, [canvas_width, widthRef])
 
   useEffect(() => {
     const handleResize = (e: Event) => {

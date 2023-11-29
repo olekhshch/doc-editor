@@ -40,6 +40,7 @@ const Elements = () => {
 export default Elements
 
 const StyledElementsList = styled.ul`
+  padding-right: 36px;
   display: flex;
   flex-direction: column;
   list-style: none;
@@ -47,7 +48,7 @@ const StyledElementsList = styled.ul`
 
   #max-width-ref {
     margin-left: var(--editor-left-mg);
-    background-color: black;
+    background-color: transparent;
     height: 2px;
   }
 `

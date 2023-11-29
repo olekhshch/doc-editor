@@ -1,12 +1,14 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
 import { useAppSelector } from "../../../app/hooks"
-import { CurrentThemeContext } from "../Editor"
+import { CurrentDocContext, CurrentThemeContext } from "../Editor"
 
 const ShortCutsList = () => {
   const { activeElementId, activeElementType } = useAppSelector(
     (state) => state.documents,
   )
+
+  const { readonly } = useContext(CurrentDocContext)!
 
   //THEME
   const { gray, main } = useContext(CurrentThemeContext)
@@ -14,34 +16,56 @@ const ShortCutsList = () => {
   return (
     <StyledShortcutsList $gray={gray} $main={main}>
       <h4>Shortcuts</h4>
+      {!readonly && (
+        <>
+          <ul>
+            <li className="shortcut-list-item">
+              <div className="keys flex-col">
+                {activeElementType === "heading" && <span>Enter</span>}
+                <span>Alt + P</span>
+                {activeElementType === "paragraph" && (
+                  <span>Shift + Enter</span>
+                )}
+              </div>
+              <span className="shortcut-description">New text block*</span>
+            </li>
+            <li className="shortcut-list-item">
+              <div className="keys flex-col">
+                <span>Alt + H</span>
+              </div>
+              <span className="shortcut-description">New heading*</span>
+            </li>
+            <li className="shortcut-list-item">
+              <div className="keys flex-col">
+                <span>Alt + T</span>
+              </div>
+              <span className="shortcut-description">New table (2x3)*</span>
+            </li>
+            <li className="shortcut-list-item">
+              <div className="keys flex-col">
+                <span>Alt + S</span>
+              </div>
+              <span className="shortcut-description">New separator*</span>
+            </li>
+          </ul>
+          <p className="remark">
+            *
+            {activeElementId === null
+              ? "at the end of the document"
+              : "after the active element"}
+          </p>
+        </>
+      )}
       <ul>
         <li className="shortcut-list-item">
           <div className="keys flex-col">
-            {activeElementType === "heading" && <span>Enter</span>}
-            <span>Alt + P</span>
-            {activeElementType === "paragraph" && <span>Shift + Enter</span>}
+            <span>Ctrl + Shift + R</span>
           </div>
-          <span className="shortcut-description">New text block*</span>
-        </li>
-        <li className="shortcut-list-item">
-          <div className="keys flex-col">
-            <span>Alt + H</span>
-          </div>
-          <span className="shortcut-description">New heading*</span>
-        </li>
-        <li className="shortcut-list-item">
-          <div className="keys flex-col">
-            <span>Alt + S</span>
-          </div>
-          <span className="shortcut-description">New separator*</span>
+          <span className="shortcut-description">
+            {readonly ? "Edit mode" : "Read only mode"}
+          </span>
         </li>
       </ul>
-      <p className="remark">
-        *
-        {activeElementId === null
-          ? "at the end of the document"
-          : "after the active element"}
-      </p>
     </StyledShortcutsList>
   )
 }
@@ -60,6 +84,10 @@ const StyledShortcutsList = styled.section<styledProps>`
   .keys {
     min-width: 90px;
     font-weight: bold;
+  }
+
+  ul {
+    margin-top: 8px;
   }
 
   ul,

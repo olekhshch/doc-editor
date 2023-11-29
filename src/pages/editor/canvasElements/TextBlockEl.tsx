@@ -91,10 +91,6 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
 
   const { readonly } = useContext(CurrentDocContext)!
 
-  // useEffect(() => {
-  //   setFocused(false)
-  // }, [])
-
   const { elementRef, getVerticalPosition, getLeftEdgePosition } =
     useDocElements()
 
@@ -120,7 +116,6 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
       new StrikeExtension(),
       new BulletListExtension(),
       new OrderedListExtension(),
-      new TrailingNodeExtension(),
     ],
     [],
   )
@@ -135,14 +130,14 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
 
   //TOOLBAR
 
-  const [toolbarInVisible, setToolbarIsVisible] = useState(true)
+  const [toolbarIsVisible, setToolbarIsVisible] = useState(true)
   const [leftPosition, setLeftPosition] = useState<number | undefined>(
     undefined,
   )
 
   const handleMouseOver = () => {
     const verticalPosition = getVerticalPosition()
-    setToolbarIsVisible(verticalPosition > 0)
+    setToolbarIsVisible(verticalPosition > 40)
     setLeftPosition(getLeftEdgePosition())
 
     // tbRef.current!.addEventListener("mousemove", () => {
@@ -190,7 +185,7 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
 
     return (
       <StyledElementToolbar
-        outOfScreen={!toolbarInVisible}
+        outOfScreen={!toolbarIsVisible}
         left_position={leftPosition}
       >
         <>

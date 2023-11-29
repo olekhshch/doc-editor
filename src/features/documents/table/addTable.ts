@@ -40,6 +40,8 @@ const addTableAction = (
     content: generatedContent.content,
     lastCellId: generatedContent.lastCellId,
     column_widths,
+    heading: false,
+    main_column: false,
   }
 
   try {

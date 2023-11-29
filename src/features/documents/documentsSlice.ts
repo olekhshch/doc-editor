@@ -46,6 +46,7 @@ import findElementFromState from "../../functions/findElementFromState"
 import setTableColumnWidthAction from "./table/setColumnWidth"
 import setColumnsElDevisationAction from "./columns/setColumnsElDeviation"
 import setTableWidthsArrayAction from "./table/setTableWidthsArray"
+import toggleHeadingAction from "./table/toggleHeading"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -530,6 +531,7 @@ const documentsSlice = createSlice({
     setTableCellContent: setCellContentAction,
     setTableColumnWidth: setTableColumnWidthAction,
     setTableColumnsWidths: setTableWidthsArrayAction,
+    toggleTableHeading: toggleHeadingAction,
 
     duplicateElement: (
       state,
@@ -622,7 +624,6 @@ export default documentsSlice.reducer
 export const {
   disableAddingElements,
   enableAddingElements,
-  // createDoc,
   deleteDoc,
   renameActiveDoc,
   setDocAsCurrent,
@@ -656,4 +657,5 @@ export const {
   setTableColumnWidth,
   setColumnsElDeviation,
   setTableColumnsWidths,
+  toggleTableHeading,
 } = documentsSlice.actions

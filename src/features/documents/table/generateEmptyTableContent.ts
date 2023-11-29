@@ -8,7 +8,7 @@ import { TableCell } from "../../../types"
  * @param c number of columns
  */
 export const initialCellContent: RemirrorJSON[] = [
-  { type: "paragraph", content: [{ type: "text", text: "cell text" }] },
+  { type: "paragraph", content: [{ type: "text", text: " " }] },
 ]
 
 const generateEmptyTableContent = (r: number, c: number) => {

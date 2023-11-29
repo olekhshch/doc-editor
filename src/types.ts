@@ -104,4 +104,6 @@ export interface TableElement extends BasicComponent {
   lastCellId: number
   content: TableCell[][]
   column_widths: (number | null)[]
+  heading: boolean
+  main_column: boolean
 }

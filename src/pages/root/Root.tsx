@@ -35,6 +35,12 @@ const Root = () => {
             <span> or </span>
             <button className="main-btn"> Load from file</button>
           </div>
+          {templates && (
+            <>
+              <p>Manage styling templates: </p>
+              <StylingTemplatesList templates={templates} />
+            </>
+          )}
         </section>
       </div>
       {/* <section id="root-main-panel">
@@ -89,13 +95,14 @@ const StyledRoot = styled.main`
     margin: 48px auto;
     margin-right: 72px;
     padding: 36px 48px;
-    min-width: 600px;
+    min-width: 440px;
     min-height: 40vh;
     background-color: rgba(249, 239, 248, 0.4);
     border-radius: 12px;
 
     display: flex;
     flex-direction: column;
+    gap: 8px;
     align-items: center;
     backdrop-filter: blur(12px);
   }

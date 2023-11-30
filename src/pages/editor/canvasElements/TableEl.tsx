@@ -2,11 +2,21 @@ import React, { useContext, useState, useEffect, useRef } from "react"
 import { TableElement, columnParam } from "../../../types"
 import styled from "styled-components"
 import TableCellEl from "./TableCell"
-import { CurrentThemeContext } from "../Editor"
+import { CurrentThemeContext, MenuState } from "../Editor"
 import useTable from "../../../app/useTable"
 import useDocElements from "../../../app/useDocElements"
-import { useAppSelector } from "../../../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import { ColumnsElementContext } from "./ColumnsDocElement"
+import { HiDuplicate } from "react-icons/hi"
+import { FaTrash } from "react-icons/fa"
+import {
+  deleteElement,
+  duplicateElement,
+} from "../../../features/documents/documentsSlice"
+import { screenwidth_editor } from "../../../screenwidth_treshholds"
+import { MdOutlineDragIndicator } from "react-icons/md"
+import { useDrag } from "react-dnd"
+import { DnDTypes } from "../../../DnDtypes"
 
 type props = {
   tableElObj: TableElement
@@ -14,6 +24,7 @@ type props = {
 }
 
 const TableEl = ({ tableElObj, column }: props) => {
+  const dispatch = useAppDispatch()
   const { _id, content, column_widths, heading } = tableElObj
   const { canvas_width } = useAppSelector((state) => state.styling.parameters)
 
@@ -63,6 +74,7 @@ const TableEl = ({ tableElObj, column }: props) => {
 
   const [headingIsVisible, setHeadingIsVisible] = useState(true)
   const [headingHeight, setHeadingHeight] = useState(40)
+  const [topPosition, setTopPosition] = useState(0)
 
   useEffect(() => {
     const scrollHandler = () => {
@@ -86,61 +98,118 @@ const TableEl = ({ tableElObj, column }: props) => {
     return () => document.removeEventListener("scroll", scrollHandler)
   }, [getVerticalPosition, tableRef])
 
-  return (
-    <StyledTable
-      ref={tableRef}
-      $gray={gray}
-      $main={main}
-      style={{
-        width:
-          column === null ? `${maxWidth}px` : `${columnsContext[column[1]]}px`,
-      }}
-    >
-      {!headingIsVisible && heading && (
-        <div
-          className="table-heading-placeholder"
-          style={{ height: `${headingHeight}px` }}
-        />
-      )}
-      {content.map((row, idx) => {
-        return (
-          <div
-            key={idx}
-            data-row-idx={idx}
-            className={
-              heading && idx === 0 && !headingIsVisible
-                ? "table-row table-heading"
-                : "table-row"
-            }
-            style={{
-              maxWidth: `${widthsSum}px`,
-            }}
-          >
-            {row.map((cell, i) => (
-              <TableCellEl
-                key={cell._id}
-                cellObj={cell}
-                row={idx}
-                col={i}
-                column={column}
-                tableId={_id}
-                width={widths[i]}
-                widthChangeHandler={handleWidthChange}
-                isLast={i === row.length - 1}
-                mouseOverHandler={mouseOverHandler}
-                isActive={idx === activeRow || i === activeColumn}
-                mouseLeaveHandler={mouseLeaveHandler}
-                deleteRow={deleteRow}
-                addRow={addRow}
-                addColumn={addColumn}
-                deleteColumn={deleteColumn}
-                heading={heading}
-              />
-            ))}
+  //DnD
+  const [{ isDragging }, dragHandle, dragPreview] = useDrag({
+    type: DnDTypes.ELEMENT,
+    collect: (monitor: any) => ({
+      isDragging: monitor.isDragging(),
+    }),
+    item: { _id, columnSource: column },
+  })
+
+  const TableToolbar = () => {
+    const handleDelete = () => {
+      dispatch(deleteElement({ column, elementId: _id }))
+    }
+
+    const handleDuplicate = () => {
+      dispatch(duplicateElement({ elementId: _id, column }))
+    }
+
+    return (
+      <section className="table-toolbar">
+        {column !== null && (
+          <div className="toolbar-section">
+            <button className="dnd-handle element-toolbar-btn" ref={dragHandle}>
+              <MdOutlineDragIndicator />
+            </button>
           </div>
-        )
-      })}
-    </StyledTable>
+        )}
+        <button
+          className="element-toolbar-btn"
+          onClick={handleDuplicate}
+          title="Duplicate"
+        >
+          <HiDuplicate />
+        </button>
+        <button
+          className="element-toolbar-btn delete-btn"
+          onClick={handleDelete}
+          title="Remove component"
+        >
+          <FaTrash />
+        </button>
+      </section>
+    )
+  }
+
+  return (
+    <StyledWrapper $main={main} $gray={gray}>
+      <StyledTable
+        ref={tableRef}
+        $gray={gray}
+        $main={main}
+        style={{
+          maxWidth:
+            column === null
+              ? `${maxWidth}px`
+              : `${columnsContext[column[1]]}px`,
+        }}
+      >
+        {!headingIsVisible && heading && (
+          <div
+            className="table-heading-placeholder"
+            style={{
+              height: `${headingHeight}px`,
+              top: `${topPosition}px`,
+              maxWidth:
+                column === null
+                  ? `${maxWidth}px`
+                  : `${columnsContext[column[1]]}px`,
+            }}
+          />
+        )}
+        {content.map((row, idx) => {
+          return (
+            <div
+              key={idx}
+              data-row-idx={idx}
+              className={
+                heading && idx === 0 && !headingIsVisible
+                  ? "table-row table-heading"
+                  : "table-row"
+              }
+              style={{
+                maxWidth: `${widthsSum}px`,
+              }}
+            >
+              {row.map((cell, i) => (
+                <TableCellEl
+                  key={cell._id}
+                  cellObj={cell}
+                  row={idx}
+                  col={i}
+                  column={column}
+                  tableId={_id}
+                  width={widths[i]}
+                  widthChangeHandler={handleWidthChange}
+                  isLast={i === row.length - 1}
+                  mouseOverHandler={mouseOverHandler}
+                  isActive={idx === activeRow || i === activeColumn}
+                  mouseLeaveHandler={mouseLeaveHandler}
+                  deleteRow={deleteRow}
+                  addRow={addRow}
+                  addColumn={addColumn}
+                  deleteColumn={deleteColumn}
+                  heading={heading}
+                />
+              ))}
+            </div>
+          )
+        })}
+      </StyledTable>
+      <TableToolbar />
+    </StyledWrapper>
   )
 }
 
@@ -163,7 +232,8 @@ const StyledTable = styled.section<styledProps>`
 
   .table-heading {
     position: fixed;
-    top: 0;
+    z-index: 500;
+    top: ${window.innerWidth < screenwidth_editor.only_one_sb ? 70 : 0}px;
     box-shadow: 0 4px 6px ${(pr) => pr.$gray};
   }
 
@@ -174,5 +244,43 @@ const StyledTable = styled.section<styledProps>`
   .table-btn {
     border: none;
     background-color: transparent;
+  }
+`
+
+const StyledWrapper = styled.div<styledProps>`
+  display: flex;
+
+  .table-toolbar {
+    padding: 4px;
+    position: absolute;
+    right: -32px;
+    top: 0;
+    z-index: 300;
+
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 24px;
+    min-height: 12px;
+    background-color: transparent;
+  }
+
+  &&:hover .table-toolbar {
+    display: flex;
+  }
+
+  .table-toolbar .element-toolbar-btn {
+    padding: 2px;
+    border: none;
+    min-width: 16px;
+    font-size: var(--small-size);
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .element-toolbar-btn:hover,
+  .active {
+    background-color: ${(props) => props.$main};
+    color: var(--white);
   }
 `

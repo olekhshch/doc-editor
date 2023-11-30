@@ -47,6 +47,7 @@ import setTableColumnWidthAction from "./table/setColumnWidth"
 import setColumnsElDevisationAction from "./columns/setColumnsElDeviation"
 import setTableWidthsArrayAction from "./table/setTableWidthsArray"
 import toggleHeadingAction from "./table/toggleHeading"
+import setMarginsAction from "./separator/setSeparatorMargins"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -513,6 +514,7 @@ const documentsSlice = createSlice({
     addSeparator: addSeparator0,
     setColourForSeprator: setSeparatorColourAction,
     setSeparatorWidth: setSeparatorWidthAction,
+    setSeparatorMargins: setMarginsAction,
 
     addImage: addImageAction,
     setImageWidth: setImageWidthAction,
@@ -658,4 +660,5 @@ export const {
   setColumnsElDeviation,
   setTableColumnsWidths,
   toggleTableHeading,
+  setSeparatorMargins,
 } = documentsSlice.actions

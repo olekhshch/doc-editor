@@ -1,14 +1,16 @@
 import React, { useRef, useState, useEffect } from "react"
 import { useAppSelector } from "./hooks"
 
-const useColumns = (gap: number, deviation: number) => {
+const useColumns = (gap: number, deviation: number, maxGlobalWidth: number) => {
   const { canvas_width } = useAppSelector((state) => state.styling.parameters)
   const leftColumnRef = useRef<HTMLElement>(null)
   const rightColumnRef = useRef<HTMLElement>(null)
 
   const [leftWidth, setLeftWidth] = useState<null | number>(null)
   const [rightWidth, setRightWidth] = useState<null | number>(null)
-  const [maxColumnWidth, setMaxColumnWidth] = useState((canvas_width - gap) / 2)
+  const [maxColumnWidth, setMaxColumnWidth] = useState(
+    (maxGlobalWidth - gap) / 2,
+  )
 
   useEffect(() => {
     if (leftColumnRef.current! && !leftWidth) {
@@ -29,14 +31,15 @@ const useColumns = (gap: number, deviation: number) => {
 
   //width validation to fit max canvas width
   useEffect(() => {
-    setMaxColumnWidth((canvas_width - gap) / 2)
-  }, [canvas_width, gap])
+    setMaxColumnWidth((maxGlobalWidth - gap) / 2)
+  }, [maxGlobalWidth, gap])
 
   useEffect(() => {
     if (
       leftWidth &&
       rightWidth &&
-      (leftWidth > maxColumnWidth || rightWidth > maxColumnWidth)
+      (leftWidth > maxColumnWidth + deviation ||
+        rightWidth > maxColumnWidth - deviation)
     ) {
       const correctedLeftWidth = maxColumnWidth + deviation
       setLeftWidth(correctedLeftWidth)

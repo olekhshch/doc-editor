@@ -65,6 +65,8 @@ export interface SeparatorElement extends BasicComponent {
   type: "separator"
   width: number
   line: string
+  margin_top: number
+  margin_bottom: number
   colour: SwatchesColour
 }
 

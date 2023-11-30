@@ -118,7 +118,7 @@ const StylingTextBlocks = ({ collapsed }: props) => {
           set_active_styling_section(collapsed ? "text_blocks" : null)
         }
       >
-        <h4>Text blocks</h4>
+        <h3>Text blocks</h3>
       </div>
       {!collapsed && (
         <section className="styling-params">

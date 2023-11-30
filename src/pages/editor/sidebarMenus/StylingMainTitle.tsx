@@ -77,7 +77,7 @@ const StylingMainTitle = ({ collapsed }: props) => {
           set_active_styling_section(collapsed ? "main_title" : null)
         }
       >
-        <h4>Doc title</h4>
+        <h3>Doc title</h3>
       </div>
       {!collapsed && (
         <section className="styling-params">

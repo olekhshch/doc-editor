@@ -36,6 +36,11 @@ interface StylingParameters {
     gap: number
   }
   canvas_width: number
+  headings: {
+    1: StylingHeading
+    2: StylingHeading
+    3: StylingHeading
+  }
 }
 
 const stylingOptionsState0: stylingOrderState = [
@@ -107,6 +112,20 @@ export const initialState: StylingState = {
       gap: 4,
     },
     canvas_width: 996,
+    headings: {
+      1: {
+        align: "left",
+        font_size: 48,
+      },
+      2: {
+        align: "left",
+        font_size: 36,
+      },
+      3: {
+        align: "left",
+        font_size: 28,
+      },
+    },
   },
 }
 
@@ -143,4 +162,10 @@ export type StylingTextBlock = {
   spacing_letter: number
   spacing_word: number
   indent: [boolean, number]
+}
+
+export interface StylingHeading {
+  font_size: number
+  font_colour?: rgbColour
+  align: "left" | "center" | "right"
 }

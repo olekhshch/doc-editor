@@ -3,6 +3,7 @@ import styled from "styled-components"
 import SbTabs from "./SbTabs"
 import { sbTabOption } from "./SbTabs"
 import { screenwidth_editor } from "../../screenwidth_treshholds"
+import { useAppSelector } from "../../app/hooks"
 
 const RightSidebar = () => {
   const [sbOptions, setSbOption] = useState<[sbTabOption, sbTabOption]>([
@@ -11,6 +12,7 @@ const RightSidebar = () => {
   ])
 
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const { canvas_width } = useAppSelector((state) => state.styling.parameters)
 
   useEffect(() => {
     const checkWidth = () => {
@@ -43,7 +45,7 @@ const StyledRightSb = styled.aside`
   right: 0;
   bottom: 0;
   position: fixed;
-  max-width: 240px;
+  max-width: 220px;
   /* width: 100%; */
   /* min-width: 154px; */
   flex-grow: 1;

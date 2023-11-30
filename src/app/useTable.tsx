@@ -6,7 +6,6 @@ import {
   deleteTableRow,
   insertColumnToTable,
   insertRowToTable,
-  setTableColumnWidth,
   setTableColumnsWidths,
 } from "../features/documents/documentsSlice"
 import { columnParam } from "../types"

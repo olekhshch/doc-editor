@@ -17,6 +17,8 @@ import {
 import { CurrentDocContext, CurrentThemeContext } from "../Editor"
 import useColumns from "../../../app/useColumns"
 import useDebounce from "../../../app/useDebounce"
+import useDocElements from "../../../app/useDocElements"
+import { constantValues } from "../../../constants"
 
 export const ColumnsElementContext = createContext<{
   left: null | number
@@ -55,9 +57,11 @@ const ColumnsDocElement = ({ columnsElement }: props) => {
   }, [_id, debouncedDeviation, dispatch])
 
   //COLUMNS WIDTHS
+  const { maxWidth } = useDocElements()
   const { leftColumnRef, leftWidth, rightColumnRef, rightWidth } = useColumns(
     columns.gap,
     columnsDeviation,
+    maxWidth,
   )
 
   const [showDimensions, setShowDimensions] = useState(false)
@@ -70,8 +74,10 @@ const ColumnsDocElement = ({ columnsElement }: props) => {
       const x = ev.clientX
       const dx = x - x0
 
-      const newDeviation = deviation + dx
-      console.log(newDeviation)
+      const newDeviation = Math.max(
+        Math.min(deviation + dx, constantValues.max_deviation_module),
+        -1 * constantValues.max_deviation_module,
+      )
 
       // const newDeviation = Math.min(Math.max(-140, columnsDeviation + dx), 140)
       setColumnsDeviation(newDeviation)

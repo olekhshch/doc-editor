@@ -28,6 +28,8 @@ const addSeparator = (
         width: 8,
         colour: payload.currentTheme,
         line: "normal",
+        margin_bottom: 4,
+        margin_top: 4,
       }
       if (!payload.afterElementId && state.activeElementId) {
         //adds separator after active element

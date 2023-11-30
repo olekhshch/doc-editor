@@ -18,12 +18,13 @@ import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
 import ElementMenu from "./ElementMenu"
 import { CurrentDocContext, CurrentThemeContext, MenuState } from "../Editor"
-import ColumnsDocElement from "./ColumnsDocElement"
+import ColumnsDocElement, { ColumnsElementContext } from "./ColumnsDocElement"
 import TextBlockEl from "./TextBlockEl"
 import SepratorEl from "./SepratorEl"
 import ImageEl from "./ImageEl"
 import TableEl from "./TableEl"
 import { useAppSelector } from "../../../app/hooks"
+import useDocElements from "../../../app/useDocElements"
 
 type props = {
   docElementObj: DocContentComponent | ColumnsElement
@@ -92,6 +93,13 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
     (state) => state.styling.parameters,
   )
 
+  //GLOBAL WIDTH
+  const { maxWidth } = useDocElements()
+  const columnsWidthsContext = useContext(ColumnsElementContext)
+
+  const maxContentWidth =
+    column === null ? maxWidth : columnsWidthsContext[column[1]]
+
   return (
     <StyledElementWrapper $gray={gray} $main={main}>
       {column === null && (
@@ -121,10 +129,17 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
             onClick={() => setElementMenuId(null)}
             ref={dragPreview}
             $canvas_width={canvas_width}
-            $max_width={["separator"].includes(type)}
+            $max_width={false}
             $gray={gray}
-            $font_size={text_blocks.font_size}
+            $font_size={
+              type === "separator" ? undefined : text_blocks.font_size
+            }
             $readonly={readonly}
+            style={{
+              width: ["heading"].includes(type)
+                ? `${maxContentWidth}px`
+                : "fit-content",
+            }}
           >
             {ContentMemo}
           </StyledContent>

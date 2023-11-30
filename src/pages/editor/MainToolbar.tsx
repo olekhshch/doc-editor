@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react"
+import React, { useContext, useState, useEffect } from "react"
 import styled from "styled-components"
 import { CurrentThemeContext, MenuState } from "./Editor"
 import { BsCardText, BsListNested } from "react-icons/bs"
@@ -14,10 +14,31 @@ import {
   addTable,
 } from "../../features/documents/documentsSlice"
 import DocNavigation from "./sidebarMenus/DocNavigation"
+import useDocElements from "../../app/useDocElements"
 
 const MainToolbar = () => {
   const { showLeftSb, showRightSb } = useContext(MenuState)
   const { gray, main } = useContext(CurrentThemeContext)
+
+  const { getVerticalPosition, elementRef } = useDocElements()
+  const [toolbarFixed, setToolbarFixed] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (elementRef.current) {
+        const v_position = getVerticalPosition()
+        if (v_position < -60) {
+          setToolbarFixed(true)
+        } else if (window.scrollY < 20) {
+          setToolbarFixed(false)
+        }
+      }
+    }
+
+    document.addEventListener("scroll", handleScroll)
+
+    return () => document.removeEventListener("scroll", handleScroll)
+  }, [elementRef, getVerticalPosition])
 
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -67,7 +88,13 @@ const MainToolbar = () => {
   }
 
   return (
-    <StyledMainToolbar $gray={gray} $main={main} id="main-toolbar">
+    <StyledMainToolbar
+      $gray={gray}
+      $main={main}
+      id="main-toolbar"
+      ref={elementRef}
+      style={{ position: toolbarFixed ? "fixed" : "unset" }}
+    >
       {!showLeftSb && (
         <>
           <div className="left-sb-section">
@@ -116,13 +143,17 @@ type styledProps = {
 const StyledMainToolbar = styled.aside<styledProps>`
   margin-top: 12px;
   padding: 12px;
+
+  z-index: 600;
   width: 100%;
+  max-width: 800px;
   height: 32px;
   box-shadow: 0 0 12px ${(props) => props.$gray};
   border-radius: 8px;
   display: flex;
   gap: 12px;
   align-items: center;
+  background-color: white;
 
   .divider {
     width: 2px;

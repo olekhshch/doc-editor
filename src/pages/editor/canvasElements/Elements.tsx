@@ -40,7 +40,7 @@ const Elements = () => {
 export default Elements
 
 const StyledElementsList = styled.ul`
-  padding-right: 36px;
+  /* padding-right: 36px; */
   display: flex;
   flex-direction: column;
   list-style: none;

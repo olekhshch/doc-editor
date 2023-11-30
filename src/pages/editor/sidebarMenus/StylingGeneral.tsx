@@ -23,9 +23,6 @@ import {
 } from "../../../features/styling/stylingSlice"
 import ColourPicker from "./ColourPicker"
 import useDebounce from "../../../app/useDebounce"
-import { rgbObjToString } from "../../../functions/rgbObjToString"
-import { GeneralParam } from "../../../features/styling/initialState"
-import { COLORS } from "remirror/extensions"
 import { StylingParamsContext } from "./StylingMenu"
 import Swatches from "../Swatches"
 import { CurrentThemeContext } from "../Editor"
@@ -173,7 +170,7 @@ const StylingGeneral = ({ collapsed }: props) => {
         className="title"
         onClick={() => set_active_styling_section(collapsed ? "general" : null)}
       >
-        <h4>General</h4>
+        <h3>General</h3>
       </div>
       {!collapsed && (
         <section className="styling-params">

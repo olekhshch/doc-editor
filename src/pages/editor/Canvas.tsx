@@ -52,8 +52,10 @@ const StyledContentContainer = styled.main`
   /* overflow: hidden; */
 
   #main_wrapper {
+    margin: 0 auto;
     min-width: 760px;
     max-width: 74vw;
+    /* width: 100%; */
     flex-grow: 1;
   }
 

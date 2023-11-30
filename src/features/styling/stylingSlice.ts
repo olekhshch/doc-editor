@@ -122,6 +122,30 @@ const stylingSlice = createSlice({
     setMaxCanvasWidth: (state, { payload }: PayloadAction<number>) => {
       state.parameters.canvas_width = payload
     },
+
+    setHeadingsAlignment: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        align: "left" | "right" | "center"
+        levels: (1 | 2 | 3)[]
+      }>,
+    ) => {
+      payload.levels.forEach((level) => {
+        state.parameters.headings[level].align = payload.align
+      })
+    },
+
+    setHeadingsFontSize: (
+      state,
+      { payload }: PayloadAction<{ font_size: number; levels: (1 | 2 | 3)[] }>,
+    ) => {
+      payload.levels.forEach(
+        (level) =>
+          (state.parameters.headings[level].font_size = payload.font_size),
+      )
+    },
   },
 })
 
@@ -145,4 +169,6 @@ export const {
   renameStylingTemplate,
   setColumnsElementsGap,
   setMaxCanvasWidth,
+  setHeadingsAlignment,
+  setHeadingsFontSize,
 } = stylingSlice.actions

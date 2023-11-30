@@ -10,16 +10,19 @@ import {
   duplicateElement,
   setActiveElementData,
   setColourForSeprator,
+  setSeparatorMargins,
   setSeparatorWidth,
 } from "../../../features/documents/documentsSlice"
 import Swatches from "../Swatches"
 import { ThemeName, themes } from "../../../features/styling/initialState"
 import { rgbObjToString } from "../../../functions/rgbObjToString"
-import useDebaunce from "../../../app/useDebounce"
+import useDebounce from "../../../app/useDebounce"
 import { MdOutlineDragIndicator } from "react-icons/md"
 import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
 import { CurrentDocContext } from "../Editor"
+import useDocElements from "../../../app/useDocElements"
+import { ColumnsElementContext } from "./ColumnsDocElement"
 
 type props = {
   separatorObj: SeparatorElement
@@ -27,17 +30,49 @@ type props = {
 }
 const SepratorEl = ({ separatorObj, column }: props) => {
   const dispatch = useAppDispatch()
-  const { _id, colour, width } = separatorObj
+  const { _id, colour, width, margin_bottom, margin_top } = separatorObj
 
   const [currentWidth, setCurrentWidth] = useState(width)
+  const [topMargin, setTopMargin] = useState(margin_top)
+  const [btmMargin, setBtmMarin] = useState(margin_bottom)
 
-  const debouncedWidth = useDebaunce(currentWidth, 1000)
+  const debouncedWidth = useDebounce(currentWidth, 1000)
+  const debouncedTopMargin = useDebounce(topMargin, 500)
+  const debouncedBtmMargin = useDebounce(btmMargin, 500)
 
   useEffect(() => {
     dispatch(
       setSeparatorWidth({ separatorId: _id, column, newWidth: debouncedWidth }),
     )
-  }, [debouncedWidth, _id, dispatch])
+
+    if (debouncedBtmMargin !== margin_bottom) {
+      dispatch(
+        setSeparatorMargins({
+          elementId: _id,
+          column,
+          margin_bottom: debouncedBtmMargin,
+        }),
+      )
+    }
+
+    if (debouncedTopMargin !== margin_top) {
+      dispatch(
+        setSeparatorMargins({
+          elementId: _id,
+          column,
+          margin_top: debouncedTopMargin,
+        }),
+      )
+    }
+  }, [
+    debouncedWidth,
+    _id,
+    dispatch,
+    debouncedBtmMargin,
+    margin_bottom,
+    debouncedTopMargin,
+    margin_top,
+  ])
 
   const rgbColour = useMemo(() => {
     const matchingTheme = themes.find((theme) => theme.name === colour)
@@ -46,6 +81,10 @@ const SepratorEl = ({ separatorObj, column }: props) => {
       themes.find((theme) => theme.name === "violet")!.main
     )
   }, [colour])
+
+  //Element width
+  const { maxWidth } = useDocElements()
+  const columnWidthsContext = useContext(ColumnsElementContext)!
 
   //DnD setup
   const [{ isDragging }, dragHandle, dragPreview] = useDrag({
@@ -71,10 +110,22 @@ const SepratorEl = ({ separatorObj, column }: props) => {
       )
     }
 
-    const handleWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleRangeChange = (
+      e: React.ChangeEvent<HTMLInputElement>,
+      param: "width" | "top_mrg" | "btm_mrg",
+    ) => {
       const { value } = e.target
       const valueNum = parseInt(value, 10)
-      setCurrentWidth(valueNum)
+      switch (param) {
+        case "width":
+          setCurrentWidth(valueNum)
+          break
+        case "top_mrg":
+          setTopMargin(valueNum)
+          break
+        case "btm_mrg":
+          setBtmMarin(valueNum)
+      }
     }
 
     return (
@@ -94,13 +145,37 @@ const SepratorEl = ({ separatorObj, column }: props) => {
             <input
               title="Separator's width"
               type="range"
-              min={1}
+              min={0}
               max={10}
               step={1}
               value={currentWidth}
-              onChange={handleWidthChange}
+              onChange={(e) => handleRangeChange(e, "width")}
             />
             <span className="separator-width">{currentWidth}</span>
+          </div>
+          <div className="toolbar-section">
+            <input
+              title="Top margin"
+              type="range"
+              min={0}
+              max={40}
+              step={1}
+              value={topMargin}
+              onChange={(e) => handleRangeChange(e, "top_mrg")}
+            />
+            <span className="separator-width">{topMargin}</span>
+          </div>
+          <div className="toolbar-section">
+            <input
+              title="Bottom margin"
+              type="range"
+              min={0}
+              max={40}
+              step={1}
+              value={btmMargin}
+              onChange={(e) => handleRangeChange(e, "btm_mrg")}
+            />
+            <span className="separator-width">{btmMargin}</span>
           </div>
           <div className="toolbar-section">
             <button
@@ -121,7 +196,7 @@ const SepratorEl = ({ separatorObj, column }: props) => {
         </>
       </StyledElementToolbar>
     )
-  }, [colour, currentWidth, dispatch, _id, dragHandle])
+  }, [dragHandle, colour, currentWidth, topMargin, btmMargin, dispatch, _id])
 
   const handleClick = (e: React.MouseEvent) => {
     dispatch(
@@ -137,6 +212,17 @@ const SepratorEl = ({ separatorObj, column }: props) => {
     <>
       {Toolbar}
       <StyledSeparator
+        style={{
+          width:
+            column === null
+              ? `${maxWidth}px`
+              : `${columnWidthsContext[column[1]]}px`,
+          marginTop:
+            currentWidth === 0
+              ? `${topMargin + btmMargin}px`
+              : `${topMargin}px`,
+          marginBottom: `${btmMargin}px`,
+        }}
         $width={currentWidth}
         $colour={rgbObjToString(rgbColour)}
         onClick={(e) => handleClick(e)}
@@ -153,7 +239,6 @@ type styledProps = {
 }
 
 const StyledSeparator = styled.div<styledProps>`
-  margin: 8px 0;
   width: 100%;
   height: ${(props) => props.$width}px;
   background-color: rgb(${(props) => props.$colour});

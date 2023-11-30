@@ -237,7 +237,7 @@ type styledProps = {
 
 const StyledCell = styled.div<styledProps>`
   position: relative;
-  min-width: 90px;
+  min-width: 80px;
   box-sizing: border-box;
   /* flex-grow: 1; */
   display: flex;

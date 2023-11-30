@@ -26,7 +26,7 @@ import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
 import styled from "styled-components"
 import useDebounce from "../../../app/useDebounce"
-import { ColumnsElementContext } from "./ColumnsDocElement"
+import { rgbObjToString } from "../../../functions/rgbObjToString"
 
 const hooks = [
   () => {
@@ -81,6 +81,16 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
     }),
     item: { _id, columnSource: column },
   })
+
+  //STYLING
+  const { headings, general } = useAppSelector(
+    (state) => state.styling.parameters,
+  )
+  const { align, font_size, font_colour } = headings[level]
+
+  const headingFontColour = `rgb${rgbObjToString(
+    font_colour ?? general.font_colour.colour,
+  )}`
 
   const Toolbar = () => {
     type headingLevel = 1 | 2 | 3
@@ -180,7 +190,15 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
 
     if (level === 1) {
       return (
-        <h2 spellCheck="false" ref={dragPreview}>
+        <h2
+          spellCheck="false"
+          ref={dragPreview}
+          style={{
+            color: headingFontColour,
+            textAlign: align,
+            fontSize: font_size,
+          }}
+        >
           <Remirror
             classNames={["heading-element"]}
             manager={manager}
@@ -196,7 +214,15 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
 
     if (level === 2) {
       return (
-        <h3 spellCheck="false" ref={dragPreview}>
+        <h3
+          spellCheck="false"
+          ref={dragPreview}
+          style={{
+            color: headingFontColour,
+            textAlign: align,
+            fontSize: font_size,
+          }}
+        >
           <Remirror
             classNames={["heading-element"]}
             manager={manager}
@@ -211,7 +237,15 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
     }
 
     return (
-      <h4 spellCheck="false" ref={dragPreview}>
+      <h4
+        spellCheck="false"
+        ref={dragPreview}
+        style={{
+          color: headingFontColour,
+          textAlign: align,
+          fontSize: font_size,
+        }}
+      >
         <Remirror
           classNames={["heading-element"]}
           manager={manager}
@@ -223,7 +257,16 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
         />
       </h4>
     )
-  }, [level, dragPreview, manager, state, readonly])
+  }, [
+    level,
+    dragPreview,
+    headingFontColour,
+    align,
+    font_size,
+    manager,
+    state,
+    readonly,
+  ])
 
   const { canvas_width } = useAppSelector((state) => state.styling.parameters)
 

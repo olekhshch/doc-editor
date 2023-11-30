@@ -9,7 +9,7 @@ type styledProps = {
 }
 
 export default styled.article<styledProps>`
-  padding: 4px 0px 0;
+  /* padding: 4px 0px 0; */
   position: relative;
   border: 1px solid transparent;
   border-radius: 8px;
@@ -24,7 +24,8 @@ export default styled.article<styledProps>`
   max-width: calc(
     var(--editor-canvas-width) - var(--editor-left-mg) - var(--editor-right-mg)
   ); */
-  width: ${(pr) => (pr.$max_width ? `${pr.$canvas_width}px` : "auto")};
+  /* width: ${(pr) => (pr.$max_width ? `${pr.$canvas_width}px` : "100%")}; */
+  width: max-content;
   max-width: ${(pr) => pr.$canvas_width}px;
 
   /* .doc-element-toolbar {
@@ -39,5 +40,19 @@ export default styled.article<styledProps>`
 
   &:hover .doc-element-toolbar {
     display: ${(props) => (props.$readonly ? "none" : "flex")};
+  }
+
+  .table-toolbar {
+    padding: 4px;
+    position: absolute;
+    right: -32px;
+    top: 0;
+    z-index: 300;
+
+    display: flex;
+    flex-direction: column;
+    min-width: 24px;
+    min-height: 12px;
+    color: white;
   }
 `

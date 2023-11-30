@@ -70,4 +70,16 @@ export const StyledSection = styled.section<styledProps>`
   .range-input {
     max-width: 80px;
   }
+
+  .styling-btn {
+    padding: 4px 2px 0;
+    background-color: transparent;
+    color: ${(pr) => pr.$main};
+    border: 1px solid transparent;
+  }
+
+  .active {
+    color: white;
+    background-color: ${(pr) => pr.$main};
+  }
 `

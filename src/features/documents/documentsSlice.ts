@@ -48,6 +48,9 @@ import setColumnsElDevisationAction from "./columns/setColumnsElDeviation"
 import setTableWidthsArrayAction from "./table/setTableWidthsArray"
 import toggleHeadingAction from "./table/toggleHeading"
 import setMarginsAction from "./separator/setSeparatorMargins"
+import addFocusFunction from "./textblock/addFocusFunction"
+import addFocusCb_textblock from "./textblock/addFocusFunction"
+import addFocusCb_heading from "./heading/addFocusCb"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -101,35 +104,12 @@ const documentsSlice = createSlice({
       state.disableElementsAdding = false
     },
 
-    // createDoc: (
-    //   state,
-    //   { payload }: PayloadAction<{ projectId: number | null }>,
-    // ) => {
-    //   const _id = Math.round(Math.random() * 1000000)
-    //   const newDocPreview: DocumentPreviewInterface = {
-    //     _id,
-    //     projectId: payload.projectId,
-    //     title: "New doc",
-    //     createdOn: new Date().getTime(),
-    //   }
-    //   const newDoc: DocumentInterface = { ...newDocPreview }
-    //   state.documents = [...state.documents, newDocPreview]
-    // },
-
     deleteDoc: (state, { payload }: PayloadAction<number>) => {
       //#TODO: Document deletion
       // state.documents = state.documents.filter((doc) => doc._id !== payload)
     },
 
     renameActiveDoc: (state, { payload }: PayloadAction<string>) => {
-      //#TODO: Rename Doc functionality
-      // const targetDocId = docId ?? state.activeDocumentId
-      // state.documents = state.documents.map((doc) => {
-      //   if (doc._id === targetDocId) {
-      //     return { ...doc, title: newTitle }
-      //   }
-      //   return doc
-      // })
       if (state.activeDocumentInfo) {
         state.activeDocumentInfo.title = payload
       }
@@ -169,6 +149,28 @@ const documentsSlice = createSlice({
 
     addParagraph: addTextBlockAction,
     setParagraphContent: setTextBlockContentAction,
+
+    addFocusCb: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        elementId: number
+        column: columnParam
+        focus_cb: () => void
+        element_type: ContentComponentType
+      }>,
+    ) => {
+      const { elementId, column, focus_cb, element_type } = payload
+      const pl = { elementId, column, focus_cb }
+      switch (element_type) {
+        case "paragraph":
+          addFocusCb_textblock(state, pl)
+          break
+        case "heading":
+          addFocusCb_heading(state, pl)
+      }
+    },
 
     setActiveElementData: (
       state,
@@ -661,4 +663,5 @@ export const {
   setTableColumnsWidths,
   toggleTableHeading,
   setSeparatorMargins,
+  addFocusCb,
 } = documentsSlice.actions

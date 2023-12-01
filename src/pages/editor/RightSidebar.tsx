@@ -25,10 +25,9 @@ const RightSidebar = () => {
   }, [])
 
   const [activeIdx, setActiveIdx] = useState<0 | 1>(0)
-  //#TODO: add shortcuts
 
   return (
-    <StyledRightSb className="editor-sb">
+    <StyledRightSb className="editor-sb" onClick={(e) => e.stopPropagation()}>
       <SbTabs
         options={sbOptions}
         activeIdx={activeIdx}

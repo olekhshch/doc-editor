@@ -136,9 +136,7 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
             }
             $readonly={readonly}
             style={{
-              width: ["heading"].includes(type)
-                ? `${maxContentWidth}px`
-                : "fit-content",
+              width: `${maxContentWidth}px`,
             }}
           >
             {ContentMemo}

@@ -13,6 +13,8 @@ const usePersist = () => {
   const dispatch = useAppDispatch()
   const stylingState = useAppSelector((state) => state.styling)
 
+  //WHEN PERSISTING DOC STATE = remove focus callbacks
+
   //LOCAL STORAGE
   function getLocalStorageValue(key: LocalStorageKey) {
     const strValue = localStorage.getItem(key)

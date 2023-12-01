@@ -36,7 +36,6 @@ const addColumnAction = (
     const colNum = contentArray[0].length
 
     //#TODO: Allow to create more but after a table viewer implementation
-    //#TODO: New columns width array
     if (colNum < 8) {
       targetTableEl.column_widths.splice(
         payload.colIndexBefore + 1,

@@ -30,6 +30,7 @@ interface StylingParameters {
     text_colour?: rgbColour
     underlined: boolean
     margin_bottom: number
+    margin_top: number
   }
   text_blocks: StylingTextBlock
   columns: {
@@ -99,6 +100,7 @@ export const initialState: StylingState = {
       font_size: 48,
       underlined: true,
       margin_bottom: 16,
+      margin_top: 12,
     },
     text_blocks: {
       font_size: 20,

@@ -11,6 +11,8 @@ import {
   setTextBlockSpacings,
   setTextBlocksFontSize,
 } from "../../../features/styling/stylingSlice"
+import { IconContext } from "react-icons"
+import { IoIosArrowDown } from "react-icons/io"
 
 type props = {
   collapsed: boolean
@@ -119,6 +121,11 @@ const StylingTextBlocks = ({ collapsed }: props) => {
         }
       >
         <h3>Text blocks</h3>
+        <IconContext.Provider
+          value={{ style: { rotate: collapsed ? "-90deg" : "0deg" } }}
+        >
+          <IoIosArrowDown />
+        </IconContext.Provider>
       </div>
       {!collapsed && (
         <section className="styling-params">

@@ -12,10 +12,13 @@ import {
   toggleTitleUnderline,
 } from "../../../features/styling/stylingSlice"
 import useDebounce from "../../../app/useDebounce"
+import { IoIosArrowDown } from "react-icons/io"
+import { IconContext } from "react-icons"
 
 type props = {
   collapsed: boolean
 }
+
 const StylingMainTitle = ({ collapsed }: props) => {
   const dispatch = useAppDispatch()
   //options state
@@ -24,14 +27,22 @@ const StylingMainTitle = ({ collapsed }: props) => {
   //Styling (theme and parameters)
   const { main, gray } = useContext(CurrentThemeContext)
   const {
-    main_title: { underlined, text_colour, font_size, margin_bottom },
+    main_title: {
+      underlined,
+      text_colour,
+      font_size,
+      margin_bottom,
+      margin_top,
+    },
   } = useAppSelector((state) => state.styling.parameters)
 
   const [fontSize, setFontSize] = useState<string | number>(font_size)
   const [marginBtm, setMarginBtm] = useState<number>(margin_bottom)
+  const [marginTop, setMarginTop] = useState(margin_top)
 
   const debouncedSize = useDebounce(fontSize, 300)
   const debouncedBtmMrg = useDebounce(marginBtm, 16)
+  const debouncedTopMrg = useDebounce(marginTop, 16)
 
   useEffect(() => {
     const sizeNum = parseInt(debouncedSize.toString(), 10)
@@ -41,19 +52,36 @@ const StylingMainTitle = ({ collapsed }: props) => {
   }, [debouncedSize, dispatch])
 
   useEffect(() => {
-    dispatch(setMainTitleMargins({ margin_bottom: debouncedBtmMrg }))
-  }, [dispatch, debouncedBtmMrg])
+    if (margin_bottom !== debouncedBtmMrg) {
+      dispatch(setMainTitleMargins({ margin_bottom: debouncedBtmMrg }))
+    }
+
+    if (margin_top !== debouncedTopMrg) {
+      dispatch(setMainTitleMargins({ margin_top: debouncedTopMrg }))
+    }
+  }, [dispatch, debouncedBtmMrg, margin_bottom, margin_top, debouncedTopMrg])
 
   const handleFontSizeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target!
     setFontSize(value)
   }
 
-  const handleBtmMarginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMarginChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    p: "top" | "bottom",
+  ) => {
     const { value } = e.target!
     const numValue = parseInt(value, 10)
+
     if (!Number.isNaN(numValue)) {
-      setMarginBtm(numValue)
+      switch (p) {
+        case "bottom":
+          setMarginBtm(numValue)
+          break
+        case "top":
+          setMarginTop(numValue)
+          break
+      }
     }
   }
 
@@ -78,6 +106,11 @@ const StylingMainTitle = ({ collapsed }: props) => {
         }
       >
         <h3>Doc title</h3>
+        <IconContext.Provider
+          value={{ style: { rotate: collapsed ? "-90deg" : "0deg" } }}
+        >
+          <IoIosArrowDown />
+        </IconContext.Provider>
       </div>
       {!collapsed && (
         <section className="styling-params">
@@ -91,6 +124,17 @@ const StylingMainTitle = ({ collapsed }: props) => {
             />
           </label>
           <label className="param-selector flex">
+            <span>Top margin ({marginTop}): </span>
+            <input
+              className="range-input"
+              type="range"
+              value={marginTop}
+              min={0}
+              max={60}
+              onChange={(e) => handleMarginChange(e, "top")}
+            />
+          </label>
+          <label className="param-selector flex">
             <span>Bottom margin ({marginBtm}): </span>
             <input
               className="range-input"
@@ -98,7 +142,7 @@ const StylingMainTitle = ({ collapsed }: props) => {
               value={marginBtm}
               min={0}
               max={60}
-              onChange={handleBtmMarginChange}
+              onChange={(e) => handleMarginChange(e, "bottom")}
             />
           </label>
           <label className="param-selector">

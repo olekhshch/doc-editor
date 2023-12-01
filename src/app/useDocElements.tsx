@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react"
+import { useRef, useState, useEffect, useContext } from "react"
 import {
   addHeading,
   addImage,
@@ -7,14 +7,17 @@ import {
   addTable,
 } from "../features/documents/documentsSlice"
 import { useAppDispatch, useAppSelector } from "./hooks"
-import { columnParam } from "../types"
+import focusElementsContext from "./focusElementsContext"
+import { ParagraphElement } from "../types"
 
 /**
  * Hook to add elements depending on current active element position
  */
 const useDocElements = () => {
   const dispatch = useAppDispatch()
-  const { disableElementsAdding } = useAppSelector((state) => state.documents)
+  const { disableElementsAdding, activeContent } = useAppSelector(
+    (state) => state.documents,
+  )
   const { canvas_width } = useAppSelector((state) => state.styling.parameters)
   const {
     parameters: { activeTheme },
@@ -119,6 +122,32 @@ const useDocElements = () => {
     // return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  //FOCUS ELEMENTS
+
+  const focusFirst = () => {
+    if (activeContent) {
+      const firstFocusableEl = activeContent.components.find(
+        (el) => el.type === "paragraph",
+      ) as ParagraphElement
+
+      if (firstFocusableEl && firstFocusableEl.focus) {
+        firstFocusableEl.focus()
+      }
+    }
+  }
+
+  const focusLast = () => {
+    if (activeContent) {
+      const lastFocusableEl = activeContent.components.findLast((el) =>
+        ["paragraph", "heading"].includes(el.type),
+      ) as ParagraphElement
+
+      if (lastFocusableEl && lastFocusableEl.focus) {
+        lastFocusableEl.focus()
+      }
+    }
+  }
+
   return {
     addHeadingElement,
     addParagraphElement,
@@ -130,6 +159,8 @@ const useDocElements = () => {
     elementRef,
     getDimensions,
     maxWidth,
+    focusFirst,
+    focusLast,
   }
 }
 

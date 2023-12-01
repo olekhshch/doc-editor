@@ -43,13 +43,13 @@ export interface BasicComponent {
   // orderIndex: number
 }
 
-export interface HeadingElement extends BasicComponent {
+export interface HeadingElement extends BasicComponent, focusable {
   type: "heading"
   level: 1 | 2 | 3
   content: string
 }
 
-export interface ParagraphElement extends BasicComponent {
+export interface ParagraphElement extends BasicComponent, focusable {
   type: "paragraph"
   content: RemirrorJSON[]
 }
@@ -108,4 +108,8 @@ export interface TableElement extends BasicComponent {
   column_widths: (number | null)[]
   heading: boolean
   main_column: boolean
+}
+
+type focusable = {
+  focus?: () => void
 }

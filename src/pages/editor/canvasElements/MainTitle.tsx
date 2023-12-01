@@ -48,7 +48,13 @@ const MainTitle = ({ docTitle }: props) => {
   const { main } = useContext(CurrentThemeContext)
   const {
     parameters: {
-      main_title: { text_colour, underlined, font_size, margin_bottom },
+      main_title: {
+        text_colour,
+        underlined,
+        font_size,
+        margin_bottom,
+        margin_top,
+      },
       canvas_width,
     },
   } = useAppSelector((state) => state.styling)
@@ -59,9 +65,6 @@ const MainTitle = ({ docTitle }: props) => {
   const [title, setTitle] = useState(docTitle)
 
   const debouncedTitle = useDebounce(title, 300)
-
-  //#TODO: Multiline title support
-  //#TODO: Main title font size (styling)
 
   useEffect(() => {
     if (debouncedTitle.trim() !== "") {
@@ -81,6 +84,7 @@ const MainTitle = ({ docTitle }: props) => {
       $text_colour={text_colour}
       $font_size={font_size}
       $mrg_btm={margin_bottom}
+      $mrg_top={margin_top}
       $canvas_width={canvas_width}
     >
       <Remirror
@@ -106,11 +110,13 @@ type styledProps = {
   $underlined: boolean
   $font_size: number
   $mrg_btm: number
+  $mrg_top: number
   $canvas_width: number
 }
 
 const StyledDocTitle = styled.h1<styledProps>`
-  margin: 0 0 ${(pr) => pr.$mrg_btm}px var(--editor-left-mg);
+  margin: ${(pr) => pr.$mrg_top}px 0 ${(pr) => pr.$mrg_btm}px
+    var(--editor-left-mg);
   border-bottom: 4px solid
     ${(props) => (props.$underlined ? props.$main : "transparent")};
   font-family: "Roboto Condensed", sans-serif;
@@ -127,11 +133,4 @@ const StyledDocTitle = styled.h1<styledProps>`
   &:focus {
     outline: none;
   }
-
-  /* input {
-    width: 100%;
-    font-family: "Roboto Condensed", sans-serif;
-    font-size: var(--h1-size);
-    border: none;
-  } */
 `

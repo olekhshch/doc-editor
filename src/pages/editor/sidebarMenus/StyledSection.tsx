@@ -15,6 +15,8 @@ export const StyledSection = styled.section<styledProps>`
   .title {
     padding: 0 12px;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     cursor: pointer;
     background-color: ${(props) => props.$gray};
   }

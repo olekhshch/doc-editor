@@ -32,7 +32,9 @@ const stylingSlice = createSlice({
 
     setMainTitleMargins: (
       state,
-      { payload }: PayloadAction<{ margin_bottom?: number }>,
+      {
+        payload,
+      }: PayloadAction<{ margin_bottom?: number; margin_top?: number }>,
     ) => {
       state.parameters.main_title = {
         ...state.parameters.main_title,

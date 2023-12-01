@@ -8,6 +8,7 @@ import React, {
 import { HeadingElement, columnParam } from "../../../types"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import {
+  addFocusCb,
   addParagraph,
   deleteActiveElement,
   deleteElement,
@@ -17,7 +18,14 @@ import {
   setHeadingLevel,
 } from "../../../features/documents/documentsSlice"
 import StyledElementToolbar from "./StyledElementToolbar"
-import { Remirror, useRemirror, useHelpers, useKeymap } from "@remirror/react"
+import {
+  Remirror,
+  useRemirror,
+  useHelpers,
+  useKeymap,
+  EditorComponent,
+  useChainedCommands,
+} from "@remirror/react"
 import { FaTrash } from "react-icons/fa"
 import { CurrentDocContext, MenuState } from "../Editor"
 import { MdOutlineDragIndicator } from "react-icons/md"
@@ -161,14 +169,18 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
     )
   }
 
-  const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
+  const activateElement = () => {
     if (column === null) {
       dispatch(setActiveElementData({ id: _id, type: "heading" }))
     } else {
       dispatch(setActiveElementData({ id: [_id, ...column], type: "heading" }))
     }
     setElementMenuId(null)
+  }
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    activateElement()
   }
 
   const { manager, state } = useRemirror({
@@ -178,12 +190,34 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
 
   const { readonly } = useContext(CurrentDocContext)!
 
+  const Focus = () => {
+    const chain = useChainedCommands()
+
+    const focus_cb = useCallback(() => {
+      activateElement()
+      chain.focus().run()
+    }, [])
+
+    useEffect(() => {
+      if (!headingElementObj.focus) {
+        dispatch(
+          addFocusCb({
+            element_type: "heading",
+            elementId: _id,
+            column,
+            focus_cb,
+          }),
+        )
+      }
+    }, [focus_cb])
+    return <></>
+  }
+
   const HeadingMemo = useMemo(() => {
     const handleTextChange = (props: any) => {
       const { getText } = props.helpers
       const newContent = getText(props)
       if (newContent.trim() !== "") {
-        // dispatch(setHeadingContent({ headingId: _id, newContent, column }))
         setHContent(newContent)
       }
     }
@@ -231,7 +265,10 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
             onChange={handleTextChange}
             editable={!readonly}
             autoFocus={true}
-          />
+          >
+            <EditorComponent />
+            <Focus />
+          </Remirror>
         </h3>
       )
     }

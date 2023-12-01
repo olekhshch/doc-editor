@@ -26,6 +26,7 @@ import { ColumnsElementContext } from "./ColumnsDocElement"
 import { MdOutlineDragIndicator } from "react-icons/md"
 import { useDrag } from "react-dnd"
 import { DnDTypes } from "../../../DnDtypes"
+import useDocElements from "../../../app/useDocElements"
 
 type props = {
   imageElObj: ImageElement
@@ -34,13 +35,13 @@ type props = {
 
 const ImageEl = ({ imageElObj, column }: props) => {
   const dispatch = useAppDispatch()
-  const { canvas_width } = useAppSelector((state) => state.styling.parameters)
+  const { maxWidth } = useDocElements()
   const isColumn = column !== null
 
   const columnContext = useContext(ColumnsElementContext)
-  const maxWidth = useMemo(
-    () => (isColumn ? columnContext[column[1]] : canvas_width),
-    [isColumn, columnContext, canvas_width],
+  const maxImgWidth = useMemo(
+    () => (isColumn ? columnContext[column[1]] : maxWidth),
+    [isColumn, columnContext, maxWidth],
   )!
 
   const {
@@ -54,7 +55,7 @@ const ImageEl = ({ imageElObj, column }: props) => {
     src,
   } = imageElObj
 
-  const [imgWidth, setImgWidth] = useState(Math.min(width, maxWidth))
+  const [imgWidth, setImgWidth] = useState(Math.min(width, maxImgWidth))
   const [margin, setMargin] = useState(
     Math.min(left_margin, maxWidth - imgWidth),
   )
@@ -227,6 +228,7 @@ const ImageEl = ({ imageElObj, column }: props) => {
 
   //#TODO: top and bottom margins as parametrs of a toolbar
   //#TODO: Resize listener - img width adjustment
+  //#TODO: Remove resize handles when readonly
 
   //DnD setup
   const [{ isDragging }, dragHandle, dragPreview] = useDrag({

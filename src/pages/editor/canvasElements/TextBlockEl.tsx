@@ -27,6 +27,7 @@ import StyledElementToolbar from "./StyledElementToolbar"
 import { CurrentDocContext, MenuState } from "../Editor"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import {
+  addFocusCb,
   deleteElement,
   duplicateElement,
   setActiveElementData,
@@ -139,13 +140,6 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
     const verticalPosition = getVerticalPosition()
     setToolbarIsVisible(verticalPosition > 40)
     setLeftPosition(getLeftEdgePosition())
-
-    // tbRef.current!.addEventListener("mousemove", () => {
-    //   const verticalPosition = getVerticalPosition()
-    //   console.log({ verticalPosition })
-    // })
-
-    // tbRef.current!.addEventListener('mouseleave', () => tbRef.current!.removeEventListener('mousemove'))
   }
 
   const Toolbar = () => {
@@ -182,6 +176,29 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
     const makeOrderedList = () => {
       chain.toggleOrderedList().focus().run()
     }
+
+    const focus = useCallback(() => {
+      dispatch(
+        setActiveElementData({
+          id: column === null ? _id : [_id, ...column],
+          type: "paragraph",
+        }),
+      )
+      chain.focus().run()
+    }, [chain])
+
+    useEffect(() => {
+      if (!textBlockObj.focus) {
+        dispatch(
+          addFocusCb({
+            element_type: "paragraph",
+            column,
+            elementId: _id,
+            focus_cb: focus,
+          }),
+        )
+      }
+    }, [focus])
 
     return (
       <StyledElementToolbar

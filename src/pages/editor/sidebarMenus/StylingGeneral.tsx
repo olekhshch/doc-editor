@@ -26,6 +26,8 @@ import useDebounce from "../../../app/useDebounce"
 import { StylingParamsContext } from "./StylingMenu"
 import Swatches from "../Swatches"
 import { CurrentThemeContext } from "../Editor"
+import { IoIosArrowDown } from "react-icons/io"
+import { IconContext } from "react-icons"
 
 type props = {
   collapsed: boolean
@@ -171,6 +173,11 @@ const StylingGeneral = ({ collapsed }: props) => {
         onClick={() => set_active_styling_section(collapsed ? "general" : null)}
       >
         <h3>General</h3>
+        <IconContext.Provider
+          value={{ style: { rotate: collapsed ? "-90deg" : "0deg" } }}
+        >
+          <IoIosArrowDown />
+        </IconContext.Provider>
       </div>
       {!collapsed && (
         <section className="styling-params">

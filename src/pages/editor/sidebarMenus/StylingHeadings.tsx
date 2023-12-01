@@ -11,6 +11,7 @@ import {
   setHeadingsFontSize,
 } from "../../../features/styling/stylingSlice"
 import useDebounce from "../../../app/useDebounce"
+import { IoIosArrowDown } from "react-icons/io"
 
 type props = {
   collapsed: boolean
@@ -19,7 +20,7 @@ type props = {
 const StylingHeadings = ({ collapsed }: props) => {
   const { set_active_styling_section } = useContext(StylingParamsContext)
 
-  const [selectedHeadings, setSelectedHeadings] = useState<(1 | 2 | 3)[]>([])
+  const [selectedHeadings, setSelectedHeadings] = useState<(1 | 2 | 3)[]>([2])
 
   const selectHeading = (level: 1 | 2 | 3) => {
     const newSelected = [...selectedHeadings, level]
@@ -31,44 +32,11 @@ const StylingHeadings = ({ collapsed }: props) => {
     setSelectedHeadings(newSelected)
   }
 
-  const handleSelectionChange = (level: 1 | 2 | 3) => {
+  const handleSelectionChange = (e: React.ChangeEvent, level: 1 | 2 | 3) => {
     selectedHeadings.includes(level)
       ? diselectHeading(level)
       : selectHeading(level)
   }
-
-  //CHECKING WHAT PARAMS ARE MATCHING FOR SELECTED
-  // const Panel = () => {
-  //   const [mutualAlign, setMutualAlign] = useState<
-  //     "left" | "right" | "center" | null
-  //   >(null)
-
-  //   if (selectedHeadings.length === 0) {
-  //     return <span>Select min. 1 heading level</span>
-  //   }
-
-  //   selectedHeadings.forEach((level, idx) => {
-  //     const { align, font_size } = headings[level]
-  //     if (idx === 0) {
-  //       setMutualAlign(align)
-  //     } else {
-  //       if (align !== mutualAlign) {
-  //         setMutualAlign(null)
-  //       }
-  //     }
-  //   })
-
-  //   return (
-  //     <div>
-  //       <label>
-  //         <span>Align: </span>
-  //         <button>L</button>
-  //         <button>C</button>
-  //         <button>R</button>
-  //       </label>
-  //     </div>
-  //   )
-  // }
 
   //Styling
   const { main, gray } = useContext(CurrentThemeContext)
@@ -82,6 +50,11 @@ const StylingHeadings = ({ collapsed }: props) => {
         }
       >
         <h3>Headings</h3>
+        <IconContext.Provider
+          value={{ style: { rotate: collapsed ? "-90deg" : "0deg" } }}
+        >
+          <IoIosArrowDown />
+        </IconContext.Provider>
       </div>
       {!collapsed && (
         <section className="styling-params">
@@ -90,7 +63,7 @@ const StylingHeadings = ({ collapsed }: props) => {
               <input
                 type="checkbox"
                 checked={selectedHeadings.includes(1)}
-                onChange={() => handleSelectionChange(1)}
+                onChange={(e) => handleSelectionChange(e, 1)}
               />{" "}
               <span>H1</span>
             </label>
@@ -98,7 +71,7 @@ const StylingHeadings = ({ collapsed }: props) => {
               <input
                 type="checkbox"
                 checked={selectedHeadings.includes(2)}
-                onChange={() => handleSelectionChange(2)}
+                onChange={(e) => handleSelectionChange(e, 2)}
               />{" "}
               <span>H2</span>
             </label>
@@ -106,7 +79,7 @@ const StylingHeadings = ({ collapsed }: props) => {
               <input
                 type="checkbox"
                 checked={selectedHeadings.includes(3)}
-                onChange={() => handleSelectionChange(3)}
+                onChange={(e) => handleSelectionChange(e, 3)}
               />{" "}
               <span>H3</span>
             </label>
@@ -233,10 +206,7 @@ const Panel = ({ selectedHeadings }: panelProps) => {
           </IconContext.Provider>
         </button>
       </label>
-      <label
-        className="param-selector flex"
-        style={{ justifyContent: "space-between" }}
-      >
+      <label className="param-selector flex" style={{ gap: "8px" }}>
         Font size:
         <input
           type="number"

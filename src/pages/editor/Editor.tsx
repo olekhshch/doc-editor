@@ -64,6 +64,7 @@ export const MenuState = createContext<EditorMenuState>({
 
 const Editor = () => {
   const dispatch = useAppDispatch()
+  const { focusLast } = useDocElements()
 
   //INFO ABOUT THE ACTIVE DOC (readonly, metadata etc)
   const [currentDocDetails, setCurrentDocDetails] = useState<
@@ -174,6 +175,7 @@ const Editor = () => {
   const handleEditorClicks = () => {
     dispatch(setActiveElementData({ id: null, type: null }))
     setElementMenuId(null)
+    focusLast()
   }
 
   const handleResize = () => {
@@ -209,6 +211,7 @@ const Editor = () => {
 
   useEffect(() => {
     const handleShortcuts = (e: KeyboardEvent) => {
+      // e.preventDefault()
       if (e.altKey) {
         switch (e.key.toLowerCase()) {
           case "p":
@@ -243,21 +246,6 @@ const Editor = () => {
 
     return () => document.removeEventListener("keydown", handleShortcuts)
   }, [addHeadingElement, addParagraphElement])
-
-  //PERSIST OF OTHER DOCS / STYLING FROM LS
-
-  // const appPersist = usePersist()
-
-  // useEffect(() => {
-  //   //checking if any styling templates were saved
-  //   try {
-  //     const styling_templates = appPersist.getStylingTemplates_LS()
-  //     console.log({ styling_templates, templates })
-  //     dispatch(setStylingTemplates(styling_templates))
-  //   } catch (err) {
-  //     console.log("error while checking styling templates in LS")
-  //   }
-  // }, [])
 
   if (!currentDocDetails) {
     return <Loading />

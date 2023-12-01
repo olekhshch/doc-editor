@@ -100,7 +100,6 @@ const ColumnsDocElement = ({ columnsElement }: props) => {
     }
   }, [left.length, right.length, _id, dispatch])
 
-  //#TODO: Get rid of an additional left margin when element is a part of a column
   return (
     <ColumnsElementContext.Provider
       value={{ left: leftWidth, right: rightWidth }}

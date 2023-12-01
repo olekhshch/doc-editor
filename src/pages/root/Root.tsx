@@ -35,7 +35,7 @@ const Root = () => {
             <span> or </span>
             <button className="main-btn"> Load from file</button>
           </div>
-          {templates && (
+          {templates.length > 0 && (
             <>
               <p>Manage styling templates: </p>
               <StylingTemplatesList templates={templates} />

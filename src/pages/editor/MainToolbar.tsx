@@ -20,7 +20,14 @@ const MainToolbar = () => {
   const { showLeftSb, showRightSb } = useContext(MenuState)
   const { gray, main } = useContext(CurrentThemeContext)
 
-  const { getVerticalPosition, elementRef } = useDocElements()
+  const {
+    getVerticalPosition,
+    elementRef,
+    addHeadingElement,
+    addParagraphElement,
+    addSeparatorElement,
+    addTableElement,
+  } = useDocElements()
   const [toolbarFixed, setToolbarFixed] = useState(false)
 
   useEffect(() => {
@@ -46,15 +53,8 @@ const MainToolbar = () => {
   const { setPopUpFor } = useContext(MenuState)
   const { activeTheme } = useAppSelector((state) => state.styling.parameters)
   //#TODO: Nav btn
-  //#TODO: Add component btns
   //#TODO: Style btns
   //#TODO: Doc Navigation align headings
-
-  // const [mode, setMode] = useState<"Add..." | "Style...">("Add...")
-
-  // const toggleMode = () => {
-  //   setMode(mode === "Add..." ? "Style..." : "Add...")
-  // }
 
   if (showLeftSb && showRightSb) {
     return <></>
@@ -112,19 +112,19 @@ const MainToolbar = () => {
         </>
       )}
       <div className="add-btns">
-        <button title="add header" onClick={addHeadingEl}>
+        <button title="add header" onClick={addHeadingElement}>
           <BiHeading />
         </button>
-        <button title="add text block" onClick={addParagraphEl}>
+        <button title="add text block" onClick={addParagraphElement}>
           <BsCardText />
         </button>
         <button title="add image" onClick={addImageEl}>
           <BiImage />
         </button>
-        <button title="add table" onClick={addTableEl}>
+        <button title="add table" onClick={addTableElement}>
           <ImTable />
         </button>
-        <button title="add separator" onClick={addSeparatorEl}>
+        <button title="add separator" onClick={addSeparatorElement}>
           <CgFormatSeparator />
         </button>
       </div>
@@ -142,11 +142,12 @@ type styledProps = {
 
 const StyledMainToolbar = styled.aside<styledProps>`
   margin-top: 12px;
+  margin-left: auto;
   padding: 12px;
 
   z-index: 600;
   width: 100%;
-  max-width: 800px;
+  max-width: 90vw;
   height: 32px;
   box-shadow: 0 0 12px ${(props) => props.$gray};
   border-radius: 8px;

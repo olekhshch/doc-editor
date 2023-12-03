@@ -6,6 +6,9 @@ import { Link, useSearchParams } from "react-router-dom"
 import { CurrentDocContext, CurrentThemeContext } from "./Editor"
 import Loading from "../../Loading"
 import DocNavigation from "./sidebarMenus/DocNavigation"
+import AppSwitch from "../../components/AppSwitch"
+import AppButton from "../../components/AppButton"
+import usePersist from "../../app/usePersist"
 
 const LeftSidebar = () => {
   const { activeElementId } = useAppSelector((state) => state.documents)
@@ -13,6 +16,8 @@ const LeftSidebar = () => {
     "Doc",
     "Project",
   ])
+
+  const { downloadToJSON } = usePersist()
 
   //READONLY MODE
   const [searchParams, setSearchParams] = useSearchParams()
@@ -50,14 +55,16 @@ const LeftSidebar = () => {
 
   return (
     <StyledLeftSb className="editor-sb">
-      <div className="sb-inner">
+      <div className="sb-top">
         <article className="flex-col top-panel">
-          <p className="doc-title" style={{ color: main }} title={docTitle}>
+          {/* <p className="doc-title" style={{ color: main }} title={docTitle}>
             {docTitle}
-          </p>
-          <button onClick={toggleMode}>
-            {readonly ? "Edit mode" : "Read only"}
-          </button>
+          </p> */}
+          <AppSwitch
+            title="Edit mode"
+            checked={!readonly}
+            changeHandler={toggleMode}
+          />
           <Link
             to="../.."
             className="back-btn"
@@ -75,6 +82,11 @@ const LeftSidebar = () => {
         <DocNavigation />
         <p>Current element ID: {activeElementId}</p>
       </div>
+      <div className="sb-btm">
+        <div className="btn-container">
+          <AppButton title="Save to file" onClick={downloadToJSON} />
+        </div>
+      </div>
     </StyledLeftSb>
   )
 }
@@ -82,19 +94,19 @@ const LeftSidebar = () => {
 export default LeftSidebar
 
 const StyledLeftSb = styled.aside`
-  position: absolute;
-  top: 0;
+  position: fixed;
+  top: 24px;
   bottom: 0;
   left: 0;
   flex-grow: 1;
   flex-basis: 240px;
-  max-width: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 210px;
   min-width: 154px;
 
   .sb-inner {
-    position: fixed;
-    top: 32px;
-    max-width: 210px;
   }
 
   .top-panel {

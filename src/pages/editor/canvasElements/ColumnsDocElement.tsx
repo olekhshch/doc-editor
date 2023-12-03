@@ -57,7 +57,7 @@ const ColumnsDocElement = ({ columnsElement }: props) => {
   }, [_id, debouncedDeviation, dispatch])
 
   //COLUMNS WIDTHS
-  const { maxWidth } = useDocElements()
+  const { maxWidth, focusColumnLast } = useDocElements()
   const { leftColumnRef, leftWidth, rightColumnRef, rightWidth } = useColumns(
     columns.gap,
     columnsDeviation,
@@ -100,6 +100,11 @@ const ColumnsDocElement = ({ columnsElement }: props) => {
     }
   }, [left.length, right.length, _id, dispatch])
 
+  const activateLastOnClick = (e: React.MouseEvent, side: "left" | "right") => {
+    e.stopPropagation()
+    focusColumnLast([_id, side])
+  }
+
   return (
     <ColumnsElementContext.Provider
       value={{ left: leftWidth, right: rightWidth }}
@@ -113,6 +118,7 @@ const ColumnsDocElement = ({ columnsElement }: props) => {
           className="column"
           ref={leftColumnRef}
           style={{ maxWidth: `${leftWidth}px` }}
+          onClick={(e) => activateLastOnClick(e, "left")}
         >
           {left.map((element, idx) => (
             <div key={element._id}>
@@ -143,6 +149,7 @@ const ColumnsDocElement = ({ columnsElement }: props) => {
           className="column"
           ref={rightColumnRef}
           style={{ maxWidth: `${rightWidth}px` }}
+          onClick={(e) => activateLastOnClick(e, "right")}
         >
           {right.map((element, idx) => (
             <div key={element._id}>

@@ -24,6 +24,12 @@ export interface DocumentFull {
   styling?: any
 }
 
+export const initialParagraph: ParagraphElement = {
+  _id: 0,
+  type: "paragraph",
+  content: [{ type: "paragraph", content: [{ type: "text", text: " " }] }],
+}
+
 export const initialState: DocumentsState = {
   documents: [],
   activeDocumentId: null,
@@ -31,16 +37,10 @@ export const initialState: DocumentsState = {
   activeContent: {
     _id: 987,
     docId: 123,
-    components: [],
+    components: [initialParagraph],
   },
   beginsWithTitle: true,
   activeElementId: null,
   activeElementType: null,
   disableElementsAdding: true,
-}
-
-export const initialParagraph: ParagraphElement = {
-  _id: 0,
-  type: "paragraph",
-  content: [{ type: "paragraph", content: [{ type: "text", text: " " }] }],
 }

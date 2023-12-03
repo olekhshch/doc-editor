@@ -1,0 +1,52 @@
+.app-switch-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    user-select: none;
+}
+
+.app-switch {
+    position: relative;
+    display: inline-block;
+    width: 64px;
+    height: 28px;
+    border-radius: 32px;
+    background-color: grey;
+    cursor: pointer;
+}
+
+.app-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.app-slider {
+    position: relative;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.app-slider::before {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    content: "";
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: aliceblue;
+    transition: 0.2s;
+}
+
+.app-slider[data-checked="true"]::before {
+ translate: 36px;
+ background-color: var(--main);
+}
+
+.app-switch-title {
+    font-weight: bold;
+}

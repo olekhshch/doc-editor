@@ -11,6 +11,7 @@ import {
 } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import {
+  addParagraph,
   disableAddingElements,
   enableAddingElements,
   setActiveElementData,
@@ -175,7 +176,7 @@ const Editor = () => {
   const handleEditorClicks = () => {
     dispatch(setActiveElementData({ id: null, type: null }))
     setElementMenuId(null)
-    focusLast()
+    // focusLast()
   }
 
   const handleResize = () => {

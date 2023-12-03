@@ -18,6 +18,8 @@ const Elements = () => {
 
   const { components } = activeContent
 
+  //#TODO: DnD debounce
+
   return (
     <StyledElementsList>
       {components.map((element, idx) => {

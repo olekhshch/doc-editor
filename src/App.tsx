@@ -39,7 +39,7 @@ const App = () => {
   const [checkedLS, setCheckedLS] = useState(false)
 
   useEffect(() => {
-    //Checking if any styling templates are in the local storage on mount
+    // Checking if any styling templates are in the local storage on mount
     try {
       const styling_templates = appPersist.getStylingTemplates_LS()
       dispatch(setStylingTemplates(styling_templates))
@@ -50,22 +50,16 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    //persisting styling templates to LS
-    if (checkedLS) {
-      appPersist.saveStylingTemplates_LS()
+    // persisting styling templates to LS
+    try {
+      if (checkedLS) {
+        appPersist.saveStylingTemplates_LS()
+      }
+    } catch (err) {
+      console.log("ERROR while saving styling templates")
     }
   }, [templates, appPersist, checkedLS])
 
-  // useEffect(() => {
-  //   //checking if any styling templates were saved
-  //   try {
-  //     const styling_templates = appPersist.getStylingTemplates_LS()
-  //     console.log({ styling_templates, templates })
-  //     dispatch(setStylingTemplates(styling_templates))
-  //   } catch (err) {
-  //     console.log("error while checking styling templates in LS")
-  //   }
-  // }, [])
   return <RouterProvider router={router}></RouterProvider>
 }
 

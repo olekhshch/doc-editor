@@ -7,6 +7,7 @@ import {
 } from "../../../types"
 import findElementFromState from "../../../functions/findElementFromState"
 import replaceElementInArray from "../../../functions/replaceElementInArray"
+import { FocusType } from "remirror"
 
 const addFocusCb_textblock = (
   state: DocumentsState,
@@ -15,9 +16,10 @@ const addFocusCb_textblock = (
     elementId: number
     column: columnParam
     focus_cb: () => void
+    position_cb: (f: FocusType) => void
   },
 ) => {
-  const { elementId, column, focus_cb } = payload
+  const { elementId, column, focus_cb, position_cb } = payload
   state.disableElementsAdding = true
   try {
     const [targetEl, targetIdx] = findElementFromState(
@@ -29,6 +31,7 @@ const addFocusCb_textblock = (
 
     if (targetEl) {
       targetEl.focus = focus_cb
+      targetEl.position = position_cb
 
       state.activeContent!.components = replaceElementInArray(
         targetEl,

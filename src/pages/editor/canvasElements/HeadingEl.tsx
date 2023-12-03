@@ -25,6 +25,7 @@ import {
   useKeymap,
   EditorComponent,
   useChainedCommands,
+  useEditorFocus,
 } from "@remirror/react"
 import { FaTrash } from "react-icons/fa"
 import { CurrentDocContext, MenuState } from "../Editor"
@@ -196,7 +197,9 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
     const focus_cb = useCallback(() => {
       activateElement()
       chain.focus().run()
-    }, [])
+    }, [chain])
+
+    const [focus, position_cb] = useEditorFocus()
 
     useEffect(() => {
       if (!headingElementObj.focus) {
@@ -206,6 +209,7 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
             elementId: _id,
             column,
             focus_cb,
+            position_cb,
           }),
         )
       }

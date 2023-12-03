@@ -51,6 +51,7 @@ import setMarginsAction from "./separator/setSeparatorMargins"
 import addFocusFunction from "./textblock/addFocusFunction"
 import addFocusCb_textblock from "./textblock/addFocusFunction"
 import addFocusCb_heading from "./heading/addFocusCb"
+import { FocusType } from "remirror"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -86,14 +87,18 @@ const documentsSlice = createSlice({
       const _id = Math.round(Math.random() * 1000000)
       const newDocumentInfo: DocumentPreviewInterface = {
         _id,
-        title: "New doc",
+        title: "Title",
         createdOn: new Date().getTime(),
       }
 
+      const initialTextBlock: ParagraphElement = {
+        ...initialParagraph,
+        _id: new Date().getTime(),
+      }
       const newDocContent: DocumentContent = {
         _id,
         docId: _id,
-        components: [],
+        components: [initialTextBlock],
       }
 
       state.activeContent = newDocContent
@@ -159,10 +164,11 @@ const documentsSlice = createSlice({
         column: columnParam
         focus_cb: () => void
         element_type: ContentComponentType
+        position_cb: (f: FocusType) => void
       }>,
     ) => {
-      const { elementId, column, focus_cb, element_type } = payload
-      const pl = { elementId, column, focus_cb }
+      const { elementId, column, focus_cb, element_type, position_cb } = payload
+      const pl = { elementId, column, focus_cb, position_cb }
       switch (element_type) {
         case "paragraph":
           addFocusCb_textblock(state, pl)
@@ -567,58 +573,22 @@ const documentsSlice = createSlice({
           duplicate,
         ) as (DocContentComponent | ColumnsElement)[]
       }
-      // if (payload.column === null) {
-      //   //element is not a part of a column
-      //   const targetElement = state.activeContent!.components.find(
-      //     (el) => el._id === payload.elementId,
-      //   )
+    },
 
-      //   if (targetElement) {
-      //     const duplicate: DocContentComponent | ColumnsElement = {
-      //       ...targetElement,
-      //       _id: new Date().getTime(),
-      //     }
-      //     //inserting duplicate after the original
-      //     state.activeContent!.components = addElementsToState(
-      //       state.activeContent!.components,
-      //       payload.elementId,
-      //       payload.column,
-      //       duplicate,
-      //     ) as (DocContentComponent | ColumnsElement)[]
-      //   }
-      // } else {
-      //   //element is a part of a column
-      //   const [columnId, side] = payload.column
-      //   const targetColumn = state.activeContent!.components.find(
-      //     (el) => el._id === columnId && el.type === "columns",
-      //   ) as ColumnsElement | undefined
-
-      //   if (targetColumn) {
-      //     const targetColumnIdx = state.activeContent!.components.findIndex(
-      //       (el) => el._id === columnId && el.type === "columns",
-      //     )
-      //     const targetElement = targetColumn[side].find(
-      //       (el) => el._id === payload.elementId,
-      //     ) as DocContentComponent | undefined
-
-      //     if (targetElement) {
-      //       const duplicate: DocContentComponent = {
-      //         ...targetElement,
-      //         _id: new Date().getTime(),
-      //       }
-      //       const newSide = addElementsToState(
-      //         targetColumn[side],
-      //         payload.elementId,
-      //         null,
-      //         duplicate,
-      //       )
-      //       const newColumn = { ...targetColumn, [side]: newSide }
-
-      //       //replacing old columns with columns element with a duplicate
-      //       state.activeContent!.components[targetColumnIdx] = newColumn
-      //     }
-      //   }
-      // }
+    setDocumentFromObject: (
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        content: DocumentContent
+        docInfo: DocumentPreviewInterface
+      }>,
+    ) => {
+      try {
+        state.activeContent = payload.content
+        state.activeDocumentInfo = payload.docInfo
+        state.activeDocumentId = payload.docInfo._id
+      } catch (err) {}
     },
   },
 })
@@ -664,4 +634,5 @@ export const {
   toggleTableHeading,
   setSeparatorMargins,
   addFocusCb,
+  setDocumentFromObject,
 } = documentsSlice.actions

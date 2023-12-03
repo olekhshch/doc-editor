@@ -11,6 +11,9 @@ import {
   Remirror,
   ThemeProvider,
   useChainedCommands,
+  useEditorEvent,
+  useEditorFocus,
+  useHelpers,
   useRemirror,
 } from "@remirror/react"
 import {
@@ -127,6 +130,7 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
       type: "doc",
       content: currentContent,
     },
+    selection: "end",
   })
 
   //TOOLBAR
@@ -187,6 +191,8 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
       chain.focus().run()
     }, [chain])
 
+    const [focused, position] = useEditorFocus()
+
     useEffect(() => {
       if (!textBlockObj.focus) {
         dispatch(
@@ -195,10 +201,11 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
             column,
             elementId: _id,
             focus_cb: focus,
+            position_cb: position,
           }),
         )
       }
-    }, [focus])
+    }, [])
 
     return (
       <StyledElementToolbar
@@ -322,6 +329,12 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
           classNames={["text-block"]}
           // hooks={hooks}
           autoFocus={true}
+          onFocus={(props) => {
+            const {
+              state: { selection },
+            } = props
+            console.log(selection)
+          }}
           onChange={(props) => {
             const { state } = props
             const docJSON: { doc: any } = state.toJSON()

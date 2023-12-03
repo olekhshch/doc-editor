@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useContext } from "react"
+import { useRef, useState, useEffect, useCallback } from "react"
 import {
   addHeading,
   addImage,
@@ -8,7 +8,14 @@ import {
 } from "../features/documents/documentsSlice"
 import { useAppDispatch, useAppSelector } from "./hooks"
 import focusElementsContext from "./focusElementsContext"
-import { ParagraphElement } from "../types"
+import {
+  ColumnsElement,
+  HeadingElement,
+  ParagraphElement,
+  columnParam,
+  focusable,
+} from "../types"
+import findElementFromState from "../functions/findElementFromState"
 
 /**
  * Hook to add elements depending on current active element position
@@ -33,11 +40,11 @@ const useDocElements = () => {
     e.stopPropagation()
   }
 
-  const addParagraphElement = (e: React.MouseEvent | KeyboardEvent) => {
+  const addParagraphElement = (e?: React.MouseEvent | KeyboardEvent) => {
     if (!disableElementsAdding) {
       dispatch(addParagraph({ column: null }))
     }
-    e.stopPropagation()
+    e?.stopPropagation()
   }
 
   const addSeparatorElement = (e: React.MouseEvent | KeyboardEvent) => {
@@ -124,15 +131,22 @@ const useDocElements = () => {
 
   //FOCUS ELEMENTS
 
+  const focusElement = useCallback((element: focusable) => {
+    if (element.focus) {
+      element.focus()
+      if (element.position) {
+        element.position("end")
+      }
+    }
+  }, [])
+
   const focusFirst = () => {
     if (activeContent) {
       const firstFocusableEl = activeContent.components.find(
         (el) => el.type === "paragraph",
       ) as ParagraphElement
 
-      if (firstFocusableEl && firstFocusableEl.focus) {
-        firstFocusableEl.focus()
-      }
+      focusElement(firstFocusableEl)
     }
   }
 
@@ -140,10 +154,27 @@ const useDocElements = () => {
     if (activeContent) {
       const lastFocusableEl = activeContent.components.findLast((el) =>
         ["paragraph", "heading"].includes(el.type),
-      ) as ParagraphElement
+      ) as ParagraphElement | HeadingElement
 
-      if (lastFocusableEl && lastFocusableEl.focus) {
-        lastFocusableEl.focus()
+      focusElement(lastFocusableEl)
+    }
+  }
+
+  const focusColumnLast = (column: columnParam) => {
+    if (activeContent && column) {
+      const [targetColumnsEl, targetIdx] = findElementFromState(
+        activeContent.components,
+        column[0],
+        null,
+        "columns",
+      ) as [ColumnsElement, number]
+
+      if (targetColumnsEl) {
+        const lastElementInColumn = targetColumnsEl[column[1]].findLast((el) =>
+          ["paragraph", "heading"].includes(el.type),
+        ) as focusable
+
+        focusElement(lastElementInColumn)
       }
     }
   }
@@ -161,6 +192,7 @@ const useDocElements = () => {
     maxWidth,
     focusFirst,
     focusLast,
+    focusColumnLast,
   }
 }
 

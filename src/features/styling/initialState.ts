@@ -98,7 +98,7 @@ export const initialState: StylingState = {
     },
     main_title: {
       font_size: 48,
-      underlined: true,
+      underlined: false,
       margin_bottom: 16,
       margin_top: 12,
     },

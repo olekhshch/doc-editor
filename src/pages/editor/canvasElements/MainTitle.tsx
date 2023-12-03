@@ -1,18 +1,23 @@
 import React, { useState, useCallback, useContext, useEffect } from "react"
 import styled from "styled-components"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
-import { renameActiveDoc } from "../../../features/documents/documentsSlice"
+import {
+  renameActiveDoc,
+  setActiveElementData,
+} from "../../../features/documents/documentsSlice"
 import {
   useRemirror,
   Remirror,
   useHelpers,
   useKeymap,
   useCommands,
+  PlaceholderExtension,
 } from "@remirror/react"
 import { CurrentDocContext, CurrentThemeContext } from "../Editor"
 import { rgbColour } from "../../../types"
 import { rgbObjToString } from "../../../functions/rgbObjToString"
 import useDebounce from "../../../app/useDebounce"
+import useDocElements from "../../../app/useDocElements"
 
 type props = {
   docTitle: string
@@ -59,6 +64,8 @@ const MainTitle = ({ docTitle }: props) => {
     },
   } = useAppSelector((state) => state.styling)
 
+  const { maxWidth } = useDocElements()
+
   //READ ONLY
   const { readonly } = useContext(CurrentDocContext)!
 
@@ -72,10 +79,18 @@ const MainTitle = ({ docTitle }: props) => {
     }
   }, [debouncedTitle, dispatch])
 
+  const extensions = useCallback(() => [new PlaceholderExtension("Title")], [])
+
   const { manager, state } = useRemirror({
     content: title,
     stringHandler: "text",
+    extensions,
   })
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    dispatch(setActiveElementData({ id: null, type: null }))
+  }
 
   return (
     <StyledDocTitle
@@ -85,7 +100,8 @@ const MainTitle = ({ docTitle }: props) => {
       $font_size={font_size}
       $mrg_btm={margin_bottom}
       $mrg_top={margin_top}
-      $canvas_width={canvas_width}
+      $canvas_width={maxWidth}
+      onClick={handleClick}
     >
       <Remirror
         manager={manager}
@@ -97,6 +113,7 @@ const MainTitle = ({ docTitle }: props) => {
           setTitle(newTitle)
         }}
         editable={!readonly}
+        placeholder="Title"
       />
     </StyledDocTitle>
   )
@@ -123,6 +140,7 @@ const StyledDocTitle = styled.h1<styledProps>`
   font-size: ${(pr) => pr.$font_size}px;
   font-weight: normal;
   max-width: ${(pr) => pr.$canvas_width}px;
+  text-align: justify;
 
   color: ${(props) =>
     props.$text_colour ? `rgb(${rgbObjToString(props.$text_colour)})` : "auto"};

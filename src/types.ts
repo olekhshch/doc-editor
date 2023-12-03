@@ -1,4 +1,4 @@
-import { RemirrorJSON } from "remirror"
+import { FocusType, RemirrorJSON } from "remirror"
 import { ThemeName } from "./features/styling/initialState"
 
 export interface ProjectInterface {
@@ -96,7 +96,7 @@ export interface ImageElement extends BasicComponent {
 
 export type columnParam = null | [number, "left" | "right"]
 
-export interface TableCell {
+export interface TableCell extends focusable {
   _id: number
   content: RemirrorJSON[]
 }
@@ -110,6 +110,7 @@ export interface TableElement extends BasicComponent {
   main_column: boolean
 }
 
-type focusable = {
+export type focusable = {
   focus?: () => void
+  position?: (f: FocusType) => void
 }

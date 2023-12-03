@@ -141,13 +141,12 @@ type styledProps = {
 }
 
 const StyledMainToolbar = styled.aside<styledProps>`
-  margin-top: 12px;
-  margin-left: auto;
+  margin: 12px auto;
   padding: 12px;
 
   z-index: 600;
   width: 100%;
-  max-width: 90vw;
+  max-width: 80vw;
   height: 32px;
   box-shadow: 0 0 12px ${(props) => props.$gray};
   border-radius: 8px;

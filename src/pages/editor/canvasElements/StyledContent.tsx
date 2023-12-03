@@ -13,7 +13,9 @@ export default styled.article<styledProps>`
   position: relative;
   border: 1px solid transparent;
   border-radius: 8px;
-  min-height: ${(pr) => (pr.$font_size ? `${pr.$font_size}px` : "fit-content")};
+  /* min-height: ${(pr) =>
+    pr.$font_size ? `${pr.$font_size}px` : "fit-content"}; */
+  min-height: 1.1em;
   min-width: 80px;
   /* flex-grow: 1; */
   /* width: ${(props) => {

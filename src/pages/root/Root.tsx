@@ -1,16 +1,23 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import styled from "styled-components"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { useNavigate } from "react-router-dom"
-import { createNewDoc } from "../../features/documents/documentsSlice"
+import {
+  createNewDoc,
+  setDocumentFromObject,
+} from "../../features/documents/documentsSlice"
 import DocumentsList from "./DocumentsList"
 import StylingManager from "../editor/sidebarMenus/StylingManager"
 import StylingTemplatesList from "./StylingTemplatesList"
 import Bg from "./Bg"
+import AppButton from "../../components/AppButton"
+import usePersist from "../../app/usePersist"
+import { DocumentContent, DocumentPreviewInterface } from "../../types"
 
 const Root = () => {
   const dispatch = useAppDispatch()
   const navigation = useNavigate()
+  const { readJSONContent, validateJSON } = usePersist()
 
   const { documents } = useAppSelector((state) => state.documents)
   const { templates } = useAppSelector((state) => state.styling)
@@ -20,6 +27,48 @@ const Root = () => {
     navigation("/docs")
   }
 
+  const [file, setFile] = useState<File | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const triggerFileUpload = () => {
+    fileInputRef.current!.click()
+  }
+
+  const handleFileUpload = () => {
+    const { files } = fileInputRef.current!
+    if (files && files.length > 0) {
+      setFile(files[0])
+    }
+  }
+
+  useEffect(() => {
+    if (file) {
+      const reader = new FileReader()
+
+      reader.addEventListener("load", () => {
+        const result = reader.result as string
+        try {
+          const fetchedJSON = JSON.parse(result)
+
+          const isValid = validateJSON(fetchedJSON)
+          if (isValid) {
+            dispatch(
+              setDocumentFromObject({
+                content: fetchedJSON.content as DocumentContent,
+                docInfo: fetchedJSON.docInfo as DocumentPreviewInterface,
+              }),
+            )
+            navigation("/docs")
+          }
+        } catch (err) {
+          console.log("COULDNT LOAD FROM FILE")
+        }
+      })
+
+      reader.readAsText(file)
+    }
+  }, [dispatch, file, navigation, readJSONContent, validateJSON])
+
   return (
     <StyledRoot>
       <Bg />
@@ -28,12 +77,23 @@ const Root = () => {
           <div className="flex" style={{ gap: "12px", alignItems: "center" }}>
             <span>Create</span>
             <span>a</span>
-            <button className="main-btn" onClick={handleNewDocCreation}>
-              {" "}
-              New doc{" "}
-            </button>
+            <AppButton
+              title="New page"
+              onClick={handleNewDocCreation}
+              isMain={true}
+            />
             <span> or </span>
-            <button className="main-btn"> Load from file</button>
+            <AppButton
+              isMain={true}
+              title="Load from file"
+              onClick={triggerFileUpload}
+            />
+            <input
+              type="file"
+              accept="application/json"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+            />
           </div>
           {templates.length > 0 && (
             <>
@@ -43,30 +103,6 @@ const Root = () => {
           )}
         </section>
       </div>
-      {/* <section id="root-main-panel">
-        <article id="panel-content">
-          <div className="flex" style={{ gap: "12px", alignItems: "center" }}>
-            <span>Create</span>
-            <span>a</span>
-            <button className="main-btn" onClick={handleNewDocCreation}>
-              {" "}
-              New doc{" "}
-            </button>
-            <span> or </span>
-            <button className="main-btn"> Load from file</button>
-          </div> */}
-      {/* <div>
-            <p>Recent documents:</p>
-            <DocumentsList docs={documents} />
-          </div> */}
-      {/* {templates.length > 0 && (
-            <div>
-              <p>Manage styling templates: </p>
-              <StylingTemplatesList templates={templates} />
-            </div>
-          )}
-        </article>
-      </section> */}
     </StyledRoot>
   )
 }
@@ -116,40 +152,7 @@ const StyledRoot = styled.main`
     color: white;
   }
 
-  /* #root-main-panel {
-    position: absolute;
-    width: 560px;
-    top: 36px;
-    left: calc(50% - calc(560 / 2));
-    border-radius: 8px;
-    height: fit-content;
-    max-height: 90vh;
-    max-width: 60vw;
-    overflow: hidden;
-    background-color: rgba(249, 239, 248, 0.4);
+  input[type="file"] {
+    display: none;
   }
-
-  #panel-content {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  #panel-content div {
-    left: 24px;
-  }
-
-  #canvas-bg {
-    margin: 0;
-    background-color: var(--main);
-  }
-
-  .main-btn {
-    padding: 8px 12px;
-    border: 1px solid var(--main-light);
-    border-radius: 4px;
-    background-color: var(--main);
-    color: white;
-  } */
 `

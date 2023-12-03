@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useCallback, useContext } from "react"
 import styled from "styled-components"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import MainTitle from "./canvasElements/MainTitle"
@@ -8,13 +8,23 @@ import MainToolbar from "./MainToolbar"
 import { BiHide, BiShowAlt } from "react-icons/bi"
 import { toggleBegingsWithTitle } from "../../features/documents/documentsSlice"
 import { IconContext } from "react-icons"
+import useDocElements from "../../app/useDocElements"
 
 const ContentCanvas = () => {
   const { beginsWithTitle } = useAppSelector((state) => state.documents)
   const { canvas_width } = useAppSelector((state) => state.styling.parameters)
+  const { maxWidth, focusLast } = useDocElements()
 
   const docContext = useContext(CurrentDocContext)
   const { main } = useContext(CurrentThemeContext)
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      focusLast()
+    },
+    [focusLast],
+  )
 
   if (!docContext) {
     return <></>
@@ -24,7 +34,7 @@ const ContentCanvas = () => {
 
   return (
     <StyledContentContainer>
-      <div id="main_wrapper">
+      <div id="main_wrapper" onClick={(e) => handleClick(e)}>
         <MainToolbar />
         {!readonly && (
           <ShowTitleBtn beginsWithTitle={beginsWithTitle} mainColour={main} />
@@ -44,7 +54,7 @@ const StyledContentContainer = styled.main`
   right: 0;
   /* flex-basis: 297mm; */
   /* min-width: 297mm; */
-  width: 100vw;
+  min-width: 100vw;
   display: flex;
   justify-content: center;
   min-height: 100vh;
@@ -52,11 +62,13 @@ const StyledContentContainer = styled.main`
   /* overflow: hidden; */
 
   #main_wrapper {
+    padding: 0 var(--editor-left-mg) 0 0;
     margin: 0 auto;
-    min-width: 760px;
-    max-width: 74vw;
+    min-width: 540px;
+    max-width: 70vw;
     /* width: 100%; */
     flex-grow: 1;
+    width: fit-content;
   }
 
   .show-title-btn {

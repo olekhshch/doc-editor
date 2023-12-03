@@ -3,15 +3,21 @@ import { useAppDispatch, useAppSelector } from "./hooks"
 import {
   disableAddingElements,
   enableAddingElements,
+  setDocumentFromObject,
 } from "../features/documents/documentsSlice"
 import { StylingTemplate } from "../features/styling/initialState"
 import { setStylingTemplates } from "../features/styling/stylingSlice"
+import { useNavigate } from "react-router-dom"
+import { DocumentContent, DocumentPreviewInterface } from "../types"
 
 export type LocalStorageKey = "styling_templates" | "docContent"
 
 const usePersist = () => {
   const dispatch = useAppDispatch()
   const stylingState = useAppSelector((state) => state.styling)
+  const { activeContent, activeDocumentInfo } = useAppSelector(
+    (state) => state.documents,
+  )
 
   //WHEN PERSISTING DOC STATE = remove focus callbacks
 
@@ -33,7 +39,7 @@ const usePersist = () => {
    * @param key local storage key
    */
   function saveToLocalStorage(key: LocalStorageKey) {
-    dispatch(disableAddingElements())
+    // dispatch(disableAddingElements())
 
     let value: any = null
     let stringifiedValue: string = ""
@@ -48,7 +54,7 @@ const usePersist = () => {
 
     localStorage.setItem(key, stringifiedValue)
 
-    dispatch(enableAddingElements())
+    // dispatch(enableAddingElements())
 
     return value
   }
@@ -73,7 +79,63 @@ const usePersist = () => {
     return (stylingTemplates ?? []) as StylingTemplate[]
   }
 
-  return { saveStylingTemplates_LS, getStylingTemplates_LS }
+  //JSON
+
+  function downloadToJSON(e: React.MouseEvent) {
+    e.stopPropagation()
+    const basicDocJSON = { content: activeContent, docInfo: activeDocumentInfo }
+    const content = JSON.stringify(basicDocJSON, null, 2)
+    const file = new Blob([content], { type: "json" })
+
+    const fileURL = URL.createObjectURL(file)
+    const a = document.createElement("a")
+    a.href = fileURL
+    a.download = "docContent.json"
+    a.click()
+  }
+
+  //READ JSON
+
+  //VALIDATION
+  const validateJSON = (JSONFile: any) => {
+    const keys = Object.keys(JSONFile)
+
+    return keys.includes("content") && keys.includes("docInfo")
+  }
+
+  const readJSONContent = async (file: File) => {
+    const reader = new FileReader()
+
+    reader.addEventListener("load", () => {
+      const result = reader.result as string
+      try {
+        const fetchedJSON = JSON.parse(result)
+
+        const isValid = validateJSON(fetchedJSON)
+        if (isValid) {
+          dispatch(
+            setDocumentFromObject({
+              content: fetchedJSON.content as DocumentContent,
+              docInfo: fetchedJSON.docInfo as DocumentPreviewInterface,
+            }),
+          )
+          // navigation("/docs")
+        }
+      } catch (err) {
+        console.log("COULDNT LOAD FROM FILE")
+      }
+    })
+
+    reader.readAsText(file)
+  }
+
+  return {
+    saveStylingTemplates_LS,
+    getStylingTemplates_LS,
+    downloadToJSON,
+    readJSONContent,
+    validateJSON,
+  }
 }
 
 export default usePersist

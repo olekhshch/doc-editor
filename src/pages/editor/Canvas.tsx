@@ -20,7 +20,7 @@ const ContentCanvas = () => {
 
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
-      e.stopPropagation()
+      // e.stopPropagation()
       focusLast()
     },
     [focusLast],

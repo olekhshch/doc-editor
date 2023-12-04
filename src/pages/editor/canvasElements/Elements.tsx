@@ -5,6 +5,8 @@ import Element from "./DocElement"
 import styled from "styled-components"
 import DnDPlaceholder from "./dndPlaceholder"
 import { CurrentDocContext } from "../Editor"
+import { DndProvider } from "react-dnd"
+import { HTML5Backend } from "react-dnd-html5-backend"
 
 const Elements = () => {
   const dispatch = useAppDispatch()
@@ -21,21 +23,23 @@ const Elements = () => {
   //#TODO: DnD debounce
 
   return (
-    <StyledElementsList>
-      {components.map((element, idx) => {
-        const { _id } = element
+    <DndProvider backend={HTML5Backend}>
+      <StyledElementsList>
+        {components.map((element, idx) => {
+          const { _id } = element
 
-        return (
-          <div key={_id} draggable>
-            {!readonly && (
-              <DnDPlaceholder indexBefore={idx} columnTarget={null} />
-            )}
-            <Element docElementObj={element} column={null} orderIdx={idx} />
-          </div>
-        )
-      })}
-      <div id="max-width-ref" style={{ maxWidth: `${canvas_width}px` }} />
-    </StyledElementsList>
+          return (
+            <div key={_id} draggable>
+              {!readonly && (
+                <DnDPlaceholder indexBefore={idx} columnTarget={null} />
+              )}
+              <Element docElementObj={element} column={null} orderIdx={idx} />
+            </div>
+          )
+        })}
+        <div id="max-width-ref" style={{ maxWidth: `${canvas_width}px` }} />
+      </StyledElementsList>
+    </DndProvider>
   )
 }
 

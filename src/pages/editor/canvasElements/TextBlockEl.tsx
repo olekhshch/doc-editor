@@ -47,6 +47,7 @@ import { DnDTypes } from "../../../DnDtypes"
 import useDebaunce from "../../../app/useDebounce"
 import useDocElements from "../../../app/useDocElements"
 import { ExtensionPriority } from "remirror"
+import FocusContext from "./FocusContext"
 // import "remirror/styles/all.css"
 
 type props = {
@@ -192,18 +193,24 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
     }, [chain])
 
     const [focused, position] = useEditorFocus()
+    const { callbacks, addElementToContext } = useContext(FocusContext)
 
     useEffect(() => {
-      if (!textBlockObj.focus) {
-        dispatch(
-          addFocusCb({
-            element_type: "paragraph",
-            column,
-            elementId: _id,
-            focus_cb: focus,
-            position_cb: position,
-          }),
-        )
+      // if (!textBlockObj.focus) {
+      //   dispatch(
+      //     addFocusCb({
+      //       element_type: "paragraph",
+      //       column,
+      //       elementId: _id,
+      //       focus_cb: focus,
+      //       position_cb: position,
+      //     }),
+      //   )
+      // }
+      const cbIsAdded = callbacks.find((cb) => cb.elementId === _id)
+
+      if (!cbIsAdded) {
+        addElementToContext({ elementId: _id, focus, position })
       }
     }, [])
 

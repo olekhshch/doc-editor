@@ -17,7 +17,7 @@ import { DocumentContent, DocumentPreviewInterface } from "../../types"
 const Root = () => {
   const dispatch = useAppDispatch()
   const navigation = useNavigate()
-  const { readJSONContent, validateJSON } = usePersist()
+  const { validateJSON } = usePersist()
 
   const { documents } = useAppSelector((state) => state.documents)
   const { templates } = useAppSelector((state) => state.styling)
@@ -67,13 +67,19 @@ const Root = () => {
 
       reader.readAsText(file)
     }
-  }, [dispatch, file, navigation, readJSONContent, validateJSON])
+  }, [dispatch, file, navigation, validateJSON])
 
   return (
     <StyledRoot>
       <Bg />
+      <div className="margin" />
       <div className="root-wrapper">
-        <section id="root-main-panel">
+        <section className="root-panel" id="recent-docs">
+          <div className="flex" style={{ gap: "12px", alignItems: "center" }}>
+            <h3>Recent docs</h3>
+          </div>
+        </section>
+        <section className="root-panel" id="create-doc-panel">
           <div className="flex" style={{ gap: "12px", alignItems: "center" }}>
             <span>Create</span>
             <span>a</span>
@@ -95,12 +101,11 @@ const Root = () => {
               onChange={handleFileUpload}
             />
           </div>
-          {templates.length > 0 && (
-            <>
-              <p>Manage styling templates: </p>
-              <StylingTemplatesList templates={templates} />
-            </>
-          )}
+        </section>
+        <section className="root-panel" id="tutorials">
+          <div className="flex" style={{ gap: "12px", alignItems: "center" }}>
+            <h3>Documentation</h3>
+          </div>
         </section>
       </div>
     </StyledRoot>
@@ -117,30 +122,96 @@ const StyledRoot = styled.main`
   color: white;
   overflow: hidden;
 
-  .root-wrapper {
-    position: fixed;
-    display: flex;
-    width: 100%;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+  #canvas-bg {
+    position: absolute;
   }
 
-  #root-main-panel {
-    margin: 48px auto;
-    margin-right: 72px;
-    padding: 36px 48px;
-    min-width: 440px;
-    min-height: 40vh;
-    background-color: rgba(249, 239, 248, 0.4);
-    border-radius: 12px;
+  @keyframes moving {
+    from {
+      width: 240px;
+    }
 
+    to {
+      width: 650px;
+    }
+  }
+
+  @keyframes appearance {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  .root-wrapper {
+    /* position: fixed; */
+    margin-right: 48px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    justify-content: space-evenly;
+    width: 100%;
+    max-width: 100vw;
+    min-height: 100vh;
+
+    /* animation: moving 2s forwards; */
+  }
+
+  .root-panel {
+    padding: 36px 48px;
+    margin-right: auto;
+    margin-left: auto;
+    min-width: 440px;
+    height: fit-content;
+    color: var(--main);
+    background-color: rgba(250, 228, 247, 0.523);
+    border-radius: 14px;
+    flex-shrink: 0;
+
+    display: flex;
+    justify-content: center;
+    /* gap: 8px; */
     align-items: center;
     backdrop-filter: blur(12px);
+    opacity: 0;
+  }
+
+  .root-panel-wrapper {
+    display: flex;
+  }
+
+  .margin {
+    width: 240px;
+    flex-shrink: 1;
+    background-color: transparent;
+
+    animation: moving 2s forwards;
+  }
+
+  #create-doc-panel {
+    margin-left: unset;
+    animation: appearance 1s forwards;
+    font-size: 24px;
+  }
+
+  @media screen and (max-width: 700px) {
+    .margin {
+      display: none;
+    }
+
+    #create-doc-panel {
+      margin-left: auto;
+    }
+  }
+
+  #recent-docs {
+    animation: appearance 1s 1s forwards;
+  }
+
+  #tutorials {
+    animation: appearance 1s 0.4s forwards;
   }
 
   .main-btn {

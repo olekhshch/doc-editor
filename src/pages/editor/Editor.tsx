@@ -3,12 +3,7 @@ import styled from "styled-components"
 import LeftSidebar from "./LeftSidebar"
 import Canvas from "./Canvas"
 import RightSidebar from "./RightSidebar"
-import {
-  useLocation,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from "react-router-dom"
+import { useParams, useSearchParams } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import {
   addParagraph,
@@ -23,6 +18,7 @@ import { rgbObjToString } from "../../functions/rgbObjToString"
 import { ColourTheme } from "../../features/styling/initialState"
 import PopUpWindow from "./PopUpWindow"
 import useDocElements from "../../app/useDocElements"
+import FocusContext, { focusCallback } from "./canvasElements/FocusContext"
 
 interface DocInfoContenxt extends DocumentPreviewInterface {
   readonly?: boolean
@@ -174,7 +170,7 @@ const Editor = () => {
   }
 
   const handleEditorClicks = () => {
-    dispatch(setActiveElementData({ id: null, type: null }))
+    // dispatch(setActiveElementData({ id: null, type: null }))
     setElementMenuId(null)
     // focusLast()
   }
@@ -248,6 +244,19 @@ const Editor = () => {
     return () => document.removeEventListener("keydown", handleShortcuts)
   }, [addHeadingElement, addParagraphElement])
 
+  //STORING FOCUS CALLBACKS FOR FOCUSING ELEMENTS EXTERNALLY
+  const [focusCbs, setFocusCbs] = useState<focusCallback[]>([])
+
+  const addFocusCallback = (fc: focusCallback) => {
+    setFocusCbs([...focusCbs, fc])
+  }
+
+  const focusContextValue = {
+    callbacks: focusCbs,
+    addElementToContext: addFocusCallback,
+  }
+
+  //LOADING SCREEN WHEN NO DOC DATA
   if (!currentDocDetails) {
     return <Loading />
   }
@@ -256,19 +265,21 @@ const Editor = () => {
     <CurrentDocContext.Provider value={currentDocDetails}>
       <MenuState.Provider value={menuContextValue}>
         <CurrentThemeContext.Provider value={themeObj}>
-          <StyledEditorPage
-            onClick={handleEditorClicks}
-            // onKeyDown={handleShortcuts}
-            style={{
-              backgroundColor: `rgb(${rgbObjToString(doc_bg_colour.colour)})`,
-              color: `rgb(${rgbObjToString(font_colour.colour)})`,
-            }}
-          >
-            <Canvas />
-            {showLeftSb && <LeftSidebar />}
-            {showRightSb && <RightSidebar />}
-          </StyledEditorPage>
-          {popUpFor !== null && <PopUpWindow />}
+          <FocusContext.Provider value={focusContextValue}>
+            <StyledEditorPage
+              onClick={handleEditorClicks}
+              // onKeyDown={handleShortcuts}
+              style={{
+                backgroundColor: `rgb(${rgbObjToString(doc_bg_colour.colour)})`,
+                color: `rgb(${rgbObjToString(font_colour.colour)})`,
+              }}
+            >
+              <Canvas />
+              {showLeftSb && <LeftSidebar />}
+              {showRightSb && <RightSidebar />}
+            </StyledEditorPage>
+            {popUpFor !== null && <PopUpWindow />}
+          </FocusContext.Provider>
         </CurrentThemeContext.Provider>
       </MenuState.Provider>
     </CurrentDocContext.Provider>

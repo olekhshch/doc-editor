@@ -17,7 +17,7 @@ const LeftSidebar = () => {
     "Project",
   ])
 
-  const { downloadToJSON } = usePersist()
+  const { downloadToJSON, saveCurrentDocState_LS } = usePersist()
 
   //READONLY MODE
   const [searchParams, setSearchParams] = useSearchParams()
@@ -73,18 +73,13 @@ const LeftSidebar = () => {
             {"<"} Main page
           </Link>
         </article>
-        {/* <h3>Navigation: </h3> */}
-        {/* <SbTabs
-          options={sbOptions}
-          activeIdx={activeIdx}
-          setActiveIdx={setActiveIdx}
-        /> */}
         <DocNavigation />
         <p>Current element ID: {activeElementId}</p>
       </div>
       <div className="sb-btm">
-        <div className="btn-container">
-          <AppButton title="Save to file" onClick={downloadToJSON} />
+        <div className="btn-container flex-col" style={{ gap: "4px" }}>
+          <AppButton title="Save to LS" onClick={saveCurrentDocState_LS} />
+          <AppButton title="Save as JSON" onClick={downloadToJSON} />
         </div>
       </div>
     </StyledLeftSb>

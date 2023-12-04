@@ -10,7 +10,7 @@ import { setStylingTemplates } from "../features/styling/stylingSlice"
 import { useNavigate } from "react-router-dom"
 import { DocumentContent, DocumentPreviewInterface } from "../types"
 
-export type LocalStorageKey = "styling_templates" | "docContent"
+export type LocalStorageKey = "styling_templates" | "doc_content"
 
 const usePersist = () => {
   const dispatch = useAppDispatch()
@@ -49,12 +49,19 @@ const usePersist = () => {
         //adding to other templates if exists and stringifing the array for LS
         value = [...stylingState.templates] as StylingTemplate[]
 
-        stringifiedValue = JSON.stringify(value)
+        // stringifiedValue = JSON.stringify(value)
+        break
+      case "doc_content":
+        if (activeContent !== null) {
+          value = {
+            docInfo: activeDocumentInfo,
+            content: activeContent,
+          }
+        }
+        break
     }
-
+    stringifiedValue = JSON.stringify(value)
     localStorage.setItem(key, stringifiedValue)
-
-    // dispatch(enableAddingElements())
 
     return value
   }
@@ -64,9 +71,9 @@ const usePersist = () => {
    */
   function saveStylingTemplates_LS(updateStore?: boolean) {
     const templates = saveToLocalStorage("styling_templates")
-    if (updateStore === true) {
-      dispatch(setStylingTemplates(templates))
-    }
+    // if (updateStore === true) {
+    //   dispatch(setStylingTemplates(templates))
+    // }
   }
 
   function getStylingTemplates_LS() {
@@ -77,6 +84,10 @@ const usePersist = () => {
     }
 
     return (stylingTemplates ?? []) as StylingTemplate[]
+  }
+
+  function saveCurrentDocState_LS() {
+    const docState = saveToLocalStorage("doc_content")
   }
 
   //JSON
@@ -103,38 +114,38 @@ const usePersist = () => {
     return keys.includes("content") && keys.includes("docInfo")
   }
 
-  const readJSONContent = async (file: File) => {
-    const reader = new FileReader()
+  // const readJSONContent = async (file: File) => {
+  //   const reader = new FileReader()
 
-    reader.addEventListener("load", () => {
-      const result = reader.result as string
-      try {
-        const fetchedJSON = JSON.parse(result)
+  //   reader.addEventListener("load", () => {
+  //     const result = reader.result as string
+  //     try {
+  //       const fetchedJSON = JSON.parse(result)
 
-        const isValid = validateJSON(fetchedJSON)
-        if (isValid) {
-          dispatch(
-            setDocumentFromObject({
-              content: fetchedJSON.content as DocumentContent,
-              docInfo: fetchedJSON.docInfo as DocumentPreviewInterface,
-            }),
-          )
-          // navigation("/docs")
-        }
-      } catch (err) {
-        console.log("COULDNT LOAD FROM FILE")
-      }
-    })
+  //       const isValid = validateJSON(fetchedJSON)
+  //       if (isValid) {
+  //         dispatch(
+  //           setDocumentFromObject({
+  //             content: fetchedJSON.content as DocumentContent,
+  //             docInfo: fetchedJSON.docInfo as DocumentPreviewInterface,
+  //           }),
+  //         )
+  //       }
+  //     } catch (err) {
+  //       console.log("COULDNT LOAD FROM FILE")
+  //     }
+  //   })
 
-    reader.readAsText(file)
-  }
+  //   reader.readAsText(file)
+  // }
 
   return {
     saveStylingTemplates_LS,
     getStylingTemplates_LS,
     downloadToJSON,
-    readJSONContent,
+    // readJSONContent,
     validateJSON,
+    saveCurrentDocState_LS,
   }
 }
 

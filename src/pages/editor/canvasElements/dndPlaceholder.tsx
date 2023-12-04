@@ -30,24 +30,27 @@ const DnDPlaceholder = ({ indexBefore, columnTarget }: props) => {
     DragElementItem,
     void,
     DropCollected
-  >({
-    accept: DnDTypes.ELEMENT,
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      isStart: monitor.canDrop(),
-    }),
-    drop: (item) => {
-      if (item.idx !== indexBefore)
-        dispatch(
-          moveElement({
-            elementId: item._id,
-            newPlacementIdx: indexBefore,
-            columnSource: item.columnSource,
-            columnTarget,
-          }),
-        )
+  >(
+    {
+      accept: DnDTypes.ELEMENT,
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        isStart: monitor.canDrop(),
+      }),
+      drop: (item) => {
+        if (item.idx !== indexBefore)
+          dispatch(
+            moveElement({
+              elementId: item._id,
+              newPlacementIdx: indexBefore,
+              columnSource: item.columnSource,
+              columnTarget,
+            }),
+          )
+      },
     },
-  })
+    [indexBefore],
+  )
 
   //Styling
   const { gray, main } = useContext(CurrentThemeContext)
@@ -72,7 +75,20 @@ type StyledProps = {
 }
 
 const StyledPlaceholder = styled.div<StyledProps>`
-  height: ${(props) => (props.$canDrop ? 4 : 0)}px;
+  @keyframes opacity-grow {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  //Height should be min 1 mm to avoid bugs with DnD
+  height: 2px;
   background-color: ${(props) => (props.$isOver ? props.$main : props.$gray)};
   opacity: ${(props) => (props.$canDrop ? 1 : 0)};
+
+  animation: ${(props) => (props.$isOver ? "opacity-grow 1s" : "none")};
 `

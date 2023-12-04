@@ -32,8 +32,9 @@ const StyledBtn = styled.button<styledProps>`
   transition: 0.2s;
   background-color: ${(pr) => (pr.$isMain ? pr.$main_colour : "transparent")};
 
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-size: 0.9em;
+  padding: 4px 12px;
+  border-radius: 6px;
   border: 1px solid ${(pr) => pr.$main_colour};
   color: ${(pr) => (pr.$isMain ? pr.$main_colour : "white")};
   width: fit-content;

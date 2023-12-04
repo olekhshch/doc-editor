@@ -43,13 +43,13 @@ export interface BasicComponent {
   // orderIndex: number
 }
 
-export interface HeadingElement extends BasicComponent, focusable {
+export interface HeadingElement extends BasicComponent {
   type: "heading"
   level: 1 | 2 | 3
   content: string
 }
 
-export interface ParagraphElement extends BasicComponent, focusable {
+export interface ParagraphElement extends BasicComponent {
   type: "paragraph"
   content: RemirrorJSON[]
 }
@@ -96,7 +96,7 @@ export interface ImageElement extends BasicComponent {
 
 export type columnParam = null | [number, "left" | "right"]
 
-export interface TableCell extends focusable {
+export interface TableCell {
   _id: number
   content: RemirrorJSON[]
 }

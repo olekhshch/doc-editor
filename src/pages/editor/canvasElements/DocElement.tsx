@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from "react"
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
 import {
   ColumnsElement,
   DocContentComponent,
@@ -69,13 +69,24 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
   }, [docElementObj, type, column])
 
   //DnD set up
-  const [, dragHandle, dragPreview] = useDrag({
-    type: DnDTypes.ELEMENT,
-    collect: (monitor: any) => ({
-      isDragging: monitor.isDragging(),
-    }),
-    item: { _id, columnSource: column, idx: orderIdx },
-  })
+  const [, dragHandle, dragPreview] = useDrag(
+    {
+      type: DnDTypes.ELEMENT,
+      collect: (monitor: any) => ({
+        isDragging: monitor.isDragging(),
+      }),
+      item: { _id, columnSource: column, idx: orderIdx },
+    },
+    [_id, orderIdx],
+  )
+
+  useEffect(() => {
+    const handle = document.querySelector(
+      `.dnd-handle[data-element-id="${_id}"]`,
+    ) as HTMLElement
+    if (handle) {
+    }
+  }, [_id])
 
   const handleDnDHandleClick = (e: React.MouseEvent) => {
     setElementMenuId(showMenu ? null : _id)
@@ -108,6 +119,7 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
             {!readonly && (
               <button
                 className={showMenu ? "dnd-handle pressed" : "dnd-handle"}
+                data-element-id={_id}
                 title="Drag and drop to reoder; Click to expand menu"
                 draggable={!readonly}
                 ref={dragHandle}

@@ -27,7 +27,7 @@ export interface DocumentFull {
 export const initialParagraph: ParagraphElement = {
   _id: 0,
   type: "paragraph",
-  content: [{ type: "paragraph", content: [{ type: "text", text: " " }] }],
+  content: [{ type: "paragraph", content: [] }],
 }
 
 export const initialState: DocumentsState = {
@@ -36,7 +36,7 @@ export const initialState: DocumentsState = {
   activeDocumentInfo: null,
   activeContent: {
     _id: 987,
-    docId: 123,
+    docId: 0,
     components: [initialParagraph],
   },
   beginsWithTitle: true,

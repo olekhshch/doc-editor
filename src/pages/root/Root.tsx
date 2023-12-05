@@ -17,10 +17,9 @@ import { DocumentContent, DocumentPreviewInterface } from "../../types"
 const Root = () => {
   const dispatch = useAppDispatch()
   const navigation = useNavigate()
-  const { validateJSON } = usePersist()
+  const { validateDocJSON } = usePersist()
 
   const { documents } = useAppSelector((state) => state.documents)
-  const { templates } = useAppSelector((state) => state.styling)
 
   const handleNewDocCreation = () => {
     dispatch(createNewDoc())
@@ -50,7 +49,7 @@ const Root = () => {
         try {
           const fetchedJSON = JSON.parse(result)
 
-          const isValid = validateJSON(fetchedJSON)
+          const isValid = validateDocJSON(fetchedJSON)
           if (isValid) {
             dispatch(
               setDocumentFromObject({
@@ -67,7 +66,7 @@ const Root = () => {
 
       reader.readAsText(file)
     }
-  }, [dispatch, file, navigation, validateJSON])
+  }, [dispatch, file, navigation, validateDocJSON])
 
   return (
     <StyledRoot>
@@ -75,9 +74,8 @@ const Root = () => {
       <div className="margin" />
       <div className="root-wrapper">
         <section className="root-panel" id="recent-docs">
-          <div className="flex" style={{ gap: "12px", alignItems: "center" }}>
-            <h3>Recent docs</h3>
-          </div>
+          <h3>Recent documents</h3>
+          <DocumentsList docs={documents} />
         </section>
         <section className="root-panel" id="create-doc-panel">
           <div className="flex" style={{ gap: "12px", alignItems: "center" }}>
@@ -163,7 +161,8 @@ const StyledRoot = styled.main`
     padding: 36px 48px;
     margin-right: auto;
     margin-left: auto;
-    min-width: 440px;
+    max-width: 90vw;
+    min-width: 420px;
     height: fit-content;
     color: var(--main);
     background-color: rgba(250, 228, 247, 0.523);
@@ -207,6 +206,8 @@ const StyledRoot = styled.main`
   }
 
   #recent-docs {
+    flex-direction: column;
+    align-items: normal;
     animation: appearance 1s 1s forwards;
   }
 

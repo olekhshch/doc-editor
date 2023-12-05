@@ -30,9 +30,8 @@ const Elements = () => {
 
           return (
             <div key={_id} draggable>
-              {!readonly && (
-                <DnDPlaceholder indexBefore={idx} columnTarget={null} />
-              )}
+              <DnDPlaceholder indexBefore={idx} columnTarget={null} />
+
               <Element docElementObj={element} column={null} orderIdx={idx} />
             </div>
           )

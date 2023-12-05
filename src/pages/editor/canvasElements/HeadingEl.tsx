@@ -8,7 +8,6 @@ import React, {
 import { HeadingElement, columnParam } from "../../../types"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import {
-  addFocusCb,
   addParagraph,
   deleteActiveElement,
   deleteElement,
@@ -36,6 +35,7 @@ import { DnDTypes } from "../../../DnDtypes"
 import styled from "styled-components"
 import useDebounce from "../../../app/useDebounce"
 import { rgbObjToString } from "../../../functions/rgbObjToString"
+import FocusContext from "./FocusContext"
 
 const hooks = [
   () => {
@@ -200,20 +200,19 @@ const HeadingEl = ({ headingElementObj, column }: props) => {
     }, [chain])
 
     const [focus, position_cb] = useEditorFocus()
+    const { callbacks, addElementToContext } = useContext(FocusContext)
 
     useEffect(() => {
-      if (!headingElementObj.focus) {
-        dispatch(
-          addFocusCb({
-            element_type: "heading",
-            elementId: _id,
-            column,
-            focus_cb,
-            position_cb,
-          }),
-        )
+      const cb = callbacks.find((cb) => cb.elementId === _id)
+
+      if (!cb) {
+        addElementToContext({
+          elementId: _id,
+          focus: focus_cb,
+          position: position_cb,
+        })
       }
-    }, [focus_cb])
+    }, [addElementToContext, callbacks, focus, focus_cb, position_cb])
     return <></>
   }
 

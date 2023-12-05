@@ -129,7 +129,7 @@ const useDocElements = () => {
     window.addEventListener("resize", handleResize)
 
     // return () => window.removeEventListener("resize", handleResize)
-  }, [])
+  }, [widthRef])
 
   //FOCUS ELEMENTS
 

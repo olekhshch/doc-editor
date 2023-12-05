@@ -48,10 +48,6 @@ import setColumnsElDevisationAction from "./columns/setColumnsElDeviation"
 import setTableWidthsArrayAction from "./table/setTableWidthsArray"
 import toggleHeadingAction from "./table/toggleHeading"
 import setMarginsAction from "./separator/setSeparatorMargins"
-import addFocusFunction from "./textblock/addFocusFunction"
-import addFocusCb_textblock from "./textblock/addFocusFunction"
-import addFocusCb_heading from "./heading/addFocusCb"
-import { FocusType } from "remirror"
 
 const documentsSlice = createSlice({
   name: "documents",
@@ -70,18 +66,22 @@ const documentsSlice = createSlice({
 
       if (state.activeContent && state.activeDocumentInfo) {
         const docContentState = { ...state.activeContent }
-        const idx = state.documents.findIndex(
-          (document) => document.documentInfo._id === docContentState.docId,
-        )
+        if (state.activeContent.docId !== 0) {
+          //avoiding persist of the initial "placeholder" doc
 
-        const fullDoc: DocumentFull = {
-          content: docContentState,
-          documentInfo: state.activeDocumentInfo,
-        }
-        if (idx >= 0) {
-          state.documents[idx] = fullDoc
-        } else {
-          state.documents = [...state.documents, fullDoc]
+          const idx = state.documents.findIndex(
+            (document) => document.documentInfo._id === docContentState.docId,
+          )
+
+          const fullDoc: DocumentFull = {
+            content: docContentState,
+            documentInfo: state.activeDocumentInfo,
+          }
+          if (idx >= 0) {
+            state.documents[idx] = fullDoc
+          } else {
+            state.documents = [...state.documents, fullDoc]
+          }
         }
       }
       const _id = Math.round(Math.random() * 1000000)
@@ -90,10 +90,10 @@ const documentsSlice = createSlice({
         title: "Title",
         createdOn: new Date().getTime(),
       }
-
+      const newTBId = new Date().getTime()
       const initialTextBlock: ParagraphElement = {
         ...initialParagraph,
-        _id: new Date().getTime(),
+        _id: newTBId,
       }
       const newDocContent: DocumentContent = {
         _id,
@@ -105,8 +105,35 @@ const documentsSlice = createSlice({
       state.activeDocumentInfo = newDocumentInfo
 
       state.activeDocumentId = _id
+      state.activeElementId = newTBId
+      state.activeElementType = "paragraph"
 
       state.disableElementsAdding = false
+    },
+
+    cacheActiveDoc: (state) => {
+      state.disableElementsAdding = true
+
+      try {
+        const idx = state.documents.findIndex(
+          (document) => document.documentInfo._id === state.activeDocumentId,
+        )
+
+        const fullDoc: DocumentFull = {
+          content: state.activeContent!,
+          documentInfo: state.activeDocumentInfo!,
+        }
+
+        if (idx >= 0) {
+          state.documents[idx] = fullDoc
+        } else {
+          state.documents = [...state.documents, fullDoc]
+        }
+      } catch (err) {
+        console.log("ERROR while persisting active doc")
+      } finally {
+        state.disableElementsAdding = false
+      }
     },
 
     deleteDoc: (state, { payload }: PayloadAction<number>) => {
@@ -155,28 +182,28 @@ const documentsSlice = createSlice({
     addParagraph: addTextBlockAction,
     setParagraphContent: setTextBlockContentAction,
 
-    addFocusCb: (
-      state,
-      {
-        payload,
-      }: PayloadAction<{
-        elementId: number
-        column: columnParam
-        focus_cb: () => void
-        element_type: ContentComponentType
-        position_cb: (f: FocusType) => void
-      }>,
-    ) => {
-      const { elementId, column, focus_cb, element_type, position_cb } = payload
-      const pl = { elementId, column, focus_cb, position_cb }
-      switch (element_type) {
-        case "paragraph":
-          addFocusCb_textblock(state, pl)
-          break
-        case "heading":
-          addFocusCb_heading(state, pl)
-      }
-    },
+    // addFocusCb: (
+    //   state,
+    //   {
+    //     payload,
+    //   }: PayloadAction<{
+    //     elementId: number
+    //     column: columnParam
+    //     focus_cb: () => void
+    //     element_type: ContentComponentType
+    //     position_cb: (f: FocusType) => void
+    //   }>,
+    // ) => {
+    //   const { elementId, column, focus_cb, element_type, position_cb } = payload
+    //   const pl = { elementId, column, focus_cb, position_cb }
+    //   switch (element_type) {
+    //     case "paragraph":
+    //       addFocusCb_textblock(state, pl)
+    //       break
+    //     case "heading":
+    //       addFocusCb_heading(state, pl)
+    //   }
+    // },
 
     setActiveElementData: (
       state,
@@ -633,6 +660,5 @@ export const {
   setTableColumnsWidths,
   toggleTableHeading,
   setSeparatorMargins,
-  addFocusCb,
   setDocumentFromObject,
 } = documentsSlice.actions

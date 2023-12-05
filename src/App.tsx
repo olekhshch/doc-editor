@@ -33,6 +33,9 @@ const App = () => {
   const dispatch = useAppDispatch()
 
   const { templates } = useAppSelector((state) => state.styling)
+  const { documents, activeDocumentInfo, activeContent } = useAppSelector(
+    (state) => state.documents,
+  )
 
   // const templatesStringified = JSON.stringify(templates)
 
@@ -59,6 +62,12 @@ const App = () => {
       console.log("ERROR while saving styling templates")
     }
   }, [templates, appPersist, checkedLS])
+
+  //CHECKING ACTIVE DOC CHANGES
+  // useEffect(() => {
+  //   console.log({ documents, activeContent })
+
+  // }, [activeContent])
 
   return <RouterProvider router={router}></RouterProvider>
 }

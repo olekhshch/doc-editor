@@ -9,13 +9,14 @@ import { StylingTemplate } from "../features/styling/initialState"
 import { setStylingTemplates } from "../features/styling/stylingSlice"
 import { useNavigate } from "react-router-dom"
 import { DocumentContent, DocumentPreviewInterface } from "../types"
+import { DocumentFull } from "../features/documents/initialState"
 
-export type LocalStorageKey = "styling_templates" | "doc_content"
+export type LocalStorageKey = "styling_templates" | "documents"
 
 const usePersist = () => {
   const dispatch = useAppDispatch()
   const stylingState = useAppSelector((state) => state.styling)
-  const { activeContent, activeDocumentInfo } = useAppSelector(
+  const { activeContent, activeDocumentInfo, documents } = useAppSelector(
     (state) => state.documents,
   )
 
@@ -51,12 +52,12 @@ const usePersist = () => {
 
         // stringifiedValue = JSON.stringify(value)
         break
-      case "doc_content":
+      case "documents":
         if (activeContent !== null) {
           value = {
-            docInfo: activeDocumentInfo,
+            documentInfo: activeDocumentInfo,
             content: activeContent,
-          }
+          } as DocumentFull
         }
         break
     }
@@ -87,7 +88,7 @@ const usePersist = () => {
   }
 
   function saveCurrentDocState_LS() {
-    const docState = saveToLocalStorage("doc_content")
+    const docState = saveToLocalStorage("documents")
   }
 
   //JSON
@@ -108,7 +109,7 @@ const usePersist = () => {
   //READ JSON
 
   //VALIDATION
-  const validateJSON = (JSONFile: any) => {
+  const validateDocJSON = (JSONFile: any) => {
     const keys = Object.keys(JSONFile)
 
     return keys.includes("content") && keys.includes("docInfo")
@@ -144,7 +145,7 @@ const usePersist = () => {
     getStylingTemplates_LS,
     downloadToJSON,
     // readJSONContent,
-    validateJSON,
+    validateDocJSON,
     saveCurrentDocState_LS,
   }
 }

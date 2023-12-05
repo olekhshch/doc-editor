@@ -30,7 +30,6 @@ import StyledElementToolbar from "./StyledElementToolbar"
 import { CurrentDocContext, MenuState } from "../Editor"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import {
-  addFocusCb,
   deleteElement,
   duplicateElement,
   setActiveElementData,
@@ -149,6 +148,7 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
 
   const Toolbar = () => {
     const chain = useChainedCommands()
+    const { getText } = useHelpers()
 
     const handleDelete = () => {
       dispatch(deleteElement({ column, elementId: _id }))
@@ -196,23 +196,13 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
     const { callbacks, addElementToContext } = useContext(FocusContext)
 
     useEffect(() => {
-      // if (!textBlockObj.focus) {
-      //   dispatch(
-      //     addFocusCb({
-      //       element_type: "paragraph",
-      //       column,
-      //       elementId: _id,
-      //       focus_cb: focus,
-      //       position_cb: position,
-      //     }),
-      //   )
-      // }
-      const cbIsAdded = callbacks.find((cb) => cb.elementId === _id)
+      //ADDING FOCUS CALLBACKS ON MOUNT
+      const cb = callbacks.find((cb) => cb.elementId === _id)
 
-      if (!cbIsAdded) {
+      if (!cb) {
         addElementToContext({ elementId: _id, focus, position })
       }
-    }, [])
+    }, [addElementToContext, callbacks, focus, position])
 
     return (
       <StyledElementToolbar

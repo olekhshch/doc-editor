@@ -4,7 +4,13 @@ import styled from "styled-components"
 
 type props = { docs: DocumentFull[] }
 const DocumentsList = ({ docs }: props) => {
-  return <StyledList>Docs</StyledList>
+  return (
+    <StyledList>
+      {docs.map((doc) => (
+        <li key={doc.documentInfo._id}>{doc.documentInfo.title}</li>
+      ))}
+    </StyledList>
+  )
 }
 
 export default DocumentsList

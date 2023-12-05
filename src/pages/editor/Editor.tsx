@@ -225,7 +225,10 @@ const Editor = () => {
             break
         }
       } else if (e.shiftKey) {
-        if (e.key === "Enter" && activeElementType === "paragraph") {
+        if (
+          e.key === "Enter" &&
+          ["paragraph", "heading"].includes(activeElementType!)
+        ) {
           addParagraphElement(e)
         } else if (e.ctrlKey) {
           switch (e.key.toLowerCase()) {

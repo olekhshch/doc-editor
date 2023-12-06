@@ -1,6 +1,7 @@
 import React from "react"
 import { useAppDispatch, useAppSelector } from "./hooks"
 import {
+  cacheActiveDoc,
   disableAddingElements,
   enableAddingElements,
   setDocumentFromObject,
@@ -54,10 +55,21 @@ const usePersist = () => {
         break
       case "documents":
         if (activeContent !== null) {
-          value = {
+          const active_value = {
             documentInfo: activeDocumentInfo,
             content: activeContent,
           } as DocumentFull
+
+          const targetIdx = documents.findIndex(
+            (doc) => doc.documentInfo._id === active_value.documentInfo._id,
+          )
+
+          if (targetIdx >= 0) {
+            value = [...documents]
+            value[targetIdx] = active_value
+          } else {
+            value = [...documents, active_value]
+          }
         }
         break
     }
@@ -87,12 +99,23 @@ const usePersist = () => {
     return (stylingTemplates ?? []) as StylingTemplate[]
   }
 
-  function saveCurrentDocState_LS() {
+  function getCachedDocuments_LS() {
+    const docs = getLocalStorageValue("documents")
+
+    if (!Array.isArray(docs)) {
+      return [] as DocumentFull[]
+    }
+
+    return (docs ?? []) as DocumentFull[]
+  }
+
+  function saveAllDocuments_LS() {
     const docState = saveToLocalStorage("documents")
   }
 
   //JSON
 
+  //DOC STATE
   function downloadToJSON(e: React.MouseEvent) {
     e.stopPropagation()
     const basicDocJSON = { content: activeContent, docInfo: activeDocumentInfo }
@@ -102,11 +125,30 @@ const usePersist = () => {
     const fileURL = URL.createObjectURL(file)
     const a = document.createElement("a")
     a.href = fileURL
-    a.download = "docContent.json"
+    a.download = `${activeDocumentInfo?.title ?? "Doc"}.json`
     a.click()
+    a.remove()
   }
 
-  //READ JSON
+  //STYLING
+
+  function downloadStylingToJSON() {
+    const creationDate = new Date()
+    const styling: StylingTemplate = {
+      _id: creationDate.getTime(),
+      name: `Styling`,
+      state: stylingState.parameters,
+    }
+    const styling_string = JSON.stringify(styling, null, 2)
+    const file = new Blob([styling_string], { type: "json" })
+
+    const fileURL = URL.createObjectURL(file)
+    const a = document.createElement("a")
+    a.href = fileURL
+    a.download = `${styling.name}.json`
+    a.click()
+    a.remove()
+  }
 
   //VALIDATION
   const validateDocJSON = (JSONFile: any) => {
@@ -115,38 +157,14 @@ const usePersist = () => {
     return keys.includes("content") && keys.includes("docInfo")
   }
 
-  // const readJSONContent = async (file: File) => {
-  //   const reader = new FileReader()
-
-  //   reader.addEventListener("load", () => {
-  //     const result = reader.result as string
-  //     try {
-  //       const fetchedJSON = JSON.parse(result)
-
-  //       const isValid = validateJSON(fetchedJSON)
-  //       if (isValid) {
-  //         dispatch(
-  //           setDocumentFromObject({
-  //             content: fetchedJSON.content as DocumentContent,
-  //             docInfo: fetchedJSON.docInfo as DocumentPreviewInterface,
-  //           }),
-  //         )
-  //       }
-  //     } catch (err) {
-  //       console.log("COULDNT LOAD FROM FILE")
-  //     }
-  //   })
-
-  //   reader.readAsText(file)
-  // }
-
   return {
     saveStylingTemplates_LS,
     getStylingTemplates_LS,
     downloadToJSON,
-    // readJSONContent,
+    downloadStylingToJSON,
     validateDocJSON,
-    saveCurrentDocState_LS,
+    saveAllDocuments_LS,
+    getCachedDocuments_LS,
   }
 }
 

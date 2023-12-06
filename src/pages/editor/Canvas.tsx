@@ -36,10 +36,10 @@ const ContentCanvas = () => {
     <StyledContentContainer>
       <div id="main_wrapper" onClick={(e) => handleClick(e)}>
         <MainToolbar />
+        {beginsWithTitle && <MainTitle docId={_id} docTitle={title} />}
         {!readonly && (
           <ShowTitleBtn beginsWithTitle={beginsWithTitle} mainColour={main} />
         )}
-        {beginsWithTitle && <MainTitle docId={_id} docTitle={title} />}
         <Elements />
       </div>
     </StyledContentContainer>
@@ -55,6 +55,7 @@ const StyledContentContainer = styled.main`
   /* flex-basis: 297mm; */
   /* min-width: 297mm; */
   min-width: 100vw;
+  max-width: 100vw;
   display: flex;
   justify-content: center;
   min-height: 100vh;
@@ -79,6 +80,8 @@ const StyledContentContainer = styled.main`
 
   #show-title-btn-wrap {
     position: absolute;
+    z-index: 100;
+    top: 0;
     text-align: center;
     width: 60px;
     height: 60px;

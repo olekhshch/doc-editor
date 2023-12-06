@@ -31,6 +31,8 @@ const hooks = [
     const dispatch: any = useAppDispatch()
     const { title } = useContext(CurrentDocContext)!
 
+    const { focusFirst } = useDocElements()
+
     const handleEnterPress = useCallback(
       ({ state }: { state: any }) => {
         const newTitle = getText(state)
@@ -39,12 +41,21 @@ const hooks = [
         } else {
           insertText(title)
         }
+        focusFirst()
         return true
       },
-      [getText, dispatch, title, insertText],
+      [getText, focusFirst, dispatch, insertText, title],
     )
 
     useKeymap("Enter", handleEnterPress)
+
+    const handleArrowDown = useCallback(() => {
+      focusFirst()
+
+      return true
+    }, [focusFirst])
+
+    useKeymap("ArrowDown", handleArrowDown)
   },
 ]
 
@@ -150,5 +161,9 @@ const StyledDocTitle = styled.h1<styledProps>`
   min-height: 1.2em;
   &:focus {
     outline: none;
+  }
+
+  &:hover + #show-title-btn-wrap .show-title-btn {
+    opacity: 0.3;
   }
 `

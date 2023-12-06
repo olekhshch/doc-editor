@@ -61,16 +61,16 @@ const projectsSlice = createSlice({
         payload,
       }: PayloadAction<{ elementToMoveId: number; newPlacementIndex: number }>,
     ) => {
-      const oldProjects = [...state.projects]
-      const newProjects = reoderArray(
-        oldProjects,
-        payload.elementToMoveId,
-        payload.newPlacementIndex,
-      ) as ProjectInterface[]
-      state.projects = newProjects.map((project, idx) => ({
-        ...project,
-        orderIndex: idx,
-      }))
+      // const oldProjects = [...state.projects]
+      // const newProjects = reoderArray(
+      //   oldProjects,
+      //   payload.elementToMoveId,
+      //   payload.newPlacementIndex,
+      // ) as ProjectInterface[]
+      // state.projects = newProjects.map((project, idx) => ({
+      //   ...project,
+      //   orderIndex: idx,
+      // }))
     },
   },
 })

@@ -53,7 +53,6 @@ const useBackground = () => {
     if (!ctx) {
       const ctx = CanvasBgRef.current!.getContext("2d")!
       setCtx(ctx)
-      console.log(ctx)
     }
   }, [ctx, setCtx])
 
@@ -414,7 +413,7 @@ const useBackground = () => {
     ]
 
     const drawBg = () => {
-      requestAnimationFrame(drawBg)
+      const animationID = requestAnimationFrame(drawBg)
       clearCanvas()
 
       // DOC WHITE BACKGROUND AND SHADOW
@@ -458,6 +457,8 @@ const useBackground = () => {
       if (arrayFinished) {
         if (bgElements[1].w < 260) {
           bgElements[1].w += 1
+        } else {
+          cancelAnimationFrame(animationID)
         }
       }
     }
@@ -466,123 +467,6 @@ const useBackground = () => {
       drawBg()
     }
   }, [clearCanvas, ctx])
-
-  // useEffect(() => {
-  //   let i = 0 //canvas counter
-  //   const title = new DocTitle()
-  //   const title2 = new DocTitle(title.x + title.w)
-  //   title2.width = 210
-
-  //   const content = [
-  //     new Heading(),
-  //     new TextBlock(3),
-  //     new Image(),
-  //     new Table(),
-  //     new Heading(),
-  //     new TextBlock(7),
-  //   ]
-
-  //   const drawDoc = () => {
-  //     requestAnimationFrame(drawDoc)
-  //     clearCanvas()
-
-  //     //doc background
-  //     //   ctx.fillStyle = `rgba(249, 180, 224, ${i})`
-  //     ctx.fillStyle = canvasColour
-  //     ctx.fillRect(20 + i * 100, 50, 480, 620)
-  //     if (i < 1) {
-  //       i += 0.02
-  //     }
-
-  //     if (i >= 1) {
-  //       title.draw()
-
-  //       if (title.opacity < 1) {
-  //         title.clearTitle()
-  //         title.updateOpacity()
-  //       } else {
-  //         title.drawUnderline()
-  //         if (title.w > 90) {
-  //           title.updateTitle()
-  //         }
-  //       }
-  //     }
-
-  //     if (title.w <= 100) {
-  //       title2.x_start = title.x + title.w + 10
-  //       title2.draw()
-
-  //       if (title2.opacity < 1) {
-  //         title2.updateOpacity()
-  //       }
-  //     }
-
-  //     if (title2.opacity >= 1) {
-  //       content[0].v_start = title2.y + title2.h + 30
-  //       content[2].v_start = title2.y + title2.h + 30
-  //       content.forEach((element, i) => {
-  //         if (i > 0) {
-  //           const previousElement = content[i - 1]
-  //           if (i !== 2) {
-  //             element.v_start = previousElement.y + previousElement.h + 10
-  //           }
-  //           if (previousElement.finished) {
-  //             element.draw()
-  //           }
-  //         }
-  //         if (i === 0) {
-  //           element.draw()
-  //           if (element.opacity >= 1) {
-  //             element.finish()
-  //           }
-  //         }
-  //         if (element.opacity < 1) {
-  //           element.updateOpacity()!
-  //         }
-  //         if (i === 1 && element.opacity >= 1) {
-  //           setTimeout(() => {
-  //             ;(element as TextBlock).makeLeftColumn()
-  //             element.draw()
-  //             element.finish()
-  //           }, 100)
-  //         }
-  //         if (i === 2) {
-  //           ;(element as Image).updateWidth()
-  //           if (element.w >= elementWidth * 0.5 - 12) {
-  //             setTimeout(() => element.finish(), 100)
-  //           }
-  //         }
-  //         if (i === 3) {
-  //           if (element.w < elementWidth) {
-  //             ;(element as Table).updateWidth(2)
-  //           } else if ((element as Table).columns.length < 4) {
-  //             ;(element as Table).addColumn(80)
-  //           } else if (!(element as Table).heading) {
-  //             setTimeout(() => ((element as Table).heading = true), 100)
-  //           } else if (element.h < 80) {
-  //             setTimeout(() => ((element as Table).height = element.h + 20), 40)
-  //           } else {
-  //             element.finish()
-  //           }
-  //         }
-
-  //         if (i === 4) {
-  //           if (element.w < 320) {
-  //             ;(element as Heading).updateWidth()
-  //           } else if (element.h < 50) {
-  //             element.h = 60
-  //           } else {
-  //             element.finish()
-  //           }
-  //         }
-  //       })
-  //     }
-  //   }
-
-  //   if (ctx) {
-  //     drawDoc()
-  //   }
-  // }, [ctx])
 
   return { CanvasBgRef, canvasBgDims }
 }

@@ -1,6 +1,12 @@
 import { PayloadAction } from "@reduxjs/toolkit"
 import { DocumentsState } from "../initialState"
-import { ColumnsElement, SeparatorElement } from "../../../types"
+import {
+  ColumnsElement,
+  DocContentComponent,
+  SeparatorElement,
+} from "../../../types"
+import findElementFromState from "../../../functions/findElementFromState"
+import replaceElementInArray from "../../../functions/replaceElementInArray"
 
 const setSeparatorWidthAction = (
   state: DocumentsState,
@@ -12,47 +18,32 @@ const setSeparatorWidthAction = (
     newWidth: number
   }>,
 ) => {
-  if (state.activeContent) {
-    const oldElements = [...state.activeContent.components]
+  const { separatorId, newWidth, column } = payload
 
-    try {
-      if (payload.column === null) {
-        //separator is not a part of a column
-        const targetSeparator = state.activeContent.components.find(
-          (el) => el._id === payload.separatorId && el.type === "separator",
-        ) as SeparatorElement
+  state.disableElementsAdding = true
 
-        const newSeparator: SeparatorElement = {
-          ...targetSeparator,
-          width: payload.newWidth,
-        }
+  try {
+    const [targetElement, targetIdx] = findElementFromState(
+      state.activeContent!.components,
+      separatorId,
+      column,
+      "image",
+    ) as [SeparatorElement, number]
 
-        const { orderIndex } = targetSeparator
-        state.activeContent.components[orderIndex] = newSeparator
-      } else {
-        //separator is a part of a column
-        const [columnId, side] = payload.column
-        const targetColumn = state.activeContent!.components.find(
-          (el) => el._id === columnId && el.type === "columns",
-        ) as ColumnsElement
-        const newSide = targetColumn[side].map((el) => {
-          if (el._id === payload.separatorId && el.type === "separator") {
-            return { ...el, width: payload.newWidth }
-          }
-          return el
-        })
-        state.activeContent.components = state.activeContent.components.map(
-          (el) => {
-            if (el._id === columnId) {
-              return { ...el, [side]: newSide }
-            }
-            return el
-          },
-        )
-      }
-    } catch (e) {
-      state.activeContent.components = oldElements
+    if (targetElement) {
+      targetElement.width = newWidth
+
+      state.activeContent!.components = replaceElementInArray(
+        targetElement,
+        state.activeContent!.components,
+        column,
+        targetIdx,
+      ) as (DocContentComponent | ColumnsElement)[]
     }
+  } catch (err) {
+    console.log("ERROR couldnt change image width")
+  } finally {
+    state.disableElementsAdding = false
   }
 }
 

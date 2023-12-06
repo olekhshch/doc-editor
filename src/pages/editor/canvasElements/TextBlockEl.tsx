@@ -10,6 +10,7 @@ import {
   EditorComponent,
   Remirror,
   ThemeProvider,
+  useActive,
   useChainedCommands,
   useEditorEvent,
   useEditorFocus,
@@ -35,9 +36,9 @@ import {
   setActiveElementData,
   setParagraphContent,
 } from "../../../features/documents/documentsSlice"
-import { FaTrash } from "react-icons/fa"
+import { FaList, FaTrash } from "react-icons/fa"
 import { HiDuplicate } from "react-icons/hi"
-import { MdOutlineDragIndicator } from "react-icons/md"
+import { MdFormatUnderlined, MdOutlineDragIndicator } from "react-icons/md"
 
 import styled from "styled-components"
 import "remirror/styles/theme.css"
@@ -47,6 +48,13 @@ import useDebaunce from "../../../app/useDebounce"
 import useDocElements from "../../../app/useDocElements"
 import { ExtensionPriority } from "remirror"
 import FocusContext from "./FocusContext"
+import {
+  AiOutlineBold,
+  AiOutlineStrikethrough,
+  AiOutlineUnderline,
+} from "react-icons/ai"
+import { BsTypeItalic } from "react-icons/bs"
+import { GoLink, GoListOrdered } from "react-icons/go"
 // import "remirror/styles/all.css"
 
 type props = {
@@ -149,6 +157,7 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
   const Toolbar = () => {
     const chain = useChainedCommands()
     const { getText } = useHelpers()
+    const active = useActive()
 
     const handleDelete = () => {
       dispatch(deleteElement({ column, elementId: _id }))
@@ -212,33 +221,87 @@ const TextBlockEl = ({ textBlockObj, column }: props) => {
         <>
           {column !== null && (
             <div className="toolbar-section">
-              <button className="dnd-handle" ref={dragHandle}>
+              <button
+                className="dnd-handle"
+                ref={dragHandle}
+                title="Dnd to move"
+              >
                 <MdOutlineDragIndicator />
               </button>
             </div>
           )}
           <div className="toolbar-section">
-            <button className="element-toolbar-btn" onClick={makeBold}>
-              <b>B</b>
+            <button
+              className={
+                active.bold()
+                  ? "element-toolbar-btn active"
+                  : "element-toolbar-btn"
+              }
+              onClick={makeBold}
+              title="Bold"
+            >
+              <AiOutlineBold />
             </button>
-            <button className="element-toolbar-btn" onClick={makeItalic}>
-              <i>I</i>
+            <button
+              className={
+                active.italic()
+                  ? "element-toolbar-btn active"
+                  : "element-toolbar-btn"
+              }
+              onClick={makeItalic}
+              title="Italic"
+            >
+              <BsTypeItalic />
             </button>
-            <button className="element-toolbar-btn" onClick={makeUnderline}>
-              U
+            <button
+              className={
+                active.underline()
+                  ? "element-toolbar-btn active"
+                  : "element-toolbar-btn"
+              }
+              onClick={makeUnderline}
+              title="Underline"
+            >
+              <MdFormatUnderlined />
             </button>
-            <button className="element-toolbar-btn" onClick={makeStrike}>
-              S
+            <button
+              className={
+                active.strike()
+                  ? "element-toolbar-btn active"
+                  : "element-toolbar-btn"
+              }
+              onClick={makeStrike}
+              title="Strike"
+            >
+              <AiOutlineStrikethrough />
             </button>
-            <button className="element-toolbar-btn" onClick={makeUnorderedList}>
-              .L
+            <button
+              className={
+                active.bulletList()
+                  ? "element-toolbar-btn active"
+                  : "element-toolbar-btn"
+              }
+              onClick={makeUnorderedList}
+              title="Unordered list"
+            >
+              <FaList />
             </button>
-            <button className="element-toolbar-btn" onClick={makeOrderedList}>
-              1L
+            <button
+              className={
+                active.orderedList()
+                  ? "element-toolbar-btn active"
+                  : "element-toolbar-btn"
+              }
+              onClick={makeOrderedList}
+              title="Ordered list"
+            >
+              <GoListOrdered />
             </button>
           </div>
           <div className="toolbar-section">
-            <button className="element-toolbar-btn">A</button>
+            <button className="element-toolbar-btn">
+              <GoLink />
+            </button>
           </div>
           <div className="toolbar-section">
             <button
@@ -395,6 +458,7 @@ const StyledTextContent = styled.div<styledProps>`
     letter-spacing: ${(pr) => pr.$spacing_letter}px;
     line-height: ${(pr) => pr.$spacing_line};
   }
+
   .text-block li {
     margin-left: ${(props) => (props.$indent[0] ? props.$indent[1] : 32)}px;
     line-height: 1;

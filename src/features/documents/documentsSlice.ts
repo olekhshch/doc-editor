@@ -69,6 +69,7 @@ const documentsSlice = createSlice({
         if (state.activeContent.docId !== 0) {
           //avoiding persist of the initial "placeholder" doc
 
+          //persist of the current active doc to the state.documents
           const idx = state.documents.findIndex(
             (document) => document.documentInfo._id === docContentState.docId,
           )
@@ -84,12 +85,14 @@ const documentsSlice = createSlice({
           }
         }
       }
-      const _id = Math.round(Math.random() * 1000000)
+      //new doc creation
+      const _id = Math.round(Math.random() * 10000000)
       const newDocumentInfo: DocumentPreviewInterface = {
         _id,
         title: "Title",
         createdOn: new Date().getTime(),
       }
+      //initial text block in the new doc
       const newTBId = new Date().getTime()
       const initialTextBlock: ParagraphElement = {
         ...initialParagraph,
@@ -114,31 +117,45 @@ const documentsSlice = createSlice({
     cacheActiveDoc: (state) => {
       state.disableElementsAdding = true
 
-      try {
-        const idx = state.documents.findIndex(
-          (document) => document.documentInfo._id === state.activeDocumentId,
-        )
+      if (state.activeContent && state.activeDocumentInfo) {
+        try {
+          const idx = state.documents.findIndex(
+            (document) => document.documentInfo._id === state.activeDocumentId,
+          )
 
-        const fullDoc: DocumentFull = {
-          content: state.activeContent!,
-          documentInfo: state.activeDocumentInfo!,
-        }
+          const fullDoc: DocumentFull = {
+            content: state.activeContent!,
+            documentInfo: state.activeDocumentInfo!,
+          }
 
-        if (idx >= 0) {
-          state.documents[idx] = fullDoc
-        } else {
-          state.documents = [...state.documents, fullDoc]
+          if (idx >= 0) {
+            state.documents[idx] = fullDoc
+          } else {
+            state.documents = [...state.documents, fullDoc]
+          }
+          console.log({ documents: state.documents })
+        } catch (err) {
+          console.log("ERROR while persisting active doc")
+        } finally {
+          state.disableElementsAdding = false
         }
-      } catch (err) {
-        console.log("ERROR while persisting active doc")
-      } finally {
-        state.disableElementsAdding = false
       }
     },
 
+    cacheDocuments: (state, { payload }: PayloadAction<DocumentFull[]>) => {
+      state.documents = payload
+    },
+
     deleteDoc: (state, { payload }: PayloadAction<number>) => {
-      //#TODO: Document deletion
-      // state.documents = state.documents.filter((doc) => doc._id !== payload)
+      state.documents = state.documents.filter(
+        (doc) => doc.documentInfo._id !== payload,
+      )
+
+      if (state.activeDocumentId === payload) {
+        state.activeDocumentId = null
+        state.activeDocumentInfo = null
+        state.activeContent = null
+      }
     },
 
     renameActiveDoc: (state, { payload }: PayloadAction<string>) => {
@@ -148,27 +165,23 @@ const documentsSlice = createSlice({
     },
 
     setDocAsCurrent: (state, { payload }: PayloadAction<number>) => {
-      // state.activeDocumentId = payload
-      // //check if content was cached
-      // const cachedDoc = state.cachedContents.find(
-      //   (content) => content.docId === payload,
-      // )
-      // if (cachedDoc) {
-      //   console.log("CONTENT FOUND IN THE CACHE")
-      //   state.activeContent = cachedDoc
-      // } else {
-      //   //Untill persist functionality is created
-      //   const _id = new Date().getMilliseconds()
-      //   const initialP: ParagraphElement = {
-      //     ...initialParagraph,
-      //     _id,
-      //   }
-      //   state.activeContent = {
-      //     _id: 100000000,
-      //     docId: payload,
-      //     components: [initialP],
-      //   }
-      // }
+      try {
+        state.disableElementsAdding = true
+
+        const targetDoc = state.documents.find(
+          (doc) => doc.documentInfo._id === payload,
+        )
+
+        if (targetDoc) {
+          state.activeDocumentId = targetDoc.documentInfo._id
+          state.activeDocumentInfo = targetDoc.documentInfo
+          state.activeContent = targetDoc.content
+        }
+      } catch (err) {
+        console.log("ERROR while opening the document")
+      } finally {
+        state.disableElementsAdding = false
+      }
     },
 
     toggleBegingsWithTitle: (state) => {
@@ -661,4 +674,6 @@ export const {
   toggleTableHeading,
   setSeparatorMargins,
   setDocumentFromObject,
+  cacheDocuments,
+  cacheActiveDoc,
 } = documentsSlice.actions

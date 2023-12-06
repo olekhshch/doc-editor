@@ -11,7 +11,7 @@ export interface DocumentsState {
   documents: DocumentFull[]
   activeDocumentId: number | null
   activeDocumentInfo: DocumentPreviewInterface | null
-  activeContent: DocumentContent | undefined
+  activeContent: DocumentContent | null
   beginsWithTitle: boolean
   activeElementId: number | null | activeElementInColumn
   activeElementType: ContentComponentType | null
@@ -34,11 +34,7 @@ export const initialState: DocumentsState = {
   documents: [],
   activeDocumentId: null,
   activeDocumentInfo: null,
-  activeContent: {
-    _id: 987,
-    docId: 0,
-    components: [initialParagraph],
-  },
+  activeContent: null,
   beginsWithTitle: true,
   activeElementId: null,
   activeElementType: null,

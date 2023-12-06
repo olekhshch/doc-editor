@@ -8,7 +8,9 @@ import {
   duplicateElement,
   insertColumn,
 } from "../../../features/documents/documentsSlice"
-import { CurrentThemeContext } from "../Editor"
+import { CurrentThemeContext, MenuState } from "../Editor"
+import { IoIosArrowDown } from "react-icons/io"
+import { IconContext } from "react-icons"
 type props = {
   elementId: number
   elementType: ContentComponentType
@@ -16,6 +18,8 @@ type props = {
 const ElementMenu = ({ elementId, elementType }: props) => {
   //#TODO: Add elements sub menu
   const dispatch = useAppDispatch()
+
+  const { menuUpwards } = useContext(MenuState)
 
   const handleDuplicate = () => {
     dispatch(duplicateElement({ elementId, column: null }))
@@ -25,7 +29,6 @@ const ElementMenu = ({ elementId, elementType }: props) => {
 
   const { main, gray, lighter } = useContext(CurrentThemeContext)
 
-  //TODO: Table menu options (colapse table, import .csv etc.)
   const ColumnsMenu = () => {
     const addLeft = () => {
       dispatch(insertColumn({ elementId, side: "left" }))
@@ -71,22 +74,35 @@ const ElementMenu = ({ elementId, elementType }: props) => {
   }
 
   return (
-    <StyledMenu $gray={gray} $lighter={lighter} $main={main}>
-      <ul className="primary-menu">
-        <li>Add element...</li>
-        <div className="divider" />
-        <li aria-label="columns">
-          {elementType === "columns" ? "Manage columns..." : "Add column..."}
-          <ColumnsMenu />
-        </li>
-        <div className="divider" />
-        <li onClick={handleDuplicate}>Duplicate</li>
-        <li
-          onClick={() => dispatch(deleteElement({ elementId, column: null }))}
-        >
-          Delete
-        </li>
-      </ul>
+    <StyledMenu
+      $gray={gray}
+      $lighter={lighter}
+      $main={main}
+      $upwards={menuUpwards}
+    >
+      <IconContext.Provider value={{ style: { rotate: "-90deg" } }}>
+        <ul className="primary-menu">
+          <li>
+            <span>Add element</span>
+            <IoIosArrowDown />
+          </li>
+          <div className="divider" />
+          <li aria-label="columns">
+            <span>
+              {elementType === "columns" ? "Manage columns" : "Add column"}
+            </span>
+            <IoIosArrowDown />
+            <ColumnsMenu />
+          </li>
+          <div className="divider" />
+          <li onClick={handleDuplicate}>Duplicate</li>
+          <li
+            onClick={() => dispatch(deleteElement({ elementId, column: null }))}
+          >
+            Delete
+          </li>
+        </ul>
+      </IconContext.Provider>
     </StyledMenu>
   )
 }
@@ -97,10 +113,12 @@ type styledProps = {
   $main: string
   $gray: string
   $lighter: string
+  $upwards?: boolean
 }
 
 const StyledMenu = styled.section<styledProps>`
   position: absolute;
+  top: ${(pr) => (pr.$upwards ? -100 : 0)}px;
   z-index: 10;
   color: var(--black);
 
@@ -121,10 +139,9 @@ const StyledMenu = styled.section<styledProps>`
 
   .secondary-menu {
     position: absolute;
-    transform: translate(
-      calc(var(--element-menu-width)),
-      calc(var(--editor-menu-li-height) * -1)
-    );
+    top: ${(pr) => (pr.$upwards ? "unset" : 0)};
+    bottom: ${(pr) => (pr.$upwards ? 0 : "unset")};
+    transform: translate(calc(var(--element-menu-width)));
     opacity: 0;
     color: var(--black);
   }
@@ -145,6 +162,9 @@ const StyledMenu = styled.section<styledProps>`
   }
 
   li {
+    display: flex;
+    position: relative;
+    align-items: center;
     padding: 2px 4px;
     height: var(--editor-menu-li-height);
     cursor: pointer;
@@ -153,5 +173,8 @@ const StyledMenu = styled.section<styledProps>`
   li:hover {
     background-color: ${(props) => props.$gray};
     color: ${(props) => props.$main};
+  }
+  li span {
+    flex-grow: 1;
   }
 `

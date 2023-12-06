@@ -73,10 +73,12 @@ const Root = () => {
       <Bg />
       <div className="margin" />
       <div className="root-wrapper">
-        <section className="root-panel" id="recent-docs">
-          <h3>Recent documents</h3>
-          <DocumentsList docs={documents} />
-        </section>
+        {documents.length > 0 && (
+          <section className="root-panel" id="recent-docs">
+            <h3>Recent documents</h3>
+            <DocumentsList docs={documents} />
+          </section>
+        )}
         <section className="root-panel" id="create-doc-panel">
           <div className="flex" style={{ gap: "12px", alignItems: "center" }}>
             <span>Create</span>
@@ -103,6 +105,7 @@ const Root = () => {
         <section className="root-panel" id="tutorials">
           <div className="flex" style={{ gap: "12px", alignItems: "center" }}>
             <h3>Documentation</h3>
+            <p>To be added (?)</p>
           </div>
         </section>
       </div>
@@ -164,6 +167,7 @@ const StyledRoot = styled.main`
     max-width: 90vw;
     min-width: 420px;
     height: fit-content;
+    max-height: 180px;
     color: var(--main);
     background-color: rgba(250, 228, 247, 0.523);
     border-radius: 14px;

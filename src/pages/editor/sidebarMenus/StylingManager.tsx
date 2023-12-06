@@ -9,6 +9,7 @@ import { saveActiveStylingAsTemplate } from "../../../features/styling/stylingSl
 const StylingManager = () => {
   const dispatch = useAppDispatch()
   const { templates } = useAppSelector((state) => state.styling)
+  const { downloadStylingToJSON } = usePersist()
 
   return (
     <StyledManager>
@@ -20,7 +21,9 @@ const StylingManager = () => {
         >
           to local storage
         </button>
-        <button className="btn">to JSON</button>
+        <button className="btn" onClick={downloadStylingToJSON}>
+          to JSON
+        </button>
         {templates.length > 0 && <StylingTemplatesList templates={templates} />}
       </div>
     </StyledManager>

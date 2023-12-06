@@ -7,6 +7,10 @@ import ActiveDocRedirect from "./pages/editor/ActiveDocRedirect"
 import { useAppDispatch, useAppSelector } from "./app/hooks"
 import usePersist from "./app/usePersist"
 import { setStylingTemplates } from "./features/styling/stylingSlice"
+import {
+  cacheActiveDoc,
+  cacheDocuments,
+} from "./features/documents/documentsSlice"
 
 const router = createBrowserRouter([
   {
@@ -15,6 +19,11 @@ const router = createBrowserRouter([
   },
   {
     path: "docs/:docId",
+    element: <Editor />,
+    errorElement: <NotFoundScreen />,
+  },
+  {
+    path: "docs/docs/",
     element: <Editor />,
     errorElement: <NotFoundScreen />,
   },
@@ -42,10 +51,14 @@ const App = () => {
   const [checkedLS, setCheckedLS] = useState(false)
 
   useEffect(() => {
-    // Checking if any styling templates are in the local storage on mount
+    // Checking if any styling templates and docs are in the local storage on mount
     try {
       const styling_templates = appPersist.getStylingTemplates_LS()
       dispatch(setStylingTemplates(styling_templates))
+
+      const cached_documents = appPersist.getCachedDocuments_LS()
+      dispatch(cacheDocuments(cached_documents))
+
       setCheckedLS(true)
     } catch (err) {
       console.log("ERROR while checking styling templates in LS")
@@ -63,11 +76,28 @@ const App = () => {
     }
   }, [templates, appPersist, checkedLS])
 
-  //CHECKING ACTIVE DOC CHANGES
+  // CHECKING ACTIVE DOC CHANGES
   // useEffect(() => {
-  //   console.log({ documents, activeContent })
+  //   try {
+  //     //autosaving every 30 sec
+  //     setInterval(() => {
+  //       if (activeContent && activeDocumentInfo && checkedLS) {
+  //         dispatch(cacheActiveDoc())
+  //         console.log("doc cached")
+  //         appPersist.saveAllDocuments_LS()
+  //       }
+  //     }, 30000)
+  //   } catch (err) {
+  //     console.log("ERROR while saving documents to LS")
+  //   }
+  // }, [activeContent, activeDocumentInfo, checkedLS, dispatch])
 
-  // }, [activeContent])
+  useEffect(() => {
+    dispatch(cacheActiveDoc())
+    if (checkedLS) {
+      appPersist.saveAllDocuments_LS()
+    }
+  }, [dispatch, activeContent?.components, documents.length])
 
   return <RouterProvider router={router}></RouterProvider>
 }

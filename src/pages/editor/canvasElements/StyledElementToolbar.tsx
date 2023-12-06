@@ -50,18 +50,19 @@ const StyledToolbar = styled.div<styledProps>`
   align-items: center;
   /* gap: 24px; */
   font-size: var(--small-size);
-  width: 90%;
-  min-width: 400px;
 
   display: none;
 
   .toolbar-section,
   .toolbar-section-text-block {
+    padding: 4px;
+    display: flex;
+    gap: 2px;
+    align-items: center;
     background-color: white;
     border: 1px solid ${(props) => props.$gray};
     box-shadow: 0 0 6px ${(props) => props.$gray};
     border-radius: 8px;
-    padding: 0;
     height: fit-content;
   }
 
@@ -71,21 +72,46 @@ const StyledToolbar = styled.div<styledProps>`
 
   .element-toolbar-btn {
     padding: 2px;
+    /* padding-bottom: 0; */
     border: none;
+    border-radius: 4px;
     min-width: 16px;
+    width: 22px;
     font-size: var(--small-size);
     text-align: center;
     font-weight: bold;
   }
 
+  @keyframes activation {
+    from {
+      background-color: "transparent";
+    }
+
+    to {
+      background-color: ${(props) => props.$main};
+    }
+  }
+
   .element-toolbar-btn:hover,
   .active {
-    background-color: ${(props) => props.$main};
+    /* background-color: ${(props) => props.$main}; */
     color: var(--white);
+
+    animation: activation 0.2s forwards;
+  }
+
+  @keyframes active-deletion {
+    from {
+      background-color: "transparent";
+    }
+
+    to {
+      background-color: red;
+    }
   }
 
   .delete-btn:hover {
-    background-color: red;
+    animation: active-deletion 0.2s forwards;
   }
 
   .colour-swatch div {

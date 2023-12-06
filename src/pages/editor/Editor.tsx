@@ -10,6 +10,7 @@ import {
   disableAddingElements,
   enableAddingElements,
   setActiveElementData,
+  setDocAsCurrent,
 } from "../../features/documents/documentsSlice"
 import { DocumentPreviewInterface, ImageElement } from "../../types"
 import Loading from "../../Loading"
@@ -40,6 +41,8 @@ type popUpWindow = "new_image" | "doc_info" | "image_view"
 interface EditorMenuState {
   elementMenuId: number | null
   setElementMenuId: (id: number | null) => void
+  menuUpwards: boolean
+  setMenuUpwards: (b: boolean) => void
   showLeftSb: boolean
   showRightSb: boolean
   popUpFor: popUpWindow | null
@@ -51,6 +54,8 @@ interface EditorMenuState {
 export const MenuState = createContext<EditorMenuState>({
   elementMenuId: null,
   setElementMenuId: (id) => {},
+  menuUpwards: false,
+  setMenuUpwards: (b) => {},
   showLeftSb: true,
   showRightSb: true,
   popUpFor: "new_image",
@@ -61,14 +66,13 @@ export const MenuState = createContext<EditorMenuState>({
 
 const Editor = () => {
   const dispatch = useAppDispatch()
-  const { focusLast } = useDocElements()
 
   //INFO ABOUT THE ACTIVE DOC (readonly, metadata etc)
   const [currentDocDetails, setCurrentDocDetails] = useState<
     DocInfoContenxt | undefined
   >(undefined)
 
-  const { activeContent, activeDocumentInfo, activeElementType } =
+  const { activeContent, activeDocumentInfo, activeElementType, documents } =
     useAppSelector((state) => state.documents)
 
   const [searchParams, setSearchParams] = useSearchParams()
@@ -101,7 +105,16 @@ const Editor = () => {
 
         dispatch(readonly ? disableAddingElements() : enableAddingElements())
       } else {
-        throw new Error("ERROR: Wasn't able to find full doc info")
+        //Checking if document with this id is cached
+        const targetDoc = documents.find(
+          (doc) => doc.documentInfo._id === docIdNum,
+        )
+
+        if (targetDoc) {
+          dispatch(setDocAsCurrent(docIdNum))
+        } else {
+          throw new Error("ERROR: Wasn't able to find full doc info")
+        }
       }
     }
   }, [
@@ -154,6 +167,7 @@ const Editor = () => {
   //Editor additional windows and menus
 
   const [elementMenuId, setElementMenuId] = useState<number | null>(null)
+  const [menuUpwards, setMenuUpwards] = useState(false)
   const [popUpFor, setPopUpFor] = useState<popUpWindow | null>(null)
   const [imageViewObj, setImageViewObj] = useState<ImageElement | undefined>(
     undefined,
@@ -161,6 +175,8 @@ const Editor = () => {
   const menuContextValue: EditorMenuState = {
     elementMenuId,
     setElementMenuId,
+    menuUpwards,
+    setMenuUpwards,
     showLeftSb,
     showRightSb,
     popUpFor,
@@ -245,7 +261,14 @@ const Editor = () => {
     document.addEventListener("keydown", handleShortcuts)
 
     return () => document.removeEventListener("keydown", handleShortcuts)
-  }, [addHeadingElement, addParagraphElement])
+  }, [
+    activeElementType,
+    addHeadingElement,
+    addParagraphElement,
+    addSeparatorElement,
+    addTableElement,
+    toggleMode,
+  ])
 
   //STORING FOCUS CALLBACKS FOR FOCUSING ELEMENTS EXTERNALLY
   const [focusCbs, setFocusCbs] = useState<focusCallback[]>([])

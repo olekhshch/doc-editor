@@ -9,7 +9,7 @@ const ActiveDocRedirect = () => {
 
   useEffect(() => {
     if (activeDocumentId) {
-      navigation(`docs/${activeDocumentId}`)
+      navigation(`/docs/${activeDocumentId}`)
     }
   }, [activeDocumentId, navigation])
 

@@ -30,18 +30,35 @@ export default styled.article<styledProps>`
   width: max-content;
   max-width: ${(pr) => pr.$canvas_width}px;
 
-  /* .doc-element-toolbar {
-    top: -20px;
-    left: 8px;
-  } */
+  @keyframes appearance {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes border {
+    from {
+      border: 1px solid "transparent";
+    }
+    to {
+      border-color: ${(props) =>
+        props.$readonly ? "transparent" : props.$gray};
+    }
+  }
 
   &:hover {
-    border: 1px solid
-      ${(props) => (props.$readonly ? "transparent" : props.$gray)};
+    /* border: 1px solid
+      ${(props) => (props.$readonly ? "transparent" : props.$gray)}; */
+    animation: border 0.4s forwards;
   }
 
   &:hover .doc-element-toolbar {
     display: ${(props) => (props.$readonly ? "none" : "flex")};
+    animation: appearance 0.2s forwards;
   }
 
   .table-toolbar {

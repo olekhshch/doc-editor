@@ -18,7 +18,6 @@ import ShortCutsList from "./ShortCutsList"
 
 const AddComponentsMenu = () => {
   const { disableElementsAdding } = useAppSelector((state) => state.documents)
-  const { activeTheme } = useAppSelector((state) => state.styling)
 
   const { setPopUpFor } = useContext(MenuState)
   const dispatch = useAppDispatch()

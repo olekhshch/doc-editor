@@ -35,7 +35,8 @@ type props = {
 const DocElement = ({ docElementObj, column, orderIdx }: props) => {
   const { type, _id } = docElementObj
 
-  const { elementMenuId, setElementMenuId } = useContext(MenuState)
+  const { elementMenuId, setElementMenuId, setMenuUpwards } =
+    useContext(MenuState)
   const [showMenu, setShowMenu] = useState(false)
 
   const { readonly } = useContext(CurrentDocContext)!
@@ -89,7 +90,9 @@ const DocElement = ({ docElementObj, column, orderIdx }: props) => {
   }, [_id])
 
   const handleDnDHandleClick = (e: React.MouseEvent) => {
+    const shiftUpward = window.innerHeight - e.clientY < 120
     setElementMenuId(showMenu ? null : _id)
+    setMenuUpwards(shiftUpward)
     e.stopPropagation()
   }
 
@@ -179,6 +182,7 @@ const StyledElementWrapper = styled.li<styledProps>`
   }
 
   .element-left-margin {
+    position: relative;
     min-width: var(--editor-left-mg);
     display: flex;
     justify-content: right;

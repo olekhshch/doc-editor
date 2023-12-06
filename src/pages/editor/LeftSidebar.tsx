@@ -17,7 +17,7 @@ const LeftSidebar = () => {
     "Project",
   ])
 
-  const { downloadToJSON, saveCurrentDocState_LS } = usePersist()
+  const { downloadToJSON } = usePersist()
 
   //READONLY MODE
   const [searchParams, setSearchParams] = useSearchParams()
@@ -78,7 +78,7 @@ const LeftSidebar = () => {
       </div>
       <div className="sb-btm">
         <div className="btn-container flex-col" style={{ gap: "4px" }}>
-          <AppButton title="Save to LS" onClick={saveCurrentDocState_LS} />
+          {/* <AppButton title="Save to LS" onClick={saveCurrentDocState_LS} /> */}
           <AppButton title="Save as JSON" onClick={downloadToJSON} />
         </div>
       </div>
